@@ -13,4 +13,4 @@
 
 Auth::routes(); // laravel Authentication
 
-Route::get('/{any}', 'AppController@index')->name('any', '.*');
+Route::get('/{any}', 'AppController@index')->where('any', '.*');

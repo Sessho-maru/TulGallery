@@ -7,7 +7,7 @@ Vue.use(VueRouter); // use VueRouter
 export default new VueRouter({
     routes: [
         {
-            path: '/test',
+            path: '/',
             component: ExampleComponent
         }
     ],

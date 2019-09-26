@@ -34828,7 +34828,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 
 /* harmony default export */ __webpack_exports__["default"] = (new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: [{
-    path: '/test',
+    path: '/',
     component: _components_ExampleComponent__WEBPACK_IMPORTED_MODULE_2__["default"]
   }],
   mode: 'history' // turn off backwards compatibility (for modern web browser)
