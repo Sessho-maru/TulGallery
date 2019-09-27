@@ -8,6 +8,6 @@ class Tag extends Model
 {
     public function tagmap()
     {
-        $this->belongsTo(Tagmap::class);
+        return $this->belongsTo(Tagmap::class);
     }
 }

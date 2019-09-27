@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 
 Route::middleware('auth:api')->group(function () 
 {
+    Route::get('/imgs', 'ImagesController@index');
     Route::post('/imgs', 'ImagesController@store');
     Route::get('/imgs/{id}', 'ImagesController@show');
     Route::patch('/imgs/{id}', 'ImagesController@update');
