@@ -56,6 +56,15 @@ class imgTest extends TestCase
         $resopnse->assertSessionHasNoErrors('url');
     }
 
+    public function test_a_image_can_be_retrived()
+    {
+        $this->post('/api/imgs', $this->data());
+        $image = Image::first();
+
+        $response = $this->get('api/imgs/' . $image->id);
+        $response->assertJson(['url' => $image->url]);
+    }
+
     // public function test_an_unauthenticated_user_should_be_redirected_to_login()
     // {
     //     $response = $this->post('/api/imgs', $this->data());

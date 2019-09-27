@@ -15,4 +15,9 @@ class ImagesController extends Controller
 
         Image::create($data);
     }
+
+    public function show($id)
+    {
+        return Image::find($id);
+    }
 }
