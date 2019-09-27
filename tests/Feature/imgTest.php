@@ -8,6 +8,7 @@ use Tests\TestCase;
 
 use App\User;
 use App\Image;
+use Illuminate\Support\Str;
 
 class imgTest extends TestCase
 {
@@ -19,6 +20,7 @@ class imgTest extends TestCase
     {
         parent::setUp();
         $this->user = User::create([
+            'api_token' =>  Str::random(32),
             'name' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => '1234'
@@ -28,6 +30,7 @@ class imgTest extends TestCase
     private function data()
     {
         return [
+            'api_token' => $this->user->api_token,
             'url' => 'https://img2.gelbooru.com//images/66/c3/66c38e1cb048c18dcabf1705e52470fa.jpeg',
             'external_link'=> 'https://img2.gelbooru.com//images/34/74/3474a5dc0caac58e006671fed794f941.png'
         ];
@@ -45,7 +48,14 @@ class imgTest extends TestCase
         }
     }
 
-    public function test_an_image_can_be_added()
+    public function test_an_unauthenticated_user_should_be_redirected_to_login()
+    {
+        $response = $this->post('/api/imgs', array_merge($this->data(), ['api_token' => '']));
+        $response->assertRedirect('/login');
+        $this->assertCount(0, Image::all());
+    }
+
+    public function test_an_authenticated_user_can_add_an_image()
     {   
         $this->post('/api/imgs', $this->data());
         $this->assertCount(1, Image::all());
@@ -95,14 +105,7 @@ class imgTest extends TestCase
         $this->post('/api/imgs', $this->data());
         $image = Image::first();
 
-        $response = $this->delete('/api/imgs/' . $image->id);
+        $this->delete('/api/imgs/' . $image->id);
         $this->assertCount(0, Image::all());
     }
-
-    // public function test_an_unauthenticated_user_should_be_redirected_to_login()
-    // {
-    //     $response = $this->post('/api/imgs', $this->data());
-    //     $response->assertRedirect('/login');
-    //     $this->assertCount(0, Image::all());
-    // }
 }

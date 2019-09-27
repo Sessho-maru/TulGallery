@@ -13,11 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api')->group(function () 
+{
+    Route::post('/imgs', 'ImagesController@store');
+    Route::get('/imgs/{id}', 'ImagesController@show');
+    Route::patch('/imgs/{id}', 'ImagesController@update');
+    Route::delete('/imgs/{id}', 'ImagesController@destroy');
 });
-
-Route::post('/imgs', 'ImagesController@store');
-Route::get('/imgs/{id}', 'ImagesController@show');
-Route::patch('/imgs/{id}', 'ImagesController@update');
-Route::delete('/imgs/{id}', 'ImagesController@destroy');
