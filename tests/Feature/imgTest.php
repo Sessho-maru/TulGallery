@@ -32,11 +32,34 @@ class imgTest extends TestCase
         ];
     }
 
-    public function testAnImgCanBeAdded()
+    public function test_an_image_can_be_added()
     {   
-        $this->withoutExceptionHandling();
         $this->post('/api/imgs', $this->data());
         $this->assertCount(1, Image::all());
-
     }
+
+    public function test_fields_are_required()
+    {
+        collect(['url'])
+            ->each(function ($field) 
+            {
+                $response = $this->post('/api/imgs', array_merge($this->data(), [$field => '']));
+
+                $response->assertSessionHasErrors($field);
+                $this->assertCount(0, Image::all());
+            });
+    }
+
+    public function test_url_field_must_be_an_url()
+    {
+        $resopnse = $this->post('/api/imgs', $this->data());
+        $resopnse->assertSessionHasNoErrors('url');
+    }
+
+    // public function test_an_unauthenticated_user_should_be_redirected_to_login()
+    // {
+    //     $response = $this->post('/api/imgs', $this->data());
+    //     $response->assertRedirect('/login');
+    //     $this->assertCount(0, Image::all());
+    // }
 }

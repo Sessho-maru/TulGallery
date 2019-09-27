@@ -9,8 +9,10 @@ class ImagesController extends Controller
 {
     public function store()
     {
-        Image::create([
-            'url' => request('url')
-        ]);
+        $data = request()->validate([
+            'url' => 'required|active_url'
+            ]);
+
+        Image::create($data);
     }
 }
