@@ -20,3 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/imgs', 'ImagesController@store');
 Route::get('/imgs/{id}', 'ImagesController@show');
 Route::patch('/imgs/{id}', 'ImagesController@update');
+Route::delete('/imgs/{id}', 'ImagesController@destroy');

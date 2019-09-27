@@ -33,7 +33,7 @@ class imgTest extends TestCase
         ];
     }
 
-    public function viewUrl($image)
+    private function viewUrl($image)
     {
         if ($image['external_link'] != null)
         {
@@ -80,7 +80,6 @@ class imgTest extends TestCase
 
     public function test_a_image_can_be_patch()
     {
-        $this->withoutExceptionHandling();
         $this->post('/api/imgs', $this->data());
         $image = Image::first();
 
@@ -89,6 +88,15 @@ class imgTest extends TestCase
 
         // $this->viewUrl($image);
         $this->assertTrue($this->data()['url'] != 'https://img2.gelbooru.com//images/b4/7c/b47c5174403ef994e7c78ec2e9496cb0.jpeg');
+    }
+
+    public function test_a_image_can_be_deleted()
+    {
+        $this->post('/api/imgs', $this->data());
+        $image = Image::first();
+
+        $response = $this->delete('/api/imgs/' . $image->id);
+        $this->assertCount(0, Image::all());
     }
 
     // public function test_an_unauthenticated_user_should_be_redirected_to_login()

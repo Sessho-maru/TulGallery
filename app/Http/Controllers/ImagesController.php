@@ -30,4 +30,10 @@ class ImagesController extends Controller
         $image = Image::find($id);
         $image->update($this->validateData());
     }
+
+    public function destroy($id)
+    {
+        $image = Image::find($id);
+        $image->delete();
+    }
 }
