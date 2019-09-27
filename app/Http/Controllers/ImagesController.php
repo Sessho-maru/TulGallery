@@ -7,17 +7,27 @@ use Illuminate\Http\Request;
 
 class ImagesController extends Controller
 {
+    private function validateData()
+    {
+        return request()->validate([
+            'url' => 'required|active_url',
+            'external_link'=> 'active_url'
+        ]);
+    }
+
     public function store()
     {
-        $data = request()->validate([
-            'url' => 'required|active_url'
-            ]);
-
-        Image::create($data);
+        Image::create($this->validateData());
     }
 
     public function show($id)
     {
         return Image::find($id);
+    }
+
+    public function update($id)
+    {
+        $image = Image::find($id);
+        $image->update($this->validateData());
     }
 }

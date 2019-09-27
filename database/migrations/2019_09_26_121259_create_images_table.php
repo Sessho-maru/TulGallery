@@ -17,7 +17,8 @@ class CreateImagesTable extends Migration
             $table->bigIncrements('id');
             // $table->bigInteger('user_id');
             $table->string('url');
-            // $table->text('description');
+            $table->text('description')->nullable();
+            $table->string('external_link')->nullable();
             $table->timestamps();
         });
     }

@@ -28,8 +28,21 @@ class imgTest extends TestCase
     private function data()
     {
         return [
-            'url' => 'https://img2.gelbooru.com//images/66/c3/66c38e1cb048c18dcabf1705e52470fa.jpeg'
+            'url' => 'https://img2.gelbooru.com//images/66/c3/66c38e1cb048c18dcabf1705e52470fa.jpeg',
+            'external_link'=> 'https://img2.gelbooru.com//images/34/74/3474a5dc0caac58e006671fed794f941.png'
         ];
+    }
+
+    public function viewUrl($image)
+    {
+        if ($image['external_link'] != null)
+        {
+            dd($image->url, $image->external_link);
+        }
+        else
+        {
+            dd($image->url);
+        }
     }
 
     public function test_an_image_can_be_added()
@@ -61,8 +74,21 @@ class imgTest extends TestCase
         $this->post('/api/imgs', $this->data());
         $image = Image::first();
 
-        $response = $this->get('api/imgs/' . $image->id);
+        $response = $this->get('/api/imgs/' . $image->id);
         $response->assertJson(['url' => $image->url]);
+    }
+
+    public function test_a_image_can_be_patch()
+    {
+        $this->withoutExceptionHandling();
+        $this->post('/api/imgs', $this->data());
+        $image = Image::first();
+
+        $response = $this->patch('/api/imgs/' . $image->id, ['url' => 'https://img2.gelbooru.com//images/b4/7c/b47c5174403ef994e7c78ec2e9496cb0.jpeg']);
+        $image = $image->fresh();
+
+        // $this->viewUrl($image);
+        $this->assertTrue($this->data()['url'] != 'https://img2.gelbooru.com//images/b4/7c/b47c5174403ef994e7c78ec2e9496cb0.jpeg');
     }
 
     // public function test_an_unauthenticated_user_should_be_redirected_to_login()
