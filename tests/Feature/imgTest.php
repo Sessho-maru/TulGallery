@@ -70,28 +70,30 @@ class imgTest extends TestCase
         $this->assertCount(1, Image::all());
     }
 
-    // public function test_a_list_of_images_can_be_fetched_for_the_authenticated_user()
-    // {
+    /*
+    public function test_a_list_of_images_can_be_fetched_for_the_authenticated_user()
+    {
 
-    //     $this->post('/api/imgs', $this->data());
+        $this->post('/api/imgs', $this->data());
 
-    //     // dd($this->data()['api_token'], array_merge($this->data(), ['api_token' => $this->anotherUser->api_token]));
+        // dd($this->data()['api_token'], array_merge($this->data(), ['api_token' => $this->anotherUser->api_token]));
 
-    //     $this->post('/api/imgs', array_merge($this->data(), [
-    //         'api_token' => $this->anotherUser->api_token
-    //     ]));
+        $this->post('/api/imgs', array_merge($this->data(), [
+            'api_token' => $this->anotherUser->api_token
+        ]));
 
 
-    //     dd(Image::all());
+        dd(Image::all());
 
-    //     $response = $this->get('/api/imgs/?api_token' . $this->user->api_token);
-    //     $response->assertJsonCount(1)
-    //                 ->assertJson([
-    //                     [
-    //                         'user_id' => $this->user->id
-    //                     ]
-    //                 ]);
-    // }
+        $response = $this->get('/api/imgs/?api_token' . $this->user->api_token);
+        $response->assertJsonCount(1)
+                    ->assertJson([
+                        [
+                            'user_id' => $this->user->id
+                        ]
+                    ]);
+    }
+    */
 
     public function test_fields_are_required()
     {
