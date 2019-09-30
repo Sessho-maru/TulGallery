@@ -22,13 +22,15 @@ class ImagesController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Image::class);
-        return ImageResource::collection(request()->user()->images);
+        return (ImageResource::collection(request()->user()->images))->response()->setStatusCode(200);
     }
 
     public function store()
     {
         $this->authorize('create', Image::class);
-        request()->user()->images()->create($this->validateData());
+        $image = request()->user()->images()->create($this->validateData());
+
+        return (new ImageResource($image))->response()->setStatusCode(201);
     }
 
     public function show($id)
@@ -36,18 +38,26 @@ class ImagesController extends Controller
         $image = Image::find($id);
 
         $this->authorize('view', $image);
-        return new ImageResource($image);
+        return (new ImageResource($image))->response()->setStatusCode(200);
     }
 
     public function update($id)
     {
-        $this->authorize('update', Image::find($id));
-        Image::find($id)->update($this->validateData());
+        $image = Image::find($id);
+
+        $this->authorize('update', $image);
+        $image->update($this->validateData());
+
+        return (new ImageResource($image))->response()->setStatusCode(200);
     }
 
     public function destroy($id)
     {
-        $this->authorize('delete', Image::find($id));
-        Image::find($id)->delete();
+        $image = Image::find($id);
+
+        $this->authorize('delete', $image);
+        $image->delete();
+
+        return response([], 204);
     }
 }

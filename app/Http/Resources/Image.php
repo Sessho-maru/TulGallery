@@ -15,12 +15,17 @@ class Image extends JsonResource
     public function toArray($request)
     {
         return [
-            'image_id' => $this->id,
-            'uploader' => $this->user->name,
-            'url' => $this->url,
-            'description' => $this->description,
-            'external_link' => $this->external_link,
-            'last_updated' => $this->updated_at->diffForHumans()
+            'data' => [
+                'image_id' => $this->id,
+                'uploader' => $this->user->name,
+                'url' => $this->url,
+                'description' => $this->description,
+                'external_link' => $this->external_link,
+                'last_updated' => $this->updated_at->diffForHumans()
+            ],
+            'links' => [
+                'self' => $this->path()
+            ]
         ];
     }
 }
