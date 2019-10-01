@@ -1,47 +1,53 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
+    @include('layouts.baseLayout') <!-- It Contains 2 <div> tags -->
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+        <h1 class="text-white text-3xl pt-8">Oh no!</h1>
+        <h2 class="text-blue-300">Enter your reset token to reset password</h2>
 
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
+        <form class="pt-8" method="POST" action="{{ route('check') }}">
 
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+            @csrf
 
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            <div class="relative">
+                    <label class="text-blue-500 text-xs font-bold pl-3 pt-2 absolute uppercase" for="user_name">user name</label>
+                    <input id="user_name" type="text" class="p-3 pt-8 w-full bg-blue-800 text-gray-100  rounded focus:outline-none focus:bg-blue-700 @error('user_name') border border-red-600 @enderror" name="user_name">
+        
+                    @error('user_name')
+                        <span class="text-red-600 text-xs" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
             </div>
-        </div>
+
+            <div class="relative pt-3">
+                <label class="text-blue-500 text-xs font-bold pl-3 pt-2 absolute uppercase" for="reset_token">reset token</label>
+                <input id="reset_token" type="text" class="p-3 pt-8 w-full bg-blue-800 text-gray-100  rounded focus:outline-none focus:bg-blue-700 @error('reset_token') border border-red-600 @enderror" name="reset_token">
+
+                @error('reset_token')
+                    <span class="text-red-600 text-xs" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+            
+            <div class="pt-6">
+                <button type="submit" class="py-2 px-3 w-full text-left bg-gray-400 text-blue-800 font-bold rounded uppercase">send request</button>
+            </div>
+
+            <div class="pt-8 flex justify-between text-white text-sm font-bold">
+                <a class="hover:text-blue-200" href="{{ route('login') }}">
+                    Login
+                </a>
+                    
+                <a class="hover:text-blue-200" href="{{ route('register') }}">
+                    Register
+                </a>
+            </div>
+
+        </form>
+
     </div>
 </div>
 @endsection

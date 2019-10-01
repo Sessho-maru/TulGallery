@@ -16,7 +16,6 @@ class CreateTagmapsTable extends Migration
         Schema::create('tagmaps', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('image_id');
-            $table->timestamps();
         });
     }
 

@@ -27,15 +27,15 @@ class imgTest extends TestCase
         $this->user = User::create([
             'api_token' =>  Str::random(32),
             'name' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => '1234'
+            'password' => '1234',
+            'password_reset_token' => '753400'
         ]);
 
         $this->anotherUser = User::create([
             'api_token' =>  Str::random(32),
             'name' => 'notAdmin',
-            'email' => 'notAdmin@gmail.com',
-            'password' => '4567'
+            'password' => '4567',
+            'password_reset_token' => '753400'
         ]);
     }
 

@@ -1,77 +1,69 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
+    @include('Layouts.baseLayout') <!-- It Contains 2 <div> tags -->
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
+        <h1 class="text-white text-3xl pt-8">Join</h1>
+        <h2 class="text-blue-300">Enter your information below</h2>
 
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
+        <form class="pt-8" method="POST" action="{{ route('register') }}">
+            
+            @csrf
 
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            <div class="relative">
+                <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="user_name">User name</label>
+                <input id="user_name" type="text" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded 
+                                                @error('user_name') border border-red-600 @enderror" name="user_name" placeholder="Your Name">
+                @error('user_name')
+                    <span class="text-red-600 text-xs" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
             </div>
-        </div>
+
+            <div class="relative pt-3">
+                <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="reset_token">reset token</label>
+                <input id="reset_token" type="text" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded 
+                                                @error('reset_token') border border-red-600 @enderror" name="reset_token" placeholder="Require to reset password">
+                @error('reset_token')
+                    <span class="text-red-600 text-xs" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+
+            <div class="relative pt-3">
+                <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="password">password</label>
+                <input id="password" type="password" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded 
+                                                @error('password') border border-red-600 @enderror" name="password" placeholder="Password">
+                @error('password')
+                    <span class="text-red-600 text-xs" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+
+            <div class="relative pt-3">
+                <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="password-confirm">re-enter password</label>
+                <input id="password-confirm" type="password" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded" name="password_confirmation" placeholder="Confirm">
+            </div>
+
+            <div class="pt-6">
+                <button type="submit" class="w-full py-2 px-3 text-left bg-gray-400 text-blue-800 font-bold rounded uppercase font-bold">Register</button>
+            </div>
+
+            <div class="pt-8 flex justify-between text-white text-sm font-bold">
+                <a class="hover:text-blue-200" href="{{ route('password.request') }}">
+                    Forgot Your Password?
+                </a>
+
+                <a class="hover:text-blue-200" href="{{ route('login') }}">
+                    Login
+                </a>
+            </div>
+        
+        </form>
+
     </div>
 </div>
 @endsection

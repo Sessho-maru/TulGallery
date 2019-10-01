@@ -13,4 +13,10 @@
 
 Auth::routes(); // laravel Authentication
 
-Route::get('/{any}', 'AppController@index')->where('any', '.*');
+Route::get('/logout-manual', function () 
+{
+    request()->session()->invalidate();
+});
+
+Route::post('/pw_check', 'PasswordController@check')->name('check');
+Route::post('/pw_reset', 'PasswordController@reset')->name('reset');
