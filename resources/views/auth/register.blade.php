@@ -24,7 +24,7 @@
             <div class="relative pt-3">
                 <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="reset_token">reset token</label>
                 <input id="reset_token" type="text" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded 
-                                                @error('reset_token') border border-red-600 @enderror" name="reset_token" placeholder="Require to reset password">
+                                                @error('reset_token') border border-red-600 @enderror" name="reset_token" placeholder="Requires to reset password, 6 digits number">
                 @error('reset_token')
                     <span class="text-red-600 text-xs" role="alert">
                         <strong>{{ $message }}</strong>
