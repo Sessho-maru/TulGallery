@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import ExampleComponent from './components/ExampleComponent';
+import ImageCreate from './views/ImageCreate';
 
 Vue.use(VueRouter); // use VueRouter
 
@@ -9,6 +10,10 @@ export default new VueRouter({
         {
             path: '/',
             component: ExampleComponent
+        },
+        {
+            path: '/imgs/create',
+            component: ImageCreate
         }
     ],
 
