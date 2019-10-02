@@ -45,20 +45,13 @@ class imgTest extends TestCase
             'api_token' => $this->user->api_token,
             'url' => $this->poket,
             'description' => '',
-            'external_link'=> $this->dumbbel
+            'external_link'=> $this->dumbbel // delete
         ];
     }
 
     private function viewUrl($image)
     {
-        if ($image['external_link'] != null)
-        {
-            dd($image->url, $image->external_link);
-        }
-        else
-        {
-            dd($image->url);
-        }
+        dd($image->url);
     }
 
     public function test_an_unauthenticated_user_should_be_redirected_to_login()
@@ -82,7 +75,6 @@ class imgTest extends TestCase
                             'uploader' => $this->anotherUser->name,
                             'url' => $this->data()['url'],
                             'description' => $this->data()['description'],
-                            'external_link' => $this->data()['external_link'],
                         ],
                         'links' => [
                             'self' => $image->path()
@@ -96,21 +88,18 @@ class imgTest extends TestCase
             'user_id' => $this->user->id,
             'url' => $this->data()['url'],
             'description' => $this->data()['description'],
-            'external_link' => $this->data()['external_link']
         ]);
 
         $image2 = Image::create([
             'user_id' => $this->user->id,
             'url' => $this->atago,
             'description' => $this->data()['description'],
-            'external_link' => $this->data()['external_link']
         ]);
 
         $image3 = Image::create([
             'user_id' => $this->anotherUser->id,
             'url' => $this->data()['url'],
             'description' => $this->data()['description'],
-            'external_link' => $this->data()['external_link']
         ]);
 
         $response = $this->get('/api/imgs/?api_token=' . $this->user->api_token);
@@ -161,7 +150,6 @@ class imgTest extends TestCase
             'user_id' => $this->user->id,
             'url' => $this->data()['url'],
             'description' => $this->data()['description'],
-            'external_link' => $this->data()['external_link']
         ]);
         
         {
@@ -189,7 +177,6 @@ class imgTest extends TestCase
             'user_id' => $this->user->id,
             'url' => $this->data()['url'],
             'description' => $this->data()['description'],
-            'external_link' => $this->data()['external_link']
         ]);
 
         {
@@ -221,7 +208,6 @@ class imgTest extends TestCase
                     'uploader' => $this->user->name,
                     'url' => $this->atago,
                     'description' => $this->data()['description'],
-                    'external_link' => $this->data()['external_link'],
                 ],
                 'links' => [
                     'self' => $image->path()   
@@ -237,7 +223,6 @@ class imgTest extends TestCase
             'user_id' => $this->user->id,
             'url' => $this->data()['url'],
             'description' => $this->data()['description'],
-            'external_link' => $this->data()['external_link']
         ]);
 
         {
