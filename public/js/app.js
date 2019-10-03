@@ -1942,7 +1942,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "App"
+  name: "App",
+  props: ['user']
 });
 
 /***/ }),
@@ -2026,27 +2027,41 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageCreate",
+  props: ['api_token'],
   data: function data() {
     return {
       file: "",
       form: {
+        api_token: this.api_token,
         url: "",
         desc: ""
-      }
+      },
+      uploaded: false
     };
   },
   methods: {
-    submitForm: function submitForm() {
-      var _this = this;
-
+    fileHandle: function fileHandle() {
       this.file = this.$refs.file.files[0];
       var extension = this.file.name.split('.').pop();
 
       if (extension != 'jpeg' && extension != 'png') {
         alert("not supported");
+        this.file = null;
+        return;
+      }
+
+      this.uploaded = true;
+    },
+    submitForm: function submitForm() {
+      var _this = this;
+
+      if (this.uploaded == false) {
+        document.getElementById('error').innerHTML = "Require at least 1 Image";
         return;
       }
 
@@ -2057,12 +2072,16 @@ __webpack_require__.r(__webpack_exports__);
           'Content-Type': 'multipart/form-data'
         }
       }).then(function (response) {
-        _this.url = response.data.url;
+        _this.uploaded = true;
+        _this.form.url = response.data.url;
         console.log('SUCCESS!!');
+        axios.post('/api/imgs', _this.form).then(function (response) {})["catch"](function (errors) {});
       })["catch"](function (errors) {
         console.log('FAILURE!!');
       });
-      axios.post('/imgs/create', this.form).then(function (response) {})["catch"](function (errors) {});
+    },
+    clearError: function clearError() {
+      document.getElementById('error').innerHTML = "";
     }
   }
 });
@@ -19926,7 +19945,10 @@ var render = function() {
         [
           _vm._m(0),
           _vm._v(" "),
-          _c("router-view", { staticClass: "flex flex-1 flex-wrap p-6" })
+          _c("router-view", {
+            staticClass: "flex flex-1 flex-wrap p-6",
+            attrs: { api_token: _vm.user.api_token }
+          })
         ],
         1
       )
@@ -20053,7 +20075,7 @@ var render = function() {
         }
       },
       [
-        _c("div", { staticClass: "pb-8" }, [
+        _c("div", { staticClass: "pb-2" }, [
           _c(
             "label",
             {
@@ -20072,11 +20094,17 @@ var render = function() {
               type: "file",
               accept: ".jpeg,.png",
               enctype: "multipart/form-data"
-            }
+            },
+            on: { change: _vm.fileHandle, click: _vm.clearError }
           })
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "pb-4" }, [
+        _c("p", {
+          staticClass: "text-red-600 text-sm",
+          attrs: { id: "error" }
+        }),
+        _vm._v(" "),
+        _c("div", { staticClass: "py-8" }, [
           _c(
             "label",
             {
@@ -20093,11 +20121,11 @@ var render = function() {
               _c("ckeditor", {
                 attrs: { id: "description", type: "classic" },
                 model: {
-                  value: _vm.desc,
+                  value: _vm.form.desc,
                   callback: function($$v) {
-                    _vm.desc = $$v
+                    _vm.$set(_vm.form, "desc", $$v)
                   },
-                  expression: "desc"
+                  expression: "form.desc"
                 }
               })
             ],

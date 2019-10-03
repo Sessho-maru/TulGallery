@@ -75,7 +75,7 @@
                     </div>
                 </div> <!-- top section -->
 
-                <router-view class="flex flex-1 flex-wrap p-6">
+                <router-view class="flex flex-1 flex-wrap p-6" v-bind:api_token="user.api_token">
 
                 </router-view> <!-- bottom section -->
                 
@@ -87,7 +87,11 @@
 
 <script>
 export default {
-    name: "App"
+    name: "App",
+
+    props: [
+        'user'
+    ]
 }
 </script>
 

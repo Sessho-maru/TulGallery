@@ -12,9 +12,12 @@ class ImagesController extends Controller
 {
     private function validateData()
     {
+        // $message = [
+        //     'url.required' => 'Require at least 1 Image'
+        // ];
         return request()->validate([
             'url' => 'required|active_url',
-            'description' => 'max:1000',
+            'desc' => '',
         ]);
     }
 
@@ -26,8 +29,15 @@ class ImagesController extends Controller
 
     public function store()
     {
+        $validated = $this->validateData();
         $this->authorize('create', Image::class);
-        $image = request()->user()->images()->create($this->validateData());
+        
+
+        $image = request()->user()->images()->create([
+            'user_id' => request()->user()->id,
+            'url' => $validated['url'],
+            'description' => $validated['desc']
+        ]);
 
         return (new ImageResource($image))->response()->setStatusCode(201);
     }
