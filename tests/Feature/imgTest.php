@@ -26,14 +26,14 @@ class imgTest extends TestCase
         parent::setUp();
         $this->user = User::create([
             'api_token' =>  Str::random(32),
-            'name' => 'admin',
+            'user_name' => 'admin',
             'password' => '1234',
             'password_reset_token' => '753400'
         ]);
 
         $this->anotherUser = User::create([
             'api_token' =>  Str::random(32),
-            'name' => 'notAdmin',
+            'user_name' => 'notAdmin',
             'password' => '4567',
             'password_reset_token' => '753400'
         ]);
@@ -45,7 +45,6 @@ class imgTest extends TestCase
             'api_token' => $this->user->api_token,
             'url' => $this->poket,
             'description' => '',
-            'external_link'=> $this->dumbbel // delete
         ];
     }
 

@@ -3,7 +3,7 @@
         <form @submit.prevent="submitForm">
             <div class="pb-8">
                 <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
-                <input id="image" type="file" ref="file" class="pt-8 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data"/>
+                <input id="image" type="file" ref="file" accept=".jpeg,.png" class="pt-8 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data"/>
             </div>
 
             <div class="pb-4">
@@ -30,9 +30,12 @@ export default {
     data()
     {
         return {
-            url: "",
             file: "",
-            desc: ""
+
+            form: {
+                url: "",
+                desc: ""
+            }
         }
     },
 
@@ -41,27 +44,33 @@ export default {
         submitForm()
         {
             this.file = this.$refs.file.files[0];
-            console.log(this.file);
+            let extension = this.file.name.split('.').pop();
+
+            if (extension != 'jpeg' && extension != 'png')
+            {
+                alert("not supported");
+                return;
+            }
 
             let formData = new FormData();
             formData.append('file', this.file);
 
-            axios.post( '/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+            axios.post('/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
                     .then( response => {
+                        this.url = response.data.url;
                         console.log('SUCCESS!!');
-                        // this.url = return back Uploaded image Url
                     })
                     .catch( errors => {
                         console.log('FAILURE!!');
                     });
             
-            // axios.post('/imgs/create', ['url'=> this.url, 'desc'=> this.desc])
-            //     .then( response => {
+            axios.post('/imgs/create', this.form)
+                .then( response => {
                     
-            //     })
-            //     .catch( errors => {
+                })
+                .catch( errors => {
 
-            //     });
+                });
         }
     }
 }

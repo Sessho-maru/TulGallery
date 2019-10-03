@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,11 +21,13 @@ Route::get('/logout-manual', function ()
 
 Route::post('/imgs/upload', function()
 {
-    request()->file('file')->store(
+    $uploaded = request()->file('file')->store(
         'images',
         's3'
     );
-})->name('upload');
+
+    return [ 'url' => 'https://tulbooru.s3.ap-northeast-2.amazonaws.com/' . $uploaded ];
+});
 
 Route::get('/{any}', 'AppController@index')->where('any', '.*');
 Route::post('/pw_check', 'PasswordController@check')->name('check');

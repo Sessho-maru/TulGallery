@@ -18,7 +18,6 @@ class CreateImagesTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('url');
             $table->text('description')->nullable();
-            $table->string('external_link')->nullable(); // delete
             $table->timestamps();
         });
     }

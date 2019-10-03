@@ -6,7 +6,7 @@ import VueCkeditor from 'vue-ckeditor5'
 
 const options = {
   editors: {
-    classic: ClassicEditor,
+    classic: ClassicEditor
   },
   name: 'ckeditor'
 }

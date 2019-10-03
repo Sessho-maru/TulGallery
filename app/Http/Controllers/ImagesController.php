@@ -14,8 +14,7 @@ class ImagesController extends Controller
     {
         return request()->validate([
             'url' => 'required|active_url',
-            'description' => 'max:300',
-            'external_link'=> 'active_url' // deldete
+            'description' => 'max:1000',
         ]);
     }
 
