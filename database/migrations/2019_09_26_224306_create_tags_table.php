@@ -15,8 +15,14 @@ class CreateTagsTable extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tag_name');
+            $table->string('tag_name')->unique();
             $table->timestamps();
+        });
+        
+        Schema::create('image_tag', function (Blueprint $table) {
+            $table->bigInteger('image_id');
+            $table->bigInteger('tag_id');
+            $table->primary(['image_id', 'tag_id']);
         });
     }
 
@@ -28,5 +34,6 @@ class CreateTagsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('tags');
+        Schema::dropIfExists('image_tag');
     }
 }

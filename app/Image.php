@@ -17,9 +17,9 @@ class Image extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    public function tagmap()
+    
+    public function tags()
     {
-        return $this->hasOne(Tagmap::class);
+        return $this->belongsToMany(Tag::class);
     }
 }
