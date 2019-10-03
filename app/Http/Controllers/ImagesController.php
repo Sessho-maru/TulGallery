@@ -91,7 +91,7 @@ class ImagesController extends Controller
         {
             $image->update($this->validateData());
         }
-        
+
         return (new ImageResource($image))->response()->setStatusCode(200);
     }
 

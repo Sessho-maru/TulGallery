@@ -50,8 +50,6 @@ export default {
                 tags: ""
             },
 
-            image_id: "",
-
             uploaded: false,
             tagging: false
         }
@@ -92,16 +90,15 @@ export default {
             axios.post('/api/imgs', this.form)
                     .then( response => {
 
-                        this.image_id = response.data.data.image_id;
+                        let image_id = response.data.data.image_id;
                     
                         let formData = new FormData();
                         formData.append('file', this.file);
 
                         axios.post('/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
                             .then( response => {
-                                
-                                console.log(response.data.url);
-                                axios.patch('/api/imgs/' + this.image_id, { 'api_token': this.api_token, 'url': response.data.url, 'flag': "url_update" })
+
+                                axios.patch('/api/imgs/' + image_id, { 'api_token': this.api_token, 'url': response.data.url, 'flag': "url_update" })
                                         .then( resopnse => {
 
                                         })

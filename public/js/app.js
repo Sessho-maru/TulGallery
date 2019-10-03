@@ -2047,7 +2047,6 @@ __webpack_require__.r(__webpack_exports__);
         desc: "",
         tags: ""
       },
-      image_id: "",
       uploaded: false,
       tagging: false
     };
@@ -2080,7 +2079,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.form.tags = this.form.tags.concat("/");
       axios.post('/api/imgs', this.form).then(function (response) {
-        _this.image_id = response.data.data.image_id;
+        var image_id = response.data.data.image_id;
         var formData = new FormData();
         formData.append('file', _this.file);
         axios.post('/imgs/upload', formData, {
@@ -2088,8 +2087,7 @@ __webpack_require__.r(__webpack_exports__);
             'Content-Type': 'multipart/form-data'
           }
         }).then(function (response) {
-          console.log(response.data.url);
-          axios.patch('/api/imgs/' + _this.image_id, {
+          axios.patch('/api/imgs/' + image_id, {
             'api_token': _this.api_token,
             'url': response.data.url,
             'flag': "url_update"
