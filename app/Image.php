@@ -10,7 +10,7 @@ class Image extends Model
 
     public function path()
     {
-        return url('/imgs/' . $this->id);
+        return '/imgs/' . $this->id;
     }
 
     public function user()

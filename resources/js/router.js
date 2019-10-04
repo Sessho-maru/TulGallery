@@ -1,17 +1,18 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import ExampleComponent from './components/ExampleComponent';
+import ImageIndex from './views/ImageIndex'
 import ImageCreate from './views/ImageCreate';
 import ImageShow from './views/ImageShow';
+import ImageEdit from './views/ImageEdit';
 
 Vue.use(VueRouter); // use VueRouter
 
 export default new VueRouter({
     routes: [
         {
-            path: '/',
-            component: ExampleComponent
+            path: '/imgs',
+            component: ImageIndex
         },
         {
             path: '/imgs/create',
@@ -20,6 +21,10 @@ export default new VueRouter({
         {
             path: '/imgs/:id',
             component: ImageShow
+        },
+        {
+            path: '/imgs/:id/edit',
+            component: ImageEdit
         }
     ],
 

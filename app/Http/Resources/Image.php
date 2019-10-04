@@ -17,9 +17,9 @@ class Image extends JsonResource
         return [
             'data' => [
                 'image_id' => $this->id,
-                'uploader' => $this->user->user_name,
                 'url' => $this->url,
                 'description' => $this->description,
+                'tags' => $this->tags->pluck('tag_name')->toArray(),
                 'last_updated' => $this->updated_at->diffForHumans()
             ],
             'links' => [

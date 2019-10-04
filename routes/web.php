@@ -26,7 +26,10 @@ Route::post('/imgs/upload', function()
         's3'
     );
 
-    return [ 'url' => 'https://tulbooru.s3.ap-northeast-2.amazonaws.com/' . $uploaded ];
+    return [ 
+        'url' => 'https://tulbooru.s3.ap-northeast-2.amazonaws.com/' . $uploaded,
+        // 'path' => $uploaded 
+    ];
 });
 
 Route::get('/{any}', 'AppController@index')->where('any', '.*');
