@@ -53,7 +53,7 @@ export default {
                 tags: "",
             },
 
-            uploaded: false,
+            loaded: false,
         }
     },
 
@@ -71,12 +71,12 @@ export default {
                 return;
             }
 
-            this.uploaded = true;
+            this.loaded = true;
         },
 
         submitForm()
         {
-            if (this.uploaded == false)
+            if (this.loaded == false)
             {
                 document.getElementById('error_image').innerHTML = "Require at least 1 Image";
                 return;

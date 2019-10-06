@@ -26,7 +26,7 @@ export default {
     },
 
     mounted() {
-        axios.get('/api/imgs/?api_token=' + this.api_token)
+        axios.get('/api/imgs')
             .then( response => {
                 this.post = response.data.data;
             })

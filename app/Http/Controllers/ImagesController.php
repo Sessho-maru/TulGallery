@@ -15,11 +15,15 @@ class ImagesController extends Controller
 {
     private function validateData()
     {
+        $msg = [
+            'tags.regex' => 'Incorrect Tag formatting'
+        ];
+
         return request()->validate([
             'url' => 'required|active_url',
             'description' => '',
-            'tags' => 'required|regex:/[[:word:]]+,+/'
-        ]);
+            'tags' => 'required|regex://' // 수정해야함
+        ], $msg);
     }
 
     private function urlUpdate()
@@ -38,8 +42,8 @@ class ImagesController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Image::class);
-        return (ImageResource::collection(request()->user()->images))->response()->setStatusCode(200);
+        // $this->authorize('viewAny', Image::class); All Registered User can index any Images
+        return (ImageResource::collection(Image::all()))->response()->setStatusCode(200);
     }
 
     public function store()
@@ -47,6 +51,7 @@ class ImagesController extends Controller
         $this->authorize('create', Image::class);
 
         $validated = $this->validateData();
+
         $validated['tags'] = substr($validated['tags'], 0, -1);
         $tagNames = explode(",", $validated['tags']);
         // 전달된 태그 문자열을 ',' 기준으로 분할
@@ -72,6 +77,8 @@ class ImagesController extends Controller
         ]);
         // image 생성
 
+        // 추가 할 수 있는것: if $image->url === "http://via.placeholder.com/350x150" then $image->delete() and return
+
         foreach ($tagNames as $tagName)
         {
             $tag_id = Tag::where('tag_name', $tagName)->first()->id;
@@ -85,7 +92,7 @@ class ImagesController extends Controller
     public function show($id)
     {   
         $image = Image::find($id);
-        $this->authorize('view', $image);
+        // $this->authorize('view', $image); All Registered User can view Specific Image
 
         return (new ImageResource($image))->response()->setStatusCode(200);
     }

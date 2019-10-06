@@ -66,16 +66,16 @@
             <div class="flex flex-col flex-1 h-screen">
 
                 <div class="h-16 px-6 border-b border-gray-400 flex items-center justify-between">
-                    <div>
+                    <div class="mr-64">
                         Images
                     </div>
-
-                    <div class="text-blue-600 font-bold">
-                        `user_name`
+                    
+                    <div>
+                        <SearchBar v-bind:api_token="user.api_token"/>
                     </div>
                 </div> <!-- top section -->
 
-                <router-view class="flex flex-1 flex-wrap p-6" v-bind:api_token="user.api_token">
+                <router-view class="flex flex-1 flex-wrap p-6" v-bind:api_token="user.api_token" v-bind:user_id="user.id">
 
                 </router-view> <!-- bottom section -->
                 
@@ -86,12 +86,18 @@
 </template>
 
 <script>
+import SearchBar from '../components/SearchBar';
+
 export default {
     name: "App",
 
     props: [
         'user'
-    ]
+    ],
+
+    components: {
+        SearchBar
+    }
 }
 </script>
 

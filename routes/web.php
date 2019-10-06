@@ -28,7 +28,6 @@ Route::post('/imgs/upload', function()
 
     return [ 
         'url' => 'https://tulbooru.s3.ap-northeast-2.amazonaws.com/' . $uploaded,
-        // 'path' => $uploaded 
     ];
 });
 

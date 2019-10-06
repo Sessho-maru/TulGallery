@@ -10,8 +10,10 @@
                         <a href="#" @click="$router.back()">< Back</a>
                     </div>
                     <div class="relative">
-                        <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
-                        <a href="#" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold" @click="modal = !modal">Delete</a>
+                        <div v-if="post.user_id == user_id">
+                            <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
+                            <a href="#" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold" @click="modal = !modal">Delete</a>
+                        </div>
 
                         <div v-if="modal" class="absolute bg-blue-900 text-white rounded-lg z-20 p-8 w-64 right-0 mt-2 mr-6">
                             <p>Are you sure you want to delete this Image?</p>
@@ -29,7 +31,7 @@
 
                 <div class="pt-8">
                     <div class="">
-                        <img class="" v-bind:src="post.url" alt="">
+                        <a v-bind:href="post.url" target="_blank"><img v-bind:src="post.url" alt=""></a>
                     </div>
                 </div>
 
@@ -58,7 +60,8 @@ export default {
     name: "ImageShow",
 
     props: [
-        'api_token'
+        'api_token',
+        'user_id'
     ],
 
     data()
@@ -72,7 +75,7 @@ export default {
 
     mounted()
     {
-        axios.get('/api/imgs/' + this.$route.params.id + '?api_token=' + this.api_token)
+        axios.get('/api/imgs/' + this.$route.params.id)
             .then( response => {
                 this.post = response.data.data;
                 this.loading = false;
