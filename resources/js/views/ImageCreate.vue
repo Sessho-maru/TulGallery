@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import InputField from '../components/InputField';
-
 export default {
     name: "ImageCreate",
 

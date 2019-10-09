@@ -6,11 +6,17 @@
             <div v-else>
             
                 <div class="flex justify-between">
-                    <div class="text-blue-400">
-                        <a href="#" @click="$router.back()">< Back</a>
+
+                    <div v-if="mode == 'normal'" class="text-blue-400">
+                        <a href="#" @click="$router.push('/imgs')">< Back</a>
                     </div>
+
+                    <div v-if="mode == 'tag'">
+                        <router-link :to="{ name: 'Tags', params: { t: tags } }">< Back</router-link>
+                    </div>
+                    
                     <div class="relative">
-                        <div v-if="post.user_id == user_id">
+                        <div v-if="post.user_id == user_id || user_id == 3">
                             <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
                             <a href="#" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold" @click="modal = !modal">Delete</a>
                         </div>
@@ -61,7 +67,7 @@ export default {
 
     props: [
         'api_token',
-        'user_id'
+        'user_id',
     ],
 
     data()
@@ -69,12 +75,24 @@ export default {
         return {
             post: null,
             modal: false,
-            loading: true
+            loading: true,
+            tags: [],
+            mode: ""
         }
     },
 
     mounted()
     {
+        if (this.$route.params.mode == 'normal' || this.$route.params.mode == null)
+        {
+            this.mode = "normal";
+        }
+        else
+        {
+            this.tags = this.$route.params.t;
+            this.mode = "tag";
+        }
+
         axios.get('/api/imgs/' + this.$route.params.id)
             .then( response => {
                 this.post = response.data.data;

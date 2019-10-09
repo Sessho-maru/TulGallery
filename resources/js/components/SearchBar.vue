@@ -1,18 +1,30 @@
 <template>
     <div>
-        <div class="absolute">
-            <svg viewBox="0 0 24 24" class="w-5 h-5 mt-2 ml-2">
-                <path fill-rule="evenodd" d="M20.2 18.1l-1.4 1.3-5.5-5.2 1.4-1.3 5.5 5.2zM7.5 12c-2.7 0-4.9-2.1-4.9-4.6s2.2-4.6 4.9-4.6 4.9 2.1 4.9 4.6S10.2 12 7.5 12zM7.5.8C3.7.8.7 3.7.7 7.3s3.1 6.5 6.8 6.5c3.8 0 6.8-2.9 6.8-6.5S11.3.8 7.5.8z" clip-rule="evenodd"/>
-            </svg>
+
+        <div v-if="focus" @click="focus = false; results = [];" class="bg-black opacity-0 absolute right-0 left-0 top-0 bottom-0 z-10"></div>
+
+        <div id="search_bar" class="relative z-10">
+            <div class="absolute">
+                <svg viewBox="0 0 24 24" class="w-5 h-5 mt-2 ml-2">
+                    <path fill-rule="evenodd" d="M20.2 18.1l-1.4 1.3-5.5-5.2 1.4-1.3 5.5 5.2zM7.5 12c-2.7 0-4.9-2.1-4.9-4.6s2.2-4.6 4.9-4.6 4.9 2.1 4.9 4.6S10.2 12 7.5 12zM7.5.8C3.7.8.7 3.7.7 7.3s3.1 6.5 6.8 6.5c3.8 0 6.8-2.9 6.8-6.5S11.3.8 7.5.8z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <input type="text" v-bind:placeholder="tagNames" id="searchTerm" v-model="searchTerm" @input="search" @focus="focus = true" class="w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm 
+                                                                                                                    focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100">
+            <div v-if="focus" class="absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20">
+                <div v-if="results == 0">No results found for '{{ searchTerm }}'</div>
+                <div v-for="result in results">
+                    <p v-bind:id="result.id" class="flex imtes-center py-2" @click="AddTagId(result.id); AddTagName(result.tag_name); hide(result.id); results = []; searchTerm = ''; focus = false">{{ result.tag_name }}</p>
+                </div>
+            </div>
+
+            <router-link :to="{ name: 'Tags', params: { t: tags } }">
+                <div class="inline" v-if="tags.length > 0">
+                    <button @click="$emit('search')">Search</button>
+                </div>
+            </router-link>
         </div>
 
-        <select class="absolute mt-1 opacity-0">
-            <option value="user">User</option>
-            <option value="tag">Tag</option>
-        </select>
-
-        <input type="text" placeholder="<- Select Search Type" id="searchTerm" v-model="searchTerm" @input="search" class="w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm 
-                                                                                                                focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100">
     </div>
 </template>
 
@@ -30,7 +42,10 @@ export default {
     {
         return {
             searchTerm: "",
-            results: []
+            results: [],
+            tags: [],
+            tagNames: "",
+            focus: false
         }
     },
 
@@ -44,30 +59,33 @@ export default {
             {
                 axios.post('/api/search', { api_token: this.api_token, searchTerm: this.searchTerm })
                     .then( response => {
-                        console.log(response.data);
+                        this.results = response.data;
                     })
                     .catch ( errors => {
                         console.log(errors.resopnse);
                     });
             }
-        }, 300)
+        }, 300),
+
+        AddTagId(id)
+        {
+            this.tags.push(id);
+        },
+
+        AddTagName(tagName)
+        {
+            this.tagNames += tagName + ' || ';
+        },
+
+        hide(id)
+        {
+            var element = document.getElementById(id);
+            element.classList.add("hidden");
+        },
     }
 }
 </script>
 
 <style scoped>
-.search_type
-{
-	margin-top: 10px;
-	border: none;
-	background: none;
-	outline: none;
-	float: left;
-	padding: 0;
-	color: #e84118;
-	font-size: 16px;
-	transition: 0.4s;
-	line-height: 40px;
-	width: 0px;
-}
+
 </style>

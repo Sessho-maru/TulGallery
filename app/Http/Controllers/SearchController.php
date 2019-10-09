@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
+use App\Tag;
 
 class SearchController extends Controller
 {
@@ -13,7 +13,7 @@ class SearchController extends Controller
             'searchTerm' => 'required'
         ]);
 
-        $user = User::search($validated['searchTerm'])->get();
-        return $user;
+        $tag = Tag::search($validated['searchTerm'])->get();
+        return $tag;
     }
 }

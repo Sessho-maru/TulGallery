@@ -23,3 +23,4 @@ Route::middleware('auth:api')->group(function ()
 
 Route::get('/imgs', 'ImagesController@index');
 Route::get('/imgs/{id}', 'ImagesController@show');
+Route::get('/imgs/index/{id}', 'ImagesController@index_withUser');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Image;
 use App\Tag;
+use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Image as ImageResource;
@@ -22,7 +23,7 @@ class ImagesController extends Controller
         return request()->validate([
             'url' => 'required|active_url',
             'description' => '',
-            'tags' => 'required|regex://' // 수정해야함
+            'tags' => 'required'
         ], $msg);
     }
 
@@ -42,8 +43,39 @@ class ImagesController extends Controller
 
     public function index()
     {
-        // $this->authorize('viewAny', Image::class); All Registered User can index any Images
+        // $this->authorize('viewAny', Image::class); All Registered User can view any Images
         return (ImageResource::collection(Image::all()))->response()->setStatusCode(200);
+    }
+
+    public function index_withUser()
+    {
+        // dd("STOP");
+        // $this->authorize('viewAny', Image::class); All Registered User can view any Images
+        return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
+    }
+
+    public function index_withTags()
+    {
+        // dd(request()->data);
+
+        $tags = request()->data;
+        $images = [];
+        $image_ids = [];
+
+        for ($i = 0; $i < count($tags); $i++)
+        {
+            array_push($images, DB::select('SELECT image_id FROM image_tag WHERE tag_id LIKE (?)', [$tags[$i]]));
+        }
+
+        for ($i = 0; $i < count($images); $i++)
+        {
+            for ($j = 0; $j < count($images[$i]); $j++)
+            {
+                $image_ids[$images[$i][$j]->image_id] = "";
+            }
+        }
+
+        return (ImageResource::collection(Image::findMany(array_keys($image_ids))))->response()->setStatusCode(200);        
     }
 
     public function store()
