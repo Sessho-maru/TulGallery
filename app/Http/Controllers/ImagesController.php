@@ -84,7 +84,8 @@ class ImagesController extends Controller
 
         $validated = $this->validateData();
 
-        $validated['tags'] = substr($validated['tags'], 0, -1);
+        // $validated['tags'] = substr($validated['tags'], 0, -1);
+
         $tagNames = explode(",", $validated['tags']);
         // 전달된 태그 문자열을 ',' 기준으로 분할
 
@@ -143,7 +144,7 @@ class ImagesController extends Controller
         {
             $validated = $this->validateData();
 
-            $validated['tags'] = substr($validated['tags'], 0, -1);
+            // $validated['tags'] = substr($validated['tags'], 0, -1);
             $tagNames = explode(",", $validated['tags']);
 
             foreach ($tagNames as $tagName)

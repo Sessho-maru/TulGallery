@@ -7,6 +7,7 @@ import ImageShow from './views/ImageShow';
 import ImageEdit from './views/ImageEdit';
 import ImageIndexWithUser from './views/ImageIndexWithUser';
 import ImageIndexWithTags from './views/ImageIndexWithTags';
+import Logout from './Actions/Logout';
 
 Vue.use(VueRouter); // use VueRouter
 
@@ -37,6 +38,10 @@ export default new VueRouter({
         {
             path: '/imgs/:id/edit',
             component: ImageEdit
+        },
+        {
+            path: '/logout',
+            component: Logout
         }
     ],
 

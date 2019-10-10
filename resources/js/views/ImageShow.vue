@@ -8,7 +8,7 @@
                 <div class="flex justify-between">
 
                     <div v-if="mode == 'normal'" class="text-blue-400">
-                        <a href="#" @click="$router.push('/imgs')">< Back</a>
+                        <a href="#" @click="$router.back()">< Back</a>
                     </div>
 
                     <div v-if="mode == 'tag'">
@@ -53,6 +53,9 @@
                             <span class="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-4">{{ tag }}</span>
                         </div>
                     </div>
+
+                    <p class="pt-6 pb-2 text-gray-600 font-bold uppercase text-sm">Uploader</p>
+                    <router-link :to="{ path: '/imgs/index/' + post.user_id }">{{ post.user_name }}</router-link>
                 </div>
 
             </div>

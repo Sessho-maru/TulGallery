@@ -5,7 +5,7 @@
             <form @submit.prevent="submitForm">
                 <div class="pb-2">
                     <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
-                    <input id="image" type="file" ref="file" accept=".jpeg,.jpg,.png" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
+                    <input id="image" type="file" ref="file" accept=".jpeg,.jpg,.png,.gif" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
                 </div>
                 <p id="error_image" class="text-red-600 text-sm font-bold"></p>
 
@@ -24,7 +24,7 @@
             
                 <div class="flex justify-end pt-8">
                     <button class="py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700">Cancel</button>
-                    <button class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Add New Image</button>
+                    <button id="submtiButton" class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Add New Image</button>
                 </div>
             </form>
 
@@ -62,7 +62,7 @@ export default {
             this.file = this.$refs.file.files[0];
             let extension = this.file.name.split('.').pop();
 
-            if (extension != 'jpeg' && extension != 'jpg' && extension != 'png')
+            if (extension != 'jpeg' && extension != 'jpg' && extension != 'png' && extension != 'gif')
             {
                 alert("not supported");
                 this.file = null;
@@ -93,7 +93,8 @@ export default {
                 return;
             }
 
-            this.form.tags = this.form.tags.concat(",");
+            // this.form.tags = this.form.tags.concat(",");
+            this.disable('submtiButton');
 
             axios.post('/api/imgs', {...this.form, api_token: this.api_token}) // Image form request
                     .then( response => {
@@ -129,6 +130,12 @@ export default {
         clearError(field)
         {
             document.getElementById(field).innerHTML = "";
+        },
+
+        disable(id)
+        {
+            var element = document.getElementById(id);
+            element.disabled = true;
         }
     }
 }

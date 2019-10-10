@@ -21,7 +21,7 @@ export default {
 
     data() {
         return {
-            post: "",
+            post: ""
         }
     },
 
@@ -33,8 +33,7 @@ export default {
             .catch( errors => {
                 alert("Unable to Fetch Images");
             });
-    },
-
+    }
 }
 </script>
 

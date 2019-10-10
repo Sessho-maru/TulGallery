@@ -14,13 +14,13 @@
             <div v-if="focus" class="absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20">
                 <div v-if="results == 0">No results found for '{{ searchTerm }}'</div>
                 <div v-for="result in results">
-                    <p v-bind:id="result.id" class="flex imtes-center py-2" @click="AddTagId(result.id); AddTagName(result.tag_name); hide(result.id); results = []; searchTerm = ''; focus = false">{{ result.tag_name }}</p>
+                    <p v-bind:id="result.id" class="py-2" @click="AddTagId(result.id); AddTagName(result.tag_name); hide(result.id); results = []; searchTerm = ''; focus = false">{{ result.tag_name }}</p>
                 </div>
             </div>
 
-            <router-link :to="{ name: 'Tags', params: { t: tags } }">
-                <div class="inline" v-if="tags.length > 0">
-                    <button @click="$emit('search')">Search</button>
+            <router-link :to="{ name: 'Tags', params: { t: selectedTags } }">
+                <div class="inline" v-if="selectedTags.length > 0">
+                    <button @click="$emit('search', tagNames)">Search</button>
                 </div>
             </router-link>
         </div>
@@ -43,7 +43,7 @@ export default {
         return {
             searchTerm: "",
             results: [],
-            tags: [],
+            selectedTags: [],
             tagNames: "",
             focus: false
         }
@@ -69,7 +69,7 @@ export default {
 
         AddTagId(id)
         {
-            this.tags.push(id);
+            this.selectedTags.push(id);
         },
 
         AddTagName(tagName)

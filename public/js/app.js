@@ -1845,6 +1845,30 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/Actions/Logout.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/Actions/Logout.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "Logout",
+  created: function created() {
+    axios.post('/logout', {})["finally"](function (error) {
+      window.location = '/login';
+    });
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=script&lang=js&":
 /*!**************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/App.vue?vue&type=script&lang=js& ***!
@@ -1928,17 +1952,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
   data: function data() {
     return {
-      on: true
+      on: true,
+      message: ""
     };
   },
   props: ['user'],
   components: {
     SearchBar: _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  methods: {
+    showMessage: function showMessage(tagNames) {
+      this.message += "Search result with Tags : " + tagNames.substring(0, tagNames.length - 3);
+    }
   }
 });
 
@@ -1993,7 +2024,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       searchTerm: "",
       results: [],
-      tags: [],
+      selectedTags: [],
       tagNames: "",
       focus: false
     };
@@ -2016,7 +2047,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     }, 300),
     AddTagId: function AddTagId(id) {
-      this.tags.push(id);
+      this.selectedTags.push(id);
     },
     AddTagName: function AddTagName(tagName) {
       this.tagNames += tagName + ' || ';
@@ -2098,7 +2129,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.file = this.$refs.file.files[0];
       var extension = this.file.name.split('.').pop();
 
-      if (extension != 'jpeg' && extension != 'jpg' && extension != 'png') {
+      if (extension != 'jpeg' && extension != 'jpg' && extension != 'png' && extension != 'gif') {
         alert("not supported");
         this.file = null;
         return;
@@ -2124,9 +2155,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.hasDuplicates(tags) == true) {
         document.getElementById('error_tag').innerHTML = "Inserted Tags aren't unique";
         return;
-      }
+      } // this.form.tags = this.form.tags.concat(",");
 
-      this.form.tags = this.form.tags.concat(",");
+
+      this.disable('submtiButton');
       axios.post('/api/imgs', _objectSpread({}, this.form, {
         api_token: this.api_token
       })) // Image form request
@@ -2158,6 +2190,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     clearError: function clearError(field) {
       document.getElementById(field).innerHTML = "";
+    },
+    disable: function disable(id) {
+      var element = document.getElementById(id);
+      element.disabled = true;
     }
   }
 });
@@ -2257,9 +2293,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.hasDuplicates(tags) == true) {
         document.getElementById('error_tag').innerHTML = "Inserted Tags aren't unique";
         return;
-      }
+      } // this.post.tags = this.post.tags.concat(",");
 
-      this.post.tags = this.post.tags.concat(",");
+
+      this.disable('submtiButton');
       axios.patch('/api/imgs/' + this.$route.params.id, _objectSpread({}, this.post, {
         api_token: this.api_token,
         flag: "post_update"
@@ -2274,6 +2311,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     clearError: function clearError(field) {
       document.getElementById(field).innerHTML = "";
+    },
+    disable: function disable(id) {
+      var element = document.getElementById(id);
+      element.disabled = true;
     }
   }
 });
@@ -2301,12 +2342,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageIndex",
   props: ['api_token'],
   data: function data() {
     return {
-      post: ""
+      post: "",
+      paginated: [],
+      currentPage: "",
+      index: 0
     };
   },
   mounted: function mounted() {
@@ -2314,9 +2363,71 @@ __webpack_require__.r(__webpack_exports__);
 
     axios.get('/api/imgs').then(function (response) {
       _this.post = response.data.data;
+      var page = Math.ceil(_this.post.length / 24);
+
+      for (var i = 0; i < page; i++) {
+        _this.paginated[i] = new Array();
+      } // reverse
+
+
+      var i = _this.post.length - 1;
+      var j = 0;
+      page = 0;
+
+      for (i; i >= 0; i--) {
+        _this.paginated[page][j] = _this.post[i];
+
+        if (j % 23 == 0 && j != 0) {
+          page++;
+          j = 0;
+        } else {
+          j++;
+        }
+      }
+
+      _this.change(_this.index); // verse
+
+
+      {
+        /*
+        var i = 0;
+        var j = 0;
+        page = 0;
+          for (i; i < this.post.length; i++)
+        {
+            this.paginated[page][j] = this.post[i];
+              if (i % 23 == 0 && i != 0)
+            {
+                page++;
+                j = 0;
+            }
+            else
+            {
+                j++;
+            }
+        }
+        this.change(this.index);
+        */
+      }
     })["catch"](function (errors) {
       alert("Unable to Fetch Images");
     });
+  },
+  methods: {
+    change: function change(index) {
+      if (index < 0) {
+        this.index++;
+        return;
+      }
+
+      if (index >= this.paginated.length) {
+        this.index--;
+        return;
+      }
+
+      console.log("current Page Index = " + index);
+      this.currentPage = this.paginated[index];
+    }
   }
 });
 
@@ -2343,12 +2454,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ImageIndexWithTags',
   props: ['api_token'],
   data: function data() {
     return {
       post: "",
+      paginated: [],
+      currentPage: "",
+      index: 0,
       t: []
     };
   },
@@ -2362,9 +2481,48 @@ __webpack_require__.r(__webpack_exports__);
       }
     }).then(function (response) {
       _this.post = response.data.data;
+      var page = Math.ceil(_this.post.length / 24);
+
+      for (var i = 0; i < page; i++) {
+        _this.paginated[i] = new Array();
+      } // reverse
+
+
+      var i = _this.post.length - 1;
+      var j = 0;
+      page = 0;
+
+      for (i; i >= 0; i--) {
+        _this.paginated[page][j] = _this.post[i];
+
+        if (j % 23 == 0 && j != 0) {
+          page++;
+          j = 0;
+        } else {
+          j++;
+        }
+      }
+
+      _this.change(_this.index);
     })["catch"](function (errors) {
       alert("Something goes Wrong");
     });
+  },
+  methods: {
+    change: function change(index) {
+      if (index < 0) {
+        this.index++;
+        return;
+      }
+
+      if (index >= this.paginated.length) {
+        this.index--;
+        return;
+      }
+
+      console.log("current Page Index = " + index);
+      this.currentPage = this.paginated[index];
+    }
   }
 });
 
@@ -2421,6 +2579,9 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
 //
 //
 //
@@ -20148,6 +20309,30 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/Actions/Logout.vue?vue&type=template&id=4753871a&scoped=true&":
+/*!******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/Actions/Logout.vue?vue&type=template&id=4753871a&scoped=true& ***!
+  \******************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div")
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=template&id=332fccf4&scoped=true&":
 /*!******************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/App.vue?vue&type=template&id=332fccf4&scoped=true& ***!
@@ -20167,10 +20352,7 @@ var render = function() {
     _c("div", { staticClass: "flex" }, [
       _c(
         "div",
-        {
-          staticClass:
-            "pl-6 bg-gray-200 w-48 h-screen border-r-2 border-gray-400"
-        },
+        { staticClass: "bg-gray-200 w-48 h-screen border-r-2 border-gray-400" },
         [
           _c(
             "nav",
@@ -20178,21 +20360,114 @@ var render = function() {
             [
               _c("router-link", { attrs: { to: "/imgs" } }, [
                 _c(
-                  "svg",
+                  "div",
                   {
-                    staticClass: "fill-current text-blue-600 w-12 h-12",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      viewBox: "0 0 24 24"
+                    on: {
+                      click: function($event) {
+                        _vm.on = true
+                        _vm.message = ""
+                      }
                     }
                   },
                   [
-                    _c("path", {
-                      attrs: {
-                        d:
-                          "M3.9 4.2c-.5 0-.8.3-.8.8s.4.8.8.8c.5 0 .8-.4.8-.8.1-.5-.3-.8-.8-.8zM3.3 18.6c0 1.4-.2 2.1-1.5 2.1-.3 0-.7 0-.9-.1l-.3 1.1c.3.1.7.2 1.1.2 1.9 0 2.7-1.2 2.7-3.2V8.1H3.3v10.5zM9.4 17.5c1.4 0 2.3-.4 3-1.2.8-1 1.1-2.1 1.1-3.8 0-1.4-.2-2.7-1-3.5-.6-.7-1.5-1.1-2.9-1.1s-2.3.4-3 1.2c-.8 1-1.1 2.2-1.1 3.8 0 1.5.2 2.6 1 3.5.6.7 1.5 1.1 2.9 1.1zM7.5 9.7c.3-.4.9-.8 2-.8 1 0 1.6.3 1.9.7.5.6.7 1.7.7 2.9s-.2 2.4-.7 3.1c-.3.4-.9.8-2 .8-1 0-1.6-.3-1.9-.7-.5-.6-.7-1.6-.7-2.9 0-1.2.2-2.4.7-3.1zM15 14.4c0 2.1.4 3.1 2.5 3.1.6 0 1.3-.1 1.8-.2l-.1-1c-.5.1-1 .2-1.5.2-1.4 0-1.5-.6-1.5-2.1v-5h3V8.3h-3v-3l-1.2.2v2.7h-1.8v1.1H15v5.1zM6 18h17v1H6z"
-                      }
-                    })
+                    _c(
+                      "svg",
+                      {
+                        staticStyle: { background: "rgba(0, 0, 0, 0)" },
+                        attrs: {
+                          width: "175.76005859375px",
+                          height: "72.80615234375px",
+                          xmlns: "http://www.w3.org/2000/svg",
+                          viewBox:
+                            "144.119970703125 38.596923828125 211.76005859375 72.80615234375",
+                          preserveAspectRatio: "xMidYMid"
+                        }
+                      },
+                      [
+                        _c("defs", [
+                          _c(
+                            "filter",
+                            {
+                              attrs: {
+                                id: "editing-hole",
+                                x: "-100%",
+                                y: "-100%",
+                                width: "300%",
+                                height: "300%"
+                              }
+                            },
+                            [
+                              _c("feFlood", {
+                                attrs: {
+                                  "flood-color": "#000",
+                                  result: "black"
+                                }
+                              }),
+                              _c("feMorphology", {
+                                attrs: {
+                                  operator: "dilate",
+                                  radius: "2",
+                                  in: "SourceGraphic",
+                                  result: "erode"
+                                }
+                              }),
+                              _c("feGaussianBlur", {
+                                attrs: {
+                                  in: "erode",
+                                  stdDeviation: "4",
+                                  result: "blur"
+                                }
+                              }),
+                              _c("feOffset", {
+                                attrs: {
+                                  in: "blur",
+                                  dx: "2",
+                                  dy: "2",
+                                  result: "offset"
+                                }
+                              }),
+                              _c("feComposite", {
+                                attrs: {
+                                  operator: "atop",
+                                  in: "offset",
+                                  in2: "black",
+                                  result: "merge"
+                                }
+                              }),
+                              _c("feComposite", {
+                                attrs: {
+                                  operator: "in",
+                                  in: "merge",
+                                  in2: "SourceGraphic",
+                                  result: "inner-shadow"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]),
+                        _c("g", { attrs: { filter: "url(#editing-hole)" } }, [
+                          _c(
+                            "g",
+                            {
+                              attrs: {
+                                transform:
+                                  "translate(179.5799981355667, 87.12406253814697)"
+                              }
+                            },
+                            [
+                              _c("path", {
+                                attrs: {
+                                  d:
+                                    "M1.09-3.30L1.09-3.30L1.09-3.30Q1.09-4.19 1.55-6.44L1.55-6.44L3.30-15.35L1.35-15.35L1.49-16.34L1.49-16.34Q5.45-17.52 9.27-20.43L9.27-20.43L10.86-20.43L10.07-16.83L12.64-16.83L12.34-15.35L9.80-15.35L8.12-6.44L8.12-6.44Q7.69-4.39 7.69-3.70L7.69-3.70L7.69-3.70Q7.69-2.11 9.08-1.78L9.08-1.78L9.08-1.78Q8.75-0.66 7.56 0L7.56 0L7.56 0Q6.37 0.66 4.69 0.66L4.69 0.66L4.69 0.66Q3.00 0.66 2.05-0.40L2.05-0.40L2.05-0.40Q1.09-1.45 1.09-3.30ZM23.07-1.39L23.07-1.39L23.07-1.39Q21.48 0.66 17.56 0.66L17.56 0.66L17.56 0.66Q15.51 0.66 14.03-0.58L14.03-0.58L14.03-0.58Q12.54-1.82 12.54-3.60L12.54-3.60L12.54-3.60Q12.54-4.59 12.64-5.08L12.64-5.08L14.85-16.83L21.55-17.49L19.14-4.75L19.14-4.75Q19.01-4.03 19.01-3.60L19.01-3.60L19.01-3.60Q19.01-1.68 20.16-1.68L20.16-1.68L20.16-1.68Q21.45-1.68 22.37-3.43L22.37-3.43L22.37-3.43Q22.67-3.99 22.80-4.72L22.80-4.72L25.15-16.83L31.65-17.49L29.21-4.62L29.21-4.62Q29.11-4.13 29.11-3.60L29.11-3.60L29.11-3.60Q29.11-3.07 29.40-2.49L29.40-2.49L29.40-2.49Q29.70-1.91 30.66-1.78L30.66-1.78L30.66-1.78Q30.46-0.99 29.77-0.46L29.77-0.46L29.77-0.46Q28.31 0.66 26.75 0.66L26.75 0.66L26.75 0.66Q25.18 0.66 24.26 0.10L24.26 0.10L24.26 0.10Q23.33-0.46 23.07-1.39ZM41.32-1.82L41.32-1.82L41.32-1.82Q40.29 0.66 37.03 0.66L37.03 0.66L37.03 0.66Q35.38 0.66 34.32-0.49L34.32-0.49L34.32-0.49Q33.46-1.45 33.46-2.54L33.46-2.54L33.46-2.54Q33.46-5.02 34.62-10.43L34.62-10.43L37.03-23.10L43.73-23.76L40.52-7.06L40.52-7.06Q39.96-4.62 39.96-3.76L39.96-3.76L39.96-3.76Q39.96-1.88 41.32-1.82ZM43.69-1.58L43.69-1.58L47.78-23.10L54.48-23.76L53.46-18.71L53.46-18.71Q53.10-17.16 52.64-16.07L52.64-16.07L52.64-16.07Q53.36-17.00 54.95-17.36L54.95-17.36L54.95-17.36Q55.41-17.49 55.97-17.49L55.97-17.49L55.97-17.49Q59.04-17.49 60.72-15.63L60.72-15.63L60.72-15.63Q62.40-13.76 62.40-10.16L62.40-10.16L62.40-10.16Q62.40-5.48 59.73-2.54L59.73-2.54L59.73-2.54Q56.86 0.66 51.65 0.66L51.65 0.66L51.65 0.66Q48.05 0.66 45.34-0.53L45.34-0.53L45.34-0.53Q44.39-0.96 43.69-1.58ZM52.07-11.55L50.33-1.88L50.33-1.88Q51.02-1.29 51.88-1.29L51.88-1.29L51.88-1.29Q52.73-1.29 53.23-1.62L53.23-1.62L53.23-1.62Q53.72-1.95 54.09-2.61L54.09-2.61L54.09-2.61Q55.08-4.39 55.87-9.83L55.87-9.83L55.87-9.83Q56.10-11.38 56.10-12.94L56.10-12.94L56.10-12.94Q56.10-14.49 55.75-14.98L55.75-14.98L55.75-14.98Q55.41-15.48 54.75-15.48L54.75-15.48L54.75-15.48Q52.73-15.48 52.07-11.55L52.07-11.55ZM71.58 0.66L71.58 0.66L71.58 0.66Q64.32 0.66 64.32-6.17L64.32-6.17L64.32-6.17Q64.32-11.02 66.99-14.16L66.99-14.16L66.99-14.16Q69.83-17.49 74.75-17.49L74.75-17.49L74.75-17.49Q78.31-17.49 80.12-15.84L80.12-15.84L80.12-15.84Q81.94-14.19 81.94-10.72L81.94-10.72L81.94-10.72Q81.94-5.45 79.10-2.38L79.10-2.38L79.10-2.38Q76.33 0.66 71.58 0.66ZM72.44-13.70L72.44-13.70L72.44-13.70Q72.04-12.80 71.73-11.47L71.73-11.47L71.73-11.47Q71.41-10.13 71.02-8.02L71.02-8.02L71.02-8.02Q70.62-5.91 70.62-3.30L70.62-3.30L70.62-3.30Q70.62-2.44 70.90-1.88L70.90-1.88L70.90-1.88Q71.18-1.32 71.94-1.32L71.94-1.32L71.94-1.32Q72.70-1.32 73.18-1.68L73.18-1.68L73.18-1.68Q73.66-2.05 74.02-2.90L74.02-2.90L74.02-2.90Q74.68-4.42 75.21-7.24L75.21-7.24L75.21-7.24Q75.73-10.07 75.78-11.29L75.78-11.29L75.78-11.29Q75.83-12.51 75.83-13.41L75.83-13.41L75.83-13.41Q75.83-14.32 75.57-14.92L75.57-14.92L75.57-14.92Q75.31-15.51 74.56-15.51L74.56-15.51L74.56-15.51Q73.82-15.51 73.33-15.05L73.33-15.05L73.33-15.05Q72.83-14.59 72.44-13.70ZM91.08 0.66L91.08 0.66L91.08 0.66Q83.82 0.66 83.82-6.17L83.82-6.17L83.82-6.17Q83.82-11.02 86.49-14.16L86.49-14.16L86.49-14.16Q89.33-17.49 94.25-17.49L94.25-17.49L94.25-17.49Q97.81-17.49 99.63-15.84L99.63-15.84L99.63-15.84Q101.44-14.19 101.44-10.72L101.44-10.72L101.44-10.72Q101.44-5.45 98.60-2.38L98.60-2.38L98.60-2.38Q95.83 0.66 91.08 0.66ZM91.94-13.70L91.94-13.70L91.94-13.70Q91.54-12.80 91.23-11.47L91.23-11.47L91.23-11.47Q90.92-10.13 90.52-8.02L90.52-8.02L90.52-8.02Q90.12-5.91 90.12-3.30L90.12-3.30L90.12-3.30Q90.12-2.44 90.40-1.88L90.40-1.88L90.40-1.88Q90.68-1.32 91.44-1.32L91.44-1.32L91.44-1.32Q92.20-1.32 92.68-1.68L92.68-1.68L92.68-1.68Q93.16-2.05 93.52-2.90L93.52-2.90L93.52-2.90Q94.18-4.42 94.71-7.24L94.71-7.24L94.71-7.24Q95.24-10.07 95.29-11.29L95.29-11.29L95.29-11.29Q95.34-12.51 95.34-13.41L95.34-13.41L95.34-13.41Q95.34-14.32 95.07-14.92L95.07-14.92L95.07-14.92Q94.81-15.51 94.07-15.51L94.07-15.51L94.07-15.51Q93.32-15.51 92.83-15.05L92.83-15.05L92.83-15.05Q92.33-14.59 91.94-13.70ZM113.72-9.27L113.72-9.27L113.72-9.27Q114.91-11.38 114.91-13.53L114.91-13.53L114.91-13.53Q114.91-14.95 113.88-14.95L113.88-14.95L113.88-14.95Q113.09-14.95 112.27-13.60L112.27-13.60L112.27-13.60Q111.41-12.24 111.14-10.49L111.14-10.49L109.43 0L102.60 0.66L105.96-16.83L111.41-17.49L110.81-14.16L110.81-14.16Q112.43-17.49 116.06-17.49L116.06-17.49L116.06-17.49Q117.98-17.49 119.01-16.50L119.01-16.50L119.01-16.50Q120.05-15.51 120.05-13.48L120.05-13.48L120.05-13.48Q120.05-11.45 118.72-10.16L118.72-10.16L118.72-10.16Q117.38-8.88 115.10-8.88L115.10-8.88L115.10-8.88Q114.11-8.88 113.72-9.27ZM131.18-1.39L131.18-1.39L131.18-1.39Q129.59 0.66 125.66 0.66L125.66 0.66L125.66 0.66Q123.62 0.66 122.13-0.58L122.13-0.58L122.13-0.58Q120.65-1.82 120.65-3.60L120.65-3.60L120.65-3.60Q120.65-4.59 120.75-5.08L120.75-5.08L122.96-16.83L129.66-17.49L127.25-4.75L127.25-4.75Q127.12-4.03 127.12-3.60L127.12-3.60L127.12-3.60Q127.12-1.68 128.27-1.68L128.27-1.68L128.27-1.68Q129.56-1.68 130.48-3.43L130.48-3.43L130.48-3.43Q130.78-3.99 130.91-4.72L130.91-4.72L133.25-16.83L139.75-17.49L137.31-4.62L137.31-4.62Q137.21-4.13 137.21-3.60L137.21-3.60L137.21-3.60Q137.21-3.07 137.51-2.49L137.51-2.49L137.51-2.49Q137.81-1.91 138.76-1.78L138.76-1.78L138.76-1.78Q138.57-0.99 137.87-0.46L137.87-0.46L137.87-0.46Q136.42 0.66 134.85 0.66L134.85 0.66L134.85 0.66Q133.29 0.66 132.36 0.10L132.36 0.10L132.36 0.10Q131.44-0.46 131.18-1.39Z",
+                                  fill: "#ccc"
+                                }
+                              })
+                            ]
+                          )
+                        ])
+                      ]
+                    )
                   ]
                 )
               ]),
@@ -20200,7 +20475,8 @@ var render = function() {
               _c(
                 "p",
                 {
-                  staticClass: "pt-12 text-gray-500 uppercase font-bold text-xs"
+                  staticClass:
+                    "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
                 },
                 [_vm._v("Create")]
               ),
@@ -20209,7 +20485,7 @@ var render = function() {
                 "router-link",
                 {
                   staticClass:
-                    "flex items-center py-2 hover:text-blue-300 text-sm",
+                    "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
                   attrs: { to: "/imgs/create" }
                 },
                 [
@@ -20239,7 +20515,8 @@ var render = function() {
               _c(
                 "p",
                 {
-                  staticClass: "pt-12 text-gray-500 uppercase font-bold text-xs"
+                  staticClass:
+                    "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
                 },
                 [_vm._v("Posts")]
               ),
@@ -20250,6 +20527,7 @@ var render = function() {
                   on: {
                     click: function($event) {
                       _vm.on = true
+                      _vm.message = ""
                     }
                   }
                 },
@@ -20258,7 +20536,7 @@ var render = function() {
                     "router-link",
                     {
                       staticClass:
-                        "flex items-center py-2 hover:text-blue-300 text-sm",
+                        "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
                       attrs: { to: "/imgs" }
                     },
                     [
@@ -20266,16 +20544,19 @@ var render = function() {
                         "svg",
                         {
                           staticClass: "fill-current text-blue-600 w-5 h-5",
-                          attrs: { viewBox: "0 0 24 24" }
+                          attrs: {
+                            xmlns: "http://www.w3.org/2000/svg",
+                            viewBox: "0 0 24 24"
+                          }
                         },
                         [
                           _c("path", {
+                            staticClass: "st0",
                             attrs: {
                               d:
-                                "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
+                                "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
                             }
-                          }),
-                          _vm._v(".\n                        ")
+                          })
                         ]
                       ),
                       _vm._v(" "),
@@ -20291,7 +20572,8 @@ var render = function() {
               _c(
                 "p",
                 {
-                  staticClass: "pt-12 text-gray-500 uppercase font-bold text-xs"
+                  staticClass:
+                    "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
                 },
                 [_vm._v("Settings")]
               ),
@@ -20300,8 +20582,8 @@ var render = function() {
                 "router-link",
                 {
                   staticClass:
-                    "flex items-center py-2 hover:text-blue-300 text-sm",
-                  attrs: { to: "/" }
+                    "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                  attrs: { to: "/logout" }
                 },
                 [
                   _c(
@@ -20314,10 +20596,9 @@ var render = function() {
                       _c("path", {
                         attrs: {
                           d:
-                            "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
+                            "M21 3h-3.8c-.7 0-1.3-.6-1.3-1.3S16.5.4 17.2.4h5.1c.7 0 1.3.6 1.3 1.3v20.5c0 .7-.6 1.3-1.3 1.3h-5.1c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3H21V3zm-6.9 7.7L8.6 5.2c-.5-.5-.6-1.3-.1-1.8s1.3-.5 1.8 0l7.7 7.7c.8.8.2 2.2-.9 2.2H1.8c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3h12.3zm-1.6 4.8c.5-.5 1.3-.4 1.8.1s.4 1.3-.1 1.8l-3.8 3.2c-.5.5-1.3.4-1.8-.1-.6-.5-.5-1.3 0-1.7l3.9-3.3z"
                         }
-                      }),
-                      _vm._v(".\n                    ")
+                      })
                     ]
                   ),
                   _vm._v(" "),
@@ -20344,7 +20625,11 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "mr-64" }, [
-                _vm._v("\n                    Images\n                ")
+                _vm._v(
+                  "\n                     " +
+                    _vm._s(_vm.message) +
+                    "\n                "
+                )
               ]),
               _vm._v(" "),
               _vm.on == true
@@ -20359,6 +20644,7 @@ var render = function() {
                         on: {
                           search: function($event) {
                             _vm.on = false
+                            _vm.showMessage($event)
                           }
                         }
                       })
@@ -20489,7 +20775,7 @@ var render = function() {
                     _c(
                       "p",
                       {
-                        staticClass: "flex imtes-center py-2",
+                        staticClass: "py-2",
                         attrs: { id: result.id },
                         on: {
                           click: function($event) {
@@ -20513,16 +20799,16 @@ var render = function() {
         _vm._v(" "),
         _c(
           "router-link",
-          { attrs: { to: { name: "Tags", params: { t: _vm.tags } } } },
+          { attrs: { to: { name: "Tags", params: { t: _vm.selectedTags } } } },
           [
-            _vm.tags.length > 0
+            _vm.selectedTags.length > 0
               ? _c("div", { staticClass: "inline" }, [
                   _c(
                     "button",
                     {
                       on: {
                         click: function($event) {
-                          return _vm.$emit("search")
+                          return _vm.$emit("search", _vm.tagNames)
                         }
                       }
                     },
@@ -20589,7 +20875,7 @@ var render = function() {
               attrs: {
                 id: "image",
                 type: "file",
-                accept: ".jpeg,.jpg,.png",
+                accept: ".jpeg,.jpg,.png,.gif",
                 enctype: "multipart/form-data"
               },
               on: {
@@ -20704,7 +20990,8 @@ var staticRenderFns = [
         "button",
         {
           staticClass:
-            "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400"
+            "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400",
+          attrs: { id: "submtiButton" }
         },
         [_vm._v("Add New Image")]
       )
@@ -20861,7 +21148,8 @@ var staticRenderFns = [
         "button",
         {
           staticClass:
-            "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400"
+            "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400",
+          attrs: { id: "submtiButton" }
         },
         [_vm._v("Save")]
       )
@@ -20892,33 +21180,63 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "overflow-x-hidden" },
-    _vm._l(_vm.post, function(each) {
-      return _c(
-        "div",
-        { staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6" },
-        [
-          _c(
-            "router-link",
-            {
-              attrs: {
-                to: {
-                  name: "ImageShow",
-                  params: { id: each.data.image_id, mode: "normal" }
+    [
+      _vm._l(_vm.currentPage, function(each) {
+        return _c(
+          "div",
+          { staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6" },
+          [
+            _c(
+              "router-link",
+              {
+                attrs: {
+                  to: {
+                    name: "ImageShow",
+                    params: { id: each.data.image_id, mode: "normal" }
+                  }
                 }
+              },
+              [
+                _c("img", {
+                  staticClass: "block h-auto w-full hover:opacity-75",
+                  attrs: { src: each.data.url, alt: "placeholder" }
+                })
+              ]
+            )
+          ],
+          1
+        )
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "flex flex-1 justify-between" }, [
+        _c(
+          "button",
+          {
+            on: {
+              click: function($event) {
+                _vm.change(_vm.index - 1)
+                _vm.index--
               }
-            },
-            [
-              _c("img", {
-                staticClass: "block h-auto w-full hover:opacity-75",
-                attrs: { src: each.data.url, alt: "placeholder" }
-              })
-            ]
-          )
-        ],
-        1
-      )
-    }),
-    0
+            }
+          },
+          [_vm._v("Prev")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            on: {
+              click: function($event) {
+                _vm.change(_vm.index + 1)
+                _vm.index++
+              }
+            }
+          },
+          [_vm._v("Next")]
+        )
+      ])
+    ],
+    2
   )
 }
 var staticRenderFns = []
@@ -20946,33 +21264,63 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "overflow-x-hidden" },
-    _vm._l(_vm.post, function(each) {
-      return _c(
-        "div",
-        { staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6" },
-        [
-          _c(
-            "router-link",
-            {
-              attrs: {
-                to: {
-                  name: "ImageShow",
-                  params: { id: each.data.image_id, t: _vm.t, mode: "tag" }
+    [
+      _vm._l(_vm.currentPage, function(each) {
+        return _c(
+          "div",
+          { staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6" },
+          [
+            _c(
+              "router-link",
+              {
+                attrs: {
+                  to: {
+                    name: "ImageShow",
+                    params: { id: each.data.image_id, t: _vm.t, mode: "tag" }
+                  }
                 }
+              },
+              [
+                _c("img", {
+                  staticClass: "block h-auto w-full hover:opacity-75",
+                  attrs: { src: each.data.url, alt: "placeholder" }
+                })
+              ]
+            )
+          ],
+          1
+        )
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "flex flex-1 justify-between" }, [
+        _c(
+          "button",
+          {
+            on: {
+              click: function($event) {
+                _vm.change(_vm.index - 1)
+                _vm.index--
               }
-            },
-            [
-              _c("img", {
-                staticClass: "block h-auto w-full hover:opacity-75",
-                attrs: { src: each.data.url, alt: "placeholder" }
-              })
-            ]
-          )
-        ],
-        1
-      )
-    }),
-    0
+            }
+          },
+          [_vm._v("Prev")]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            on: {
+              click: function($event) {
+                _vm.change(_vm.index + 1)
+                _vm.index++
+              }
+            }
+          },
+          [_vm._v("Next")]
+        )
+      ])
+    ],
+    2
   )
 }
 var staticRenderFns = []
@@ -21058,7 +21406,7 @@ var render = function() {
                         attrs: { href: "#" },
                         on: {
                           click: function($event) {
-                            return _vm.$router.push("/imgs")
+                            return _vm.$router.back()
                           }
                         }
                       },
@@ -21187,52 +21535,75 @@ var render = function() {
               ])
             ]),
             _vm._v(" "),
-            _c("div", {}, [
-              _c("div", { staticClass: "border-b border-gray-500" }, [
+            _c(
+              "div",
+              {},
+              [
+                _c("div", { staticClass: "border-b border-gray-500" }, [
+                  _c(
+                    "p",
+                    {
+                      staticClass:
+                        "pt-6 text-gray-600 font-bold uppercase text-sm"
+                    },
+                    [_vm._v("Description")]
+                  ),
+                  _vm._v(" "),
+                  _c("p", {
+                    staticClass: "px-2 py-4",
+                    domProps: { innerHTML: _vm._s(_vm.post.description) }
+                  })
+                ]),
+                _vm._v(" "),
                 _c(
                   "p",
                   {
                     staticClass:
                       "pt-6 text-gray-600 font-bold uppercase text-sm"
                   },
-                  [_vm._v("Description")]
+                  [_vm._v("Tags")]
                 ),
                 _vm._v(" "),
-                _c("p", {
-                  staticClass: "px-2 py-4",
-                  domProps: { innerHTML: _vm._s(_vm.post.description) }
-                })
-              ]),
-              _vm._v(" "),
-              _c(
-                "p",
-                {
-                  staticClass: "pt-6 text-gray-600 font-bold uppercase text-sm"
-                },
-                [_vm._v("Tags")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "flex flex-row px-2 py-4 border-b border-gray-500"
-                },
-                _vm._l(_vm.post.tags, function(tag) {
-                  return _c("div", { key: tag }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass:
-                          "inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-4"
-                      },
-                      [_vm._v(_vm._s(tag))]
-                    )
-                  ])
-                }),
-                0
-              )
-            ])
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "flex flex-row px-2 py-4 border-b border-gray-500"
+                  },
+                  _vm._l(_vm.post.tags, function(tag) {
+                    return _c("div", { key: tag }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass:
+                            "inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-4"
+                        },
+                        [_vm._v(_vm._s(tag))]
+                      )
+                    ])
+                  }),
+                  0
+                ),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  {
+                    staticClass:
+                      "pt-6 pb-2 text-gray-600 font-bold uppercase text-sm"
+                  },
+                  [_vm._v("Uploader")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    attrs: { to: { path: "/imgs/index/" + _vm.post.user_id } }
+                  },
+                  [_vm._v(_vm._s(_vm.post.user_name))]
+                )
+              ],
+              1
+            )
           ])
     ])
   ])
@@ -36275,6 +36646,75 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./resources/js/Actions/Logout.vue":
+/*!*****************************************!*\
+  !*** ./resources/js/Actions/Logout.vue ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Logout_vue_vue_type_template_id_4753871a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Logout.vue?vue&type=template&id=4753871a&scoped=true& */ "./resources/js/Actions/Logout.vue?vue&type=template&id=4753871a&scoped=true&");
+/* harmony import */ var _Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Logout.vue?vue&type=script&lang=js& */ "./resources/js/Actions/Logout.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Logout_vue_vue_type_template_id_4753871a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Logout_vue_vue_type_template_id_4753871a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "4753871a",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/Actions/Logout.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/Actions/Logout.vue?vue&type=script&lang=js&":
+/*!******************************************************************!*\
+  !*** ./resources/js/Actions/Logout.vue?vue&type=script&lang=js& ***!
+  \******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Logout.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/Actions/Logout.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/Actions/Logout.vue?vue&type=template&id=4753871a&scoped=true&":
+/*!************************************************************************************!*\
+  !*** ./resources/js/Actions/Logout.vue?vue&type=template&id=4753871a&scoped=true& ***!
+  \************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_template_id_4753871a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Logout.vue?vue&type=template&id=4753871a&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/Actions/Logout.vue?vue&type=template&id=4753871a&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_template_id_4753871a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Logout_vue_vue_type_template_id_4753871a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -36518,6 +36958,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _views_ImageEdit__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./views/ImageEdit */ "./resources/js/views/ImageEdit.vue");
 /* harmony import */ var _views_ImageIndexWithUser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./views/ImageIndexWithUser */ "./resources/js/views/ImageIndexWithUser.vue");
 /* harmony import */ var _views_ImageIndexWithTags__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./views/ImageIndexWithTags */ "./resources/js/views/ImageIndexWithTags.vue");
+/* harmony import */ var _Actions_Logout__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Actions/Logout */ "./resources/js/Actions/Logout.vue");
+
 
 
 
@@ -36549,6 +36991,9 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
   }, {
     path: '/imgs/:id/edit',
     component: _views_ImageEdit__WEBPACK_IMPORTED_MODULE_5__["default"]
+  }, {
+    path: '/logout',
+    component: _Actions_Logout__WEBPACK_IMPORTED_MODULE_8__["default"]
   }],
   mode: 'history' // turn off backwards compatibility (for modern web browser)
 

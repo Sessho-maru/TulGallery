@@ -30,7 +30,7 @@
                     <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
                 
                     <div class="flex justify-end pt-8">
-                        <button class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Save</button>
+                        <button id="submtiButton" class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Save</button>
                     </div>
                 </form>
 
@@ -90,7 +90,9 @@ export default {
                 return;
             }
 
-            this.post.tags = this.post.tags.concat(",");
+            // this.post.tags = this.post.tags.concat(",");
+            this.disable('submtiButton');
+
             axios.patch('/api/imgs/' + this.$route.params.id, {...this.post, api_token: this.api_token, flag: "post_update"})
                     .then( response => {
                         this.$router.push(response.data.links.self);
@@ -107,6 +109,12 @@ export default {
         clearError(field)
         {
             document.getElementById(field).innerHTML = "";
+        },
+
+        disable(id)
+        {
+            var element = document.getElementById(id);
+            element.disabled = true;
         }
     }
 }

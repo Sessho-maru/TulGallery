@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^12.4.0",
-        "vue-ckeditor5": "^0.4.1"
+        "vue-ckeditor5": "^0.4.1",
+        "vuejs-paginate": "^2.1.0"
     }
 }
