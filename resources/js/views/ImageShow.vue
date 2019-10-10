@@ -16,7 +16,7 @@
                     </div>
                     
                     <div class="relative">
-                        <div v-if="post.user_id == user_id || user_id == 3">
+                        <div v-if="post.user_id == user_id || user_id == 1">
                             <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
                             <a href="#" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold" @click="modal = !modal">Delete</a>
                         </div>
