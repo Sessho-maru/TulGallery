@@ -33,6 +33,6 @@ Route::post('/imgs/upload', function()
 
 Route::get('/imgs/tags', 'ImagesController@index_withTags');
 
-Route::get('/{any}', 'AppController@index')->where('any', '.*');
+// Route::get('/{any}', 'AppController@index')->where('any', '.*');
 Route::post('/pw_check', 'PasswordController@check')->name('check');
 Route::post('/pw_reset', 'PasswordController@reset')->name('reset');
