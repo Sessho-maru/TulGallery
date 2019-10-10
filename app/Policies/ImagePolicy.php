@@ -53,7 +53,7 @@ class ImagePolicy
      */
     public function update(User $user, Image $image)
     {
-        if ($user->id == 1)
+        if ($user->id == 3)
         {
             return true;
         }
@@ -70,7 +70,7 @@ class ImagePolicy
      */
     public function delete(User $user, Image $image)
     {
-        if ($user->id == 1)
+        if ($user->id == 3)
         {
             return true;
         }
