@@ -6,13 +6,11 @@
             <div v-else>
 
                 <div class="text-blue-400">
-                        <a href="#" @click="$router.back()">< Back</a>
+                    <a href="#" @click="$router.back()">< Back</a>
                 </div>
 
                 <div class="pt-8">
-                    <div class="">
-                        <img class="" v-bind:src="post.url" alt="">
-                    </div>
+                    <img class="" v-bind:src="post.url" alt="">
                 </div>
 
                 <form @submit.prevent="submitPost">
@@ -90,8 +88,7 @@ export default {
                 return;
             }
 
-            // this.post.tags = this.post.tags.concat(",");
-            this.disable('submtiButton');
+            document.getElementById("submtiButton").disabled = true;
 
             axios.patch('/api/imgs/' + this.$route.params.id, {...this.post, api_token: this.api_token, flag: "post_update"})
                     .then( response => {
@@ -99,6 +96,7 @@ export default {
                     })
                     .catch( errors => {
                         document.getElementById('error_tag').innerHTML = errors.response.data.msg;
+                        document.getElementById("submtiButton").disabled = false;
                     });
         },
 
@@ -109,12 +107,6 @@ export default {
         clearError(field)
         {
             document.getElementById(field).innerHTML = "";
-        },
-
-        disable(id)
-        {
-            var element = document.getElementById(id);
-            element.disabled = true;
         }
     }
 }

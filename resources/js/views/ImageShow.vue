@@ -6,13 +6,12 @@
             <div v-else>
             
                 <div class="flex justify-between">
-
                     <div v-if="mode == 'normal'" class="text-blue-400">
-                        <a href="#" @click="$router.back()">< Back</a>
+                        <router-link :to="{ name: 'Index', params: { currentPageIndex: index } }">< Back</router-link>
                     </div>
 
                     <div v-if="mode == 'tag'">
-                        <router-link :to="{ name: 'Tags', params: { t: tags } }">< Back</router-link>
+                        <router-link :to="{ name: 'Tags', params: { t: tags, currentPageIndex: index } }">< Back</router-link>
                     </div>
                     
                     <div class="relative">
@@ -36,9 +35,7 @@
 
 
                 <div class="pt-8">
-                    <div class="">
-                        <a v-bind:href="post.url" target="_blank"><img v-bind:src="post.url" alt=""></a>
-                    </div>
+                    <img v-bind:src="post.url" alt="">
                 </div>
 
                 <div class="">
@@ -80,12 +77,19 @@ export default {
             modal: false,
             loading: true,
             tags: [],
-            mode: ""
+            mode: "",
+            index: 0,
         }
     },
 
     mounted()
     {
+        if (this.$route.params.currentPageIndex != null)
+        {
+            console.log(this.$route.params.currentPageIndex);
+            this.index = this.$route.params.currentPageIndex;
+        }
+        
         if (this.$route.params.mode == 'normal' || this.$route.params.mode == null)
         {
             this.mode = "normal";
@@ -97,16 +101,16 @@ export default {
         }
 
         axios.get('/api/imgs/' + this.$route.params.id)
-            .then( response => {
-                this.post = response.data.data;
-                this.loading = false;
-            })
-            .catch( errors => {
-                if (errors.response.status === 404 || errors.response.status === 403)
-                {
-                    this.$router.push('/imgs');
-                }
-            });
+                .then( response => {
+                    this.post = response.data.data;
+                    this.loading = false;
+                })
+                .catch( errors => {
+                    if (errors.response.status === 404 || errors.response.status === 403)
+                    {
+                        this.$router.push('/imgs');
+                    }
+                });
     },
 
     methods: {

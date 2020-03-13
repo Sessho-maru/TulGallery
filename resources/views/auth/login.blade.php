@@ -44,7 +44,7 @@
             </div>
 
             <div class="flex justify-between pt-8 text-white text-sm font-bold">
-                <a href="{{ route('password.request') }}">Forgot Your Password?</a>
+                <a href="{{ route('password.request') }}">Forgot Your Password?</a> <!-- It calls viwes/auth/passwords/email.blade.php -->
                 <a href="{{ route('register') }}">Register</a>
             </div>
     

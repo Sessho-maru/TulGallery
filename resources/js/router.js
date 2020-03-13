@@ -15,6 +15,7 @@ export default new VueRouter({
     routes: [
         {
             path: '/imgs',
+            name: 'Index',
             component: ImageIndex
         },
         {

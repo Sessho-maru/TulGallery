@@ -2,14 +2,14 @@
     <div class="overflow-x-hidden">
 
         <div v-for="each in currentPage" class="mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6">
-            <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, mode: 'normal' } }">
+            <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, mode: 'normal', currentPageIndex: index } }">
                 <img class="block h-auto w-full hover:opacity-75" v-bind:src="each.data.url" alt="placeholder">
             </router-link>
         </div>
 
         <div class="flex flex-1 justify-between">
-            <button @click="change(index - 1); index--;">Prev</button>
-            <button @click="change(index + 1); index++;">Next</button>
+            <button @click="changeCurrentPage(index - 1); index--;">Prev</button>
+            <button @click="changeCurrentPage(index + 1); index++;">Next</button>
         </div>
 
     </div>
@@ -26,7 +26,6 @@ export default {
 
     data() {
         return {
-            post: "",
             paginated: [],
             currentPage: "",
             index: 0
@@ -36,28 +35,25 @@ export default {
     mounted() {
         axios.get('/api/imgs')
             .then( response => {
-                this.post = response.data.data;
+                let posts = response.data.data;
+                let pageSize = Math.ceil(posts.length / 24);
 
-                var page = Math.ceil(this.post.length / 24);
-
-                for (var i = 0; i < page; i++)
+                for (let i = 0; i < pageSize; i++)
                 {
                     this.paginated[i] = new Array();
                 }
 
-                // reverse
-                var i = this.post.length - 1;
-                var j = 0;
-                page = 0;
+                let total = posts.length - 1;
+                let i = 0;
+                let j = 0;
 
-                
-                for (i; i >= 0; i--)
+                for (total; total >= 0; total--)
                 {
-                    this.paginated[page][j] = this.post[i];
+                    this.paginated[i][j] = posts[total];
 
                     if (j % 23 == 0 && j != 0)
                     {
-                        page++;
+                        i++;
                         j = 0;
                     }
                     else
@@ -65,31 +61,16 @@ export default {
                         j++;
                     }
                 }
-                this.change(this.index);
 
-                // verse
+                if (this.$route.params.currentPageIndex != null)
                 {
-                    /*
-                    var i = 0;
-                    var j = 0;
-                    page = 0;
-
-                    for (i; i < this.post.length; i++)
-                    {
-                        this.paginated[page][j] = this.post[i];
-
-                        if (i % 23 == 0 && i != 0)
-                        {
-                            page++;
-                            j = 0;
-                        }
-                        else
-                        {
-                            j++;
-                        }
-                    }
-                    this.change(this.index);
-                    */
+                    this.currentPage = this.paginated[this.$route.params.currentPageIndex];
+                    this.index = this.$route.params.currentPageIndex;
+                    console.log("current Page Index = " + this.index);
+                }
+                else
+                {
+                    this.changeCurrentPage(this.index);
                 }
                 
             })
@@ -99,9 +80,8 @@ export default {
     },
 
     methods: {
-        change(index)
+        changeCurrentPage(index)
         {   
-
             if (index < 0)
             {
                 this.index++;
@@ -119,7 +99,6 @@ export default {
         }
     }
 }
-
 </script>
 
 <style scoped>

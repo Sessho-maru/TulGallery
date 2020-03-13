@@ -21,8 +21,8 @@
             </div>
 
             <div class="relative pt-3">
-                <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="password-confirm">re-enter password</label>
-                <input id="password-confirm" type="password" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded" name="password_confirmation" placeholder="Confirm">
+                <label class="text-blue-500 text-xs pl-3 pt-2 absolute uppercase font-bold" for="password_confirm">re-enter password</label>
+                <input id="password_confirm" type="password" class="w-full p-3 pt-8 bg-blue-800 text-gray-100 focus:outline-none focus:bg-blue-700 rounded" name="password_confirm" placeholder="Confirm">
             </div>
 
             <div class="pt-6">

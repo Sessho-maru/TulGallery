@@ -23,8 +23,8 @@
                 <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
             
                 <div class="flex justify-end pt-8">
-                    <button class="py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700">Cancel</button>
-                    <button id="submtiButton" class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Add New Image</button>
+                    <a href="#" @click="$router.back()" class="py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700">Cancel</a>
+                    <button id="submitButton" class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Add New Image</button>
                 </div>
             </form>
 
@@ -59,7 +59,18 @@ export default {
 
         fileHandle()
         {
+            let maxFileSize = 15;
             this.file = this.$refs.file.files[0];
+            console.log(this.file);
+
+            if ( this.file.size > maxFileSize * 1024 * 1024 )
+            {
+                document.getElementById('error_image').innerHTML = "Too large file size (Maximum: 15MB)";
+                document.getElementById('image').value = '';
+                this.file = null;
+                return;
+            }
+
             let extension = this.file.name.split('.').pop();
 
             if (extension != 'jpeg' && extension != 'jpg' && extension != 'png' && extension != 'gif')
@@ -93,8 +104,7 @@ export default {
                 return;
             }
 
-            // this.form.tags = this.form.tags.concat(",");
-            this.disable('submtiButton');
+            document.getElementById("submitButton").disabled = true;
 
             axios.post('/api/imgs', {...this.form, api_token: this.api_token}) // Image form request
                     .then( response => {
@@ -111,15 +121,17 @@ export default {
                                             this.$router.push(resopnse.data.links.self);
                                         })
                                         .catch( errors => {
-
+                                            //
                                         });
                             })
                             .catch( errors => {
-                                
+                                document.getElementById('error_image').innerHTML = errors.response.data.msg;
+                                document.getElementById("submitButton").disabled = false;
                             });
                     })
                     .catch( errors => {
                         document.getElementById('error_tag').innerHTML = errors.response.data.msg;
+                        document.getElementById("submitButton").disabled = false;
                     });
         },
 

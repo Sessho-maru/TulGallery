@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class PasswordController extends Controller
 {
-    private function validateUser()
+    protected function validateUser()
     {
         return request()->validate([
             'user_name' => 'required',
@@ -16,11 +16,24 @@ class PasswordController extends Controller
         ]);
     }
 
-    private function validatePassword()
+    protected function validatePassword()
     {
+        /*
         return request()->validate([
             'password' => 'required|confirmed'
         ]);
+        */
+        // It didn't work...
+        
+        if (strlen(request()->password) < 6)
+        {
+            return back()->withErrors(['password' => 'Password must be longer than 5 characters']);
+        }
+
+        if (request()->password != request()->password_confirm)
+        {
+            return back()->withErrors(['password' => 'Password confirmation doesn\'t match']);
+        }
     }
 
     public function check()
@@ -32,7 +45,7 @@ class PasswordController extends Controller
         if ($user != null)
         {
             if ($user->password_reset_token == $validated['reset_token'])
-            {                
+            {      
                 return view('reset')->with('user_id', $user->id);
             }
             return back()->withErrors(['reset_token' => 'Given token isn\'t correct']);
@@ -43,10 +56,10 @@ class PasswordController extends Controller
 
     public function reset()
     {
-        $validated = $this->validatePassword();
+        $this->validatePassword();
 
         User::find(request()->user_id)->update([
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make(request()->password)
         ]);
         
         return redirect()->route('login');

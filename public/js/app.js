@@ -2126,7 +2126,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: {
     fileHandle: function fileHandle() {
+      var maxFileSize = 15;
       this.file = this.$refs.file.files[0];
+      console.log(this.file);
+
+      if (this.file.size > maxFileSize * 1024 * 1024) {
+        document.getElementById('error_image').innerHTML = "Too large file size (Maximum: 15MB)";
+        document.getElementById('image').value = '';
+        this.file = null;
+        return;
+      }
+
       var extension = this.file.name.split('.').pop();
 
       if (extension != 'jpeg' && extension != 'jpg' && extension != 'png' && extension != 'gif') {
@@ -2155,10 +2165,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.hasDuplicates(tags) == true) {
         document.getElementById('error_tag').innerHTML = "Inserted Tags aren't unique";
         return;
-      } // this.form.tags = this.form.tags.concat(",");
+      }
 
-
-      this.disable('submtiButton');
+      document.getElementById("submitButton").disabled = true;
       axios.post('/api/imgs', _objectSpread({}, this.form, {
         api_token: this.api_token
       })) // Image form request
@@ -2179,10 +2188,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }) // Url update request
           .then(function (resopnse) {
             _this.$router.push(resopnse.data.links.self);
-          })["catch"](function (errors) {});
-        })["catch"](function (errors) {});
+          })["catch"](function (errors) {//
+          });
+        })["catch"](function (errors) {
+          document.getElementById('error_image').innerHTML = errors.response.data.msg;
+          document.getElementById("submitButton").disabled = false;
+        });
       })["catch"](function (errors) {
         document.getElementById('error_tag').innerHTML = errors.response.data.msg;
+        document.getElementById("submitButton").disabled = false;
       });
     },
     hasDuplicates: function hasDuplicates(array) {
@@ -2215,8 +2229,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
 //
 //
 //
@@ -2293,10 +2305,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.hasDuplicates(tags) == true) {
         document.getElementById('error_tag').innerHTML = "Inserted Tags aren't unique";
         return;
-      } // this.post.tags = this.post.tags.concat(",");
+      }
 
-
-      this.disable('submtiButton');
+      document.getElementById("submtiButton").disabled = true;
       axios.patch('/api/imgs/' + this.$route.params.id, _objectSpread({}, this.post, {
         api_token: this.api_token,
         flag: "post_update"
@@ -2304,6 +2315,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this2.$router.push(response.data.links.self);
       })["catch"](function (errors) {
         document.getElementById('error_tag').innerHTML = errors.response.data.msg;
+        document.getElementById("submtiButton").disabled = false;
       });
     },
     hasDuplicates: function hasDuplicates(array) {
@@ -2311,10 +2323,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     clearError: function clearError(field) {
       document.getElementById(field).innerHTML = "";
-    },
-    disable: function disable(id) {
-      var element = document.getElementById(id);
-      element.disabled = true;
     }
   }
 });
@@ -2352,7 +2360,6 @@ __webpack_require__.r(__webpack_exports__);
   props: ['api_token'],
   data: function data() {
     return {
-      post: "",
       paginated: [],
       currentPage: "",
       index: 0
@@ -2362,59 +2369,41 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     axios.get('/api/imgs').then(function (response) {
-      _this.post = response.data.data;
-      var page = Math.ceil(_this.post.length / 24);
+      var posts = response.data.data;
+      var pageSize = Math.ceil(posts.length / 24);
 
-      for (var i = 0; i < page; i++) {
-        _this.paginated[i] = new Array();
-      } // reverse
+      for (var _i = 0; _i < pageSize; _i++) {
+        _this.paginated[_i] = new Array();
+      }
 
-
-      var i = _this.post.length - 1;
+      var total = posts.length - 1;
+      var i = 0;
       var j = 0;
-      page = 0;
 
-      for (i; i >= 0; i--) {
-        _this.paginated[page][j] = _this.post[i];
+      for (total; total >= 0; total--) {
+        _this.paginated[i][j] = posts[total];
 
         if (j % 23 == 0 && j != 0) {
-          page++;
+          i++;
           j = 0;
         } else {
           j++;
         }
       }
 
-      _this.change(_this.index); // verse
-
-
-      {
-        /*
-        var i = 0;
-        var j = 0;
-        page = 0;
-          for (i; i < this.post.length; i++)
-        {
-            this.paginated[page][j] = this.post[i];
-              if (i % 23 == 0 && i != 0)
-            {
-                page++;
-                j = 0;
-            }
-            else
-            {
-                j++;
-            }
-        }
-        this.change(this.index);
-        */
+      if (_this.$route.params.currentPageIndex != null) {
+        _this.currentPage = _this.paginated[_this.$route.params.currentPageIndex];
+        _this.index = _this.$route.params.currentPageIndex;
+        console.log("current Page Index = " + _this.index);
+      } else {
+        _this.changeCurrentPage(_this.index);
       }
     })["catch"](function (errors) {
       alert("Unable to Fetch Images");
     });
   },
   methods: {
-    change: function change(index) {
+    changeCurrentPage: function changeCurrentPage(index) {
       if (index < 0) {
         this.index++;
         return;
@@ -2464,7 +2453,6 @@ __webpack_require__.r(__webpack_exports__);
   props: ['api_token'],
   data: function data() {
     return {
-      post: "",
       paginated: [],
       currentPage: "",
       index: 0,
@@ -2480,36 +2468,41 @@ __webpack_require__.r(__webpack_exports__);
         data: this.$route.params.t
       }
     }).then(function (response) {
-      _this.post = response.data.data;
-      var page = Math.ceil(_this.post.length / 24);
+      var posts = response.data.data;
+      var pageSize = Math.ceil(posts.length / 24);
 
-      for (var i = 0; i < page; i++) {
-        _this.paginated[i] = new Array();
-      } // reverse
+      for (var _i = 0; _i < pageSize; _i++) {
+        _this.paginated[_i] = new Array();
+      }
 
-
-      var i = _this.post.length - 1;
+      var total = posts.length - 1;
+      var i = 0;
       var j = 0;
-      page = 0;
 
-      for (i; i >= 0; i--) {
-        _this.paginated[page][j] = _this.post[i];
+      for (total; total >= 0; total--) {
+        _this.paginated[i][j] = posts[total];
 
         if (j % 23 == 0 && j != 0) {
-          page++;
+          i++;
           j = 0;
         } else {
           j++;
         }
       }
 
-      _this.change(_this.index);
+      if (_this.$route.params.currentPageIndex != null) {
+        _this.currentPage = _this.paginated[_this.$route.params.currentPageIndex];
+        _this.index = _this.$route.params.currentPageIndex;
+        console.log("current Page Index = " + _this.index);
+      } else {
+        _this.changeCurrentPage(_this.index);
+      }
     })["catch"](function (errors) {
-      alert("Something goes Wrong");
+      alert("Unable to Fetch Images");
     });
   },
   methods: {
-    change: function change(index) {
+    changeCurrentPage: function changeCurrentPage(index) {
       if (index < 0) {
         this.index++;
         return;
@@ -2642,9 +2635,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageShow",
   props: ['api_token', 'user_id'],
@@ -2654,11 +2644,17 @@ __webpack_require__.r(__webpack_exports__);
       modal: false,
       loading: true,
       tags: [],
-      mode: ""
+      mode: "",
+      index: 0
     };
   },
   mounted: function mounted() {
     var _this = this;
+
+    if (this.$route.params.currentPageIndex != null) {
+      console.log(this.$route.params.currentPageIndex);
+      this.index = this.$route.params.currentPageIndex;
+    }
 
     if (this.$route.params.mode == 'normal' || this.$route.params.mode == null) {
       this.mode = "normal";
@@ -20965,39 +20961,38 @@ var render = function() {
             attrs: { id: "error_tag" }
           }),
           _vm._v(" "),
-          _vm._m(0)
+          _c("div", { staticClass: "flex justify-end pt-8" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700",
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    return _vm.$router.back()
+                  }
+                }
+              },
+              [_vm._v("Cancel")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass:
+                  "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400",
+                attrs: { id: "submitButton" }
+              },
+              [_vm._v("Add New Image")]
+            )
+          ])
         ]
       )
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "flex justify-end pt-8" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            "py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700"
-        },
-        [_vm._v("Cancel")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400",
-          attrs: { id: "submtiButton" }
-        },
-        [_vm._v("Add New Image")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -21040,9 +21035,7 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "pt-8" }, [
-              _c("div", {}, [
-                _c("img", { attrs: { src: _vm.post.url, alt: "" } })
-              ])
+              _c("img", { attrs: { src: _vm.post.url, alt: "" } })
             ]),
             _vm._v(" "),
             _c(
@@ -21192,7 +21185,11 @@ var render = function() {
                 attrs: {
                   to: {
                     name: "ImageShow",
-                    params: { id: each.data.image_id, mode: "normal" }
+                    params: {
+                      id: each.data.image_id,
+                      mode: "normal",
+                      currentPageIndex: _vm.index
+                    }
                   }
                 }
               },
@@ -21214,7 +21211,7 @@ var render = function() {
           {
             on: {
               click: function($event) {
-                _vm.change(_vm.index - 1)
+                _vm.changeCurrentPage(_vm.index - 1)
                 _vm.index--
               }
             }
@@ -21227,7 +21224,7 @@ var render = function() {
           {
             on: {
               click: function($event) {
-                _vm.change(_vm.index + 1)
+                _vm.changeCurrentPage(_vm.index + 1)
                 _vm.index++
               }
             }
@@ -21276,7 +21273,12 @@ var render = function() {
                 attrs: {
                   to: {
                     name: "ImageShow",
-                    params: { id: each.data.image_id, t: _vm.t, mode: "tag" }
+                    params: {
+                      id: each.data.image_id,
+                      t: _vm.t,
+                      mode: "tag",
+                      currentPageIndex: _vm.index
+                    }
                   }
                 }
               },
@@ -21298,7 +21300,7 @@ var render = function() {
           {
             on: {
               click: function($event) {
-                _vm.change(_vm.index - 1)
+                _vm.changeCurrentPage(_vm.index - 1)
                 _vm.index--
               }
             }
@@ -21311,7 +21313,7 @@ var render = function() {
           {
             on: {
               click: function($event) {
-                _vm.change(_vm.index + 1)
+                _vm.changeCurrentPage(_vm.index + 1)
                 _vm.index++
               }
             }
@@ -21399,20 +21401,25 @@ var render = function() {
         : _c("div", [
             _c("div", { staticClass: "flex justify-between" }, [
               _vm.mode == "normal"
-                ? _c("div", { staticClass: "text-blue-400" }, [
-                    _c(
-                      "a",
-                      {
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            return _vm.$router.back()
+                ? _c(
+                    "div",
+                    { staticClass: "text-blue-400" },
+                    [
+                      _c(
+                        "router-link",
+                        {
+                          attrs: {
+                            to: {
+                              name: "Index",
+                              params: { currentPageIndex: _vm.index }
+                            }
                           }
-                        }
-                      },
-                      [_vm._v("< Back")]
-                    )
-                  ])
+                        },
+                        [_vm._v("< Back")]
+                      )
+                    ],
+                    1
+                  )
                 : _vm._e(),
               _vm._v(" "),
               _vm.mode == "tag"
@@ -21423,7 +21430,13 @@ var render = function() {
                         "router-link",
                         {
                           attrs: {
-                            to: { name: "Tags", params: { t: _vm.tags } }
+                            to: {
+                              name: "Tags",
+                              params: {
+                                t: _vm.tags,
+                                currentPageIndex: _vm.index
+                              }
+                            }
                           }
                         },
                         [_vm._v("< Back")]
@@ -21528,11 +21541,7 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "pt-8" }, [
-              _c("div", {}, [
-                _c("a", { attrs: { href: _vm.post.url, target: "_blank" } }, [
-                  _c("img", { attrs: { src: _vm.post.url, alt: "" } })
-                ])
-              ])
+              _c("img", { attrs: { src: _vm.post.url, alt: "" } })
             ]),
             _vm._v(" "),
             _c(
@@ -36973,6 +36982,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 /* harmony default export */ __webpack_exports__["default"] = (new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: [{
     path: '/imgs',
+    name: 'Index',
     component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
   }, {
     path: '/imgs/index/:id',

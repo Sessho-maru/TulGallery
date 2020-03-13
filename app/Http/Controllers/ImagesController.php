@@ -16,15 +16,11 @@ class ImagesController extends Controller
 {
     private function validateData()
     {
-        $msg = [
-            'tags.regex' => 'Incorrect Tag formatting'
-        ];
-
         return request()->validate([
             'url' => 'required|active_url',
             'description' => '',
             'tags' => 'required'
-        ], $msg);
+        ]);
     }
 
     private function urlUpdate()
@@ -75,7 +71,7 @@ class ImagesController extends Controller
             }
         }
 
-        return (ImageResource::collection(Image::findMany(array_keys($image_ids))))->response()->setStatusCode(200);        
+        return (ImageResource::collection(Image::findMany(array_keys($image_ids))))->response()->setStatusCode(200);
     }
 
     public function store()
@@ -144,7 +140,6 @@ class ImagesController extends Controller
         {
             $validated = $this->validateData();
 
-            // $validated['tags'] = substr($validated['tags'], 0, -1);
             $tagNames = explode(",", $validated['tags']);
 
             foreach ($tagNames as $tagName)
