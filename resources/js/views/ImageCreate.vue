@@ -2,31 +2,34 @@
     <div class="overflow-x-hidden">
         <div class="flex flex-1 flex-col">
 
-            <form @submit.prevent="submitForm">
-                <div class="pb-2">
-                    <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
-                    <input id="image" type="file" ref="file" accept=".jpeg,.jpg,.png,.gif" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
-                </div>
-                <p id="error_image" class="text-red-600 text-sm font-bold"></p>
-
-                <div class="py-8">
-                    <label for="description" class="text-blue-500 pt-2 uppercase text-xs font-bold">Description</label>
-                    <div class="pt-5">
-                        <ckeditor id="description" type="classic" v-model="form.description"></ckeditor>
+            <div v-if="loading">Loading....</div>
+            <div v-else>
+                <form @submit.prevent="submitForm">
+                    <div class="pb-2">
+                        <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
+                        <input id="image" type="file" ref="file" accept=".jpeg,.jpg,.png,.gif" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
                     </div>
-                </div>
+                    <p id="error_image" class="text-red-600 text-sm font-bold"></p>
 
-                <div class="pb-2">
-                    <label for="tag" class="text-blue-500 pt-2 uppercase text-xs font-bold">Tags</label>
-                    <input id="tag" type="text" v-model="form.tags" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" @input="clearError('error_tag')">
-                </div>
-                <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
-            
-                <div class="flex justify-end pt-8">
-                    <a href="#" @click="$router.back()" class="py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700">Cancel</a>
-                    <button id="submitButton" class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Add New Image</button>
-                </div>
-            </form>
+                    <div class="py-8">
+                        <label for="description" class="text-blue-500 pt-2 uppercase text-xs font-bold">Description</label>
+                        <div class="pt-5">
+                            <ckeditor id="description" type="classic" v-model="form.description"></ckeditor>
+                        </div>
+                    </div>
+
+                    <div class="pb-2">
+                        <label for="tag" class="text-blue-500 pt-2 uppercase text-xs font-bold">Tags</label>
+                        <input id="tag" type="text" v-model="form.tags" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" @input="clearError('error_tag')">
+                    </div>
+                    <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
+                
+                    <div class="flex justify-end pt-8">
+                        <a href="#" @click="$router.back()" class="py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700">Cancel</a>
+                        <button id="submitButton" class="bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400">Add New Image</button>
+                    </div>
+                </form>
+            </div>
 
         </div>
     </div>
@@ -36,22 +39,28 @@
 export default {
     name: "ImageCreate",
 
-    props: [
-        'api_token'
-    ],
-
     data()
     {
         return {
             file: "",
-
             form: {
                 url: "http://via.placeholder.com/350x150",
                 description: "",
                 tags: "",
             },
+            loading: true,
+            fileLoaded: false,
+        }
+    },
 
-            loaded: false,
+    mounted() {
+        if (this.$route.params.api_token === undefined)
+        {
+            window.location.href = "http://alpha.test/login";
+        }
+        else
+        {
+            this.loading = false;
         }
     },
 
@@ -80,12 +89,12 @@ export default {
                 return;
             }
 
-            this.loaded = true;
+            this.fileLoaded = true;
         },
 
         submitForm()
         {
-            if (this.loaded == false)
+            if (this.fileLoaded == false)
             {
                 document.getElementById('error_image').innerHTML = "Require at least 1 Image";
                 return;
@@ -106,7 +115,7 @@ export default {
 
             document.getElementById("submitButton").disabled = true;
 
-            axios.post('/api/imgs', {...this.form, api_token: this.api_token}) // Image form request
+            axios.post('/api/imgs', {...this.form, api_token: this.$route.params.api_token}) // Image form request
                     .then( response => {
 
                         let image_id = response.data.data.image_id;
@@ -116,7 +125,7 @@ export default {
 
                         axios.post('/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }) // Image upload request
                             .then( response => {
-                                axios.patch('/api/imgs/' + image_id, { 'api_token': this.api_token, 'url': response.data.url, 'flag': "url_update" }) // Url update request
+                                axios.patch('/api/imgs/' + image_id, { 'api_token': this.$route.params.api_token, 'url': response.data.url, 'flag': "url_update" }) // Url update request
                                         .then( resopnse => {
                                             this.$router.push(resopnse.data.links.self);
                                         })

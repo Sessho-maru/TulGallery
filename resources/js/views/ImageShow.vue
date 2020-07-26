@@ -11,13 +11,24 @@
                     </div>
 
                     <div v-if="mode == 'tag'">
-                        <router-link :to="{ name: 'Tags', params: { t: tags, currentPageIndex: index } }">< Back</router-link>
+                        <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
                     </div>
-                    
+                        
                     <div class="relative">
-                        <div v-if="post.user_id == user_id || user_id == 3">
-                            <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
-                            <a href="#" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold" @click="modal = !modal">Delete</a>
+                        <div>
+                            <div class="inline-block" v-if="post.user_id != user_id">
+                                <div v-if="post.reported_count < this.$maxCount">
+                                    <a v-on:click.prevent="report" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Report ({{ post.reported_count }})</a>    
+                                </div>
+                                <div v-else>
+                                    <a v-on:click.prevent="modal = !modal" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Delete</a>    
+                                </div>
+                            </div>
+                            
+                            <div class="inline-block" v-if="post.user_id == user_id || user_id == this.$adminId">
+                                <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
+                                <a v-on:click.prevent="modal = !modal" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Delete</a>
+                            </div>
                         </div>
 
                         <div v-if="modal" class="absolute bg-blue-900 text-white rounded-lg z-20 p-8 w-64 right-0 mt-2 mr-6">
@@ -76,7 +87,6 @@ export default {
             post: null,
             modal: false,
             loading: true,
-            tags: [],
             mode: "",
             index: 0,
         }
@@ -96,7 +106,6 @@ export default {
         }
         else
         {
-            this.tags = this.$route.params.t;
             this.mode = "tag";
         }
 
@@ -104,6 +113,7 @@ export default {
                 .then( response => {
                     this.post = response.data.data;
                     this.loading = false;
+                    console.log(this.post);
                 })
                 .catch( errors => {
                     if (errors.response.status === 404 || errors.response.status === 403)
@@ -114,6 +124,16 @@ export default {
     },
 
     methods: {
+        report()
+        {
+            axios.get('/api/imgs/' + this.$route.params.id + '/report')
+                .then( response => {
+                    this.post.reported_count = response.data;
+                })
+                .catch( error => {
+                });
+        },
+
         destroy()
         {
             axios.delete('/api/imgs/' + this.$route.params.id + '?api_token=' + this.api_token)

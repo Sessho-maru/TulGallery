@@ -11,6 +11,10 @@ const options = {
   name: 'ckeditor'
 }
 
+Vue.prototype.$adminId = 1;
+Vue.prototype.$maxCount = 5;
+Vue.prototype.$tag_ids = [];
+
 Vue.use(VueCkeditor.plugin, options);
 require('./bootstrap');
 

@@ -1953,22 +1953,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
   data: function data() {
     return {
       on: true,
-      message: ""
+      message: "",
+      someone: {}
     };
   },
   props: ['user'],
   components: {
     SearchBar: _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  mounted: function mounted() {
+    if (this.user === undefined === false) {
+      this.someone = this.user;
+    }
+
+    console.log(this.someone);
+  },
   methods: {
+    flushAndReset: function flushAndReset() {
+      this.on = true;
+      this.message = '';
+
+      while (this.$tag_ids.length > 0) {
+        console.log(this.$tag_ids.pop());
+      }
+    },
+    tagSearchInit: function tagSearchInit(string) {
+      this.on = false;
+      this.showMessage(string);
+    },
     showMessage: function showMessage(tagNames) {
-      this.message += "Search result with Tags : " + tagNames.substring(0, tagNames.length - 3);
+      this.message = "result with: ".concat(tagNames.substring(0, tagNames.length - 3), "(click left logo to flush)");
     }
   }
 });
@@ -2023,9 +2047,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       searchTerm: "",
-      results: [],
-      selectedTags: [],
-      tagNames: "",
+      serchResults: [],
+      selectedTagNames: "",
       focus: false
     };
   },
@@ -2040,22 +2063,46 @@ __webpack_require__.r(__webpack_exports__);
           api_token: this.api_token,
           searchTerm: this.searchTerm
         }).then(function (response) {
-          _this.results = response.data;
+          _this.serchResults = response.data;
         })["catch"](function (errors) {
           console.log(errors.resopnse);
         });
       }
     }, 300),
     AddTagId: function AddTagId(id) {
-      this.selectedTags.push(id);
+      this.$tag_ids.push(id);
     },
     AddTagName: function AddTagName(tagName) {
-      this.tagNames += tagName + ' || ';
+      this.selectedTagNames += tagName + ' || ';
     },
     hide: function hide(id) {
       var element = document.getElementById(id);
       element.classList.add("hidden");
     }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/AllTags.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/views/AllTags.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'AllTags',
+  mounted: function mounted() {
+    axios.get('/tags').then(function (response) {
+      console.log(response.data);
+    })["catch"](function (errors) {});
   }
 });
 
@@ -2110,9 +2157,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageCreate",
-  props: ['api_token'],
   data: function data() {
     return {
       file: "",
@@ -2121,8 +2170,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         description: "",
         tags: ""
       },
-      loaded: false
+      loading: true,
+      fileLoaded: false
     };
+  },
+  mounted: function mounted() {
+    if (this.$route.params.api_token === undefined) {
+      window.location.href = "http://alpha.test/login";
+    } else {
+      this.loading = false;
+    }
   },
   methods: {
     fileHandle: function fileHandle() {
@@ -2145,12 +2202,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return;
       }
 
-      this.loaded = true;
+      this.fileLoaded = true;
     },
     submitForm: function submitForm() {
       var _this = this;
 
-      if (this.loaded == false) {
+      if (this.fileLoaded == false) {
         document.getElementById('error_image').innerHTML = "Require at least 1 Image";
         return;
       }
@@ -2169,7 +2226,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       document.getElementById("submitButton").disabled = true;
       axios.post('/api/imgs', _objectSpread({}, this.form, {
-        api_token: this.api_token
+        api_token: this.$route.params.api_token
       })) // Image form request
       .then(function (response) {
         var image_id = response.data.data.image_id;
@@ -2182,7 +2239,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }) // Image upload request
         .then(function (response) {
           axios.patch('/api/imgs/' + image_id, {
-            'api_token': _this.api_token,
+            'api_token': _this.$route.params.api_token,
             'url': response.data.url,
             'flag': "url_update"
           }) // Url update request
@@ -2357,7 +2414,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageIndex",
-  props: ['api_token'],
   data: function data() {
     return {
       paginated: [],
@@ -2450,22 +2506,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ImageIndexWithTags',
-  props: ['api_token'],
   data: function data() {
     return {
       paginated: [],
       currentPage: "",
-      index: 0,
-      t: []
+      index: 0
     };
   },
   mounted: function mounted() {
     var _this = this;
 
-    this.t = this.$route.params.t;
+    console.log(this.$tag_ids);
     axios.get('/imgs/tags/', {
       params: {
-        data: this.$route.params.t
+        data: this.$tag_ids
       }
     }).then(function (response) {
       var posts = response.data.data;
@@ -2498,7 +2552,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.changeCurrentPage(_this.index);
       }
     })["catch"](function (errors) {
-      alert("Unable to Fetch Images");
+      alert("Unable to Fetch Images. Tag ids are missing");
     });
   },
   methods: {
@@ -2635,6 +2689,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageShow",
   props: ['api_token', 'user_id'],
@@ -2643,7 +2708,6 @@ __webpack_require__.r(__webpack_exports__);
       post: null,
       modal: false,
       loading: true,
-      tags: [],
       mode: "",
       index: 0
     };
@@ -2659,13 +2723,13 @@ __webpack_require__.r(__webpack_exports__);
     if (this.$route.params.mode == 'normal' || this.$route.params.mode == null) {
       this.mode = "normal";
     } else {
-      this.tags = this.$route.params.t;
       this.mode = "tag";
     }
 
     axios.get('/api/imgs/' + this.$route.params.id).then(function (response) {
       _this.post = response.data.data;
       _this.loading = false;
+      console.log(_this.post);
     })["catch"](function (errors) {
       if (errors.response.status === 404 || errors.response.status === 403) {
         _this.$router.push('/imgs');
@@ -2673,11 +2737,18 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   methods: {
-    destroy: function destroy() {
+    report: function report() {
       var _this2 = this;
 
+      axios.get('/api/imgs/' + this.$route.params.id + '/report').then(function (response) {
+        _this2.post.reported_count = response.data;
+      })["catch"](function (error) {});
+    },
+    destroy: function destroy() {
+      var _this3 = this;
+
       axios["delete"]('/api/imgs/' + this.$route.params.id + '?api_token=' + this.api_token).then(function (response) {
-        _this2.$router.push('/imgs');
+        _this3.$router.push('/imgs');
       })["catch"](function (errors) {
         alert("Internal Error. Unable to delete Image");
       });
@@ -20344,322 +20415,320 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "h-screen bg-white" }, [
-    _c("div", { staticClass: "flex" }, [
-      _c(
-        "div",
-        { staticClass: "bg-gray-200 w-48 h-screen border-r-2 border-gray-400" },
-        [
-          _c(
-            "nav",
-            { staticClass: "pt-4" },
-            [
-              _c("router-link", { attrs: { to: "/imgs" } }, [
+  return !_vm.someone
+    ? _c("div", [_vm._v("Loading...")])
+    : _c("div", [
+        _c("div", { staticClass: "h-screen bg-white" }, [
+          _c("div", { staticClass: "flex" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "bg-gray-200 w-48 h-screen border-r-2 border-gray-400"
+              },
+              [
                 _c(
-                  "div",
-                  {
-                    on: {
-                      click: function($event) {
-                        _vm.on = true
-                        _vm.message = ""
-                      }
-                    }
-                  },
+                  "nav",
+                  { staticClass: "pt-4" },
                   [
+                    _c("router-link", { attrs: { to: "/imgs" } }, [
+                      _c("div", { on: { click: _vm.flushAndReset } }, [
+                        _c(
+                          "svg",
+                          {
+                            staticStyle: { background: "rgba(0, 0, 0, 0)" },
+                            attrs: {
+                              width: "175.76005859375px",
+                              height: "72.80615234375px",
+                              xmlns: "http://www.w3.org/2000/svg",
+                              viewBox:
+                                "144.119970703125 38.596923828125 211.76005859375 72.80615234375",
+                              preserveAspectRatio: "xMidYMid"
+                            }
+                          },
+                          [
+                            _c("defs", [
+                              _c(
+                                "filter",
+                                {
+                                  attrs: {
+                                    id: "editing-hole",
+                                    x: "-100%",
+                                    y: "-100%",
+                                    width: "300%",
+                                    height: "300%"
+                                  }
+                                },
+                                [
+                                  _c("feFlood", {
+                                    attrs: {
+                                      "flood-color": "#000",
+                                      result: "black"
+                                    }
+                                  }),
+                                  _c("feMorphology", {
+                                    attrs: {
+                                      operator: "dilate",
+                                      radius: "2",
+                                      in: "SourceGraphic",
+                                      result: "erode"
+                                    }
+                                  }),
+                                  _c("feGaussianBlur", {
+                                    attrs: {
+                                      in: "erode",
+                                      stdDeviation: "4",
+                                      result: "blur"
+                                    }
+                                  }),
+                                  _c("feOffset", {
+                                    attrs: {
+                                      in: "blur",
+                                      dx: "2",
+                                      dy: "2",
+                                      result: "offset"
+                                    }
+                                  }),
+                                  _c("feComposite", {
+                                    attrs: {
+                                      operator: "atop",
+                                      in: "offset",
+                                      in2: "black",
+                                      result: "merge"
+                                    }
+                                  }),
+                                  _c("feComposite", {
+                                    attrs: {
+                                      operator: "in",
+                                      in: "merge",
+                                      in2: "SourceGraphic",
+                                      result: "inner-shadow"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ]),
+                            _c(
+                              "g",
+                              { attrs: { filter: "url(#editing-hole)" } },
+                              [
+                                _c(
+                                  "g",
+                                  {
+                                    attrs: {
+                                      transform:
+                                        "translate(179.5799981355667, 87.12406253814697)"
+                                    }
+                                  },
+                                  [
+                                    _c("path", {
+                                      attrs: {
+                                        d:
+                                          "M1.09-3.30L1.09-3.30L1.09-3.30Q1.09-4.19 1.55-6.44L1.55-6.44L3.30-15.35L1.35-15.35L1.49-16.34L1.49-16.34Q5.45-17.52 9.27-20.43L9.27-20.43L10.86-20.43L10.07-16.83L12.64-16.83L12.34-15.35L9.80-15.35L8.12-6.44L8.12-6.44Q7.69-4.39 7.69-3.70L7.69-3.70L7.69-3.70Q7.69-2.11 9.08-1.78L9.08-1.78L9.08-1.78Q8.75-0.66 7.56 0L7.56 0L7.56 0Q6.37 0.66 4.69 0.66L4.69 0.66L4.69 0.66Q3.00 0.66 2.05-0.40L2.05-0.40L2.05-0.40Q1.09-1.45 1.09-3.30ZM23.07-1.39L23.07-1.39L23.07-1.39Q21.48 0.66 17.56 0.66L17.56 0.66L17.56 0.66Q15.51 0.66 14.03-0.58L14.03-0.58L14.03-0.58Q12.54-1.82 12.54-3.60L12.54-3.60L12.54-3.60Q12.54-4.59 12.64-5.08L12.64-5.08L14.85-16.83L21.55-17.49L19.14-4.75L19.14-4.75Q19.01-4.03 19.01-3.60L19.01-3.60L19.01-3.60Q19.01-1.68 20.16-1.68L20.16-1.68L20.16-1.68Q21.45-1.68 22.37-3.43L22.37-3.43L22.37-3.43Q22.67-3.99 22.80-4.72L22.80-4.72L25.15-16.83L31.65-17.49L29.21-4.62L29.21-4.62Q29.11-4.13 29.11-3.60L29.11-3.60L29.11-3.60Q29.11-3.07 29.40-2.49L29.40-2.49L29.40-2.49Q29.70-1.91 30.66-1.78L30.66-1.78L30.66-1.78Q30.46-0.99 29.77-0.46L29.77-0.46L29.77-0.46Q28.31 0.66 26.75 0.66L26.75 0.66L26.75 0.66Q25.18 0.66 24.26 0.10L24.26 0.10L24.26 0.10Q23.33-0.46 23.07-1.39ZM41.32-1.82L41.32-1.82L41.32-1.82Q40.29 0.66 37.03 0.66L37.03 0.66L37.03 0.66Q35.38 0.66 34.32-0.49L34.32-0.49L34.32-0.49Q33.46-1.45 33.46-2.54L33.46-2.54L33.46-2.54Q33.46-5.02 34.62-10.43L34.62-10.43L37.03-23.10L43.73-23.76L40.52-7.06L40.52-7.06Q39.96-4.62 39.96-3.76L39.96-3.76L39.96-3.76Q39.96-1.88 41.32-1.82ZM43.69-1.58L43.69-1.58L47.78-23.10L54.48-23.76L53.46-18.71L53.46-18.71Q53.10-17.16 52.64-16.07L52.64-16.07L52.64-16.07Q53.36-17.00 54.95-17.36L54.95-17.36L54.95-17.36Q55.41-17.49 55.97-17.49L55.97-17.49L55.97-17.49Q59.04-17.49 60.72-15.63L60.72-15.63L60.72-15.63Q62.40-13.76 62.40-10.16L62.40-10.16L62.40-10.16Q62.40-5.48 59.73-2.54L59.73-2.54L59.73-2.54Q56.86 0.66 51.65 0.66L51.65 0.66L51.65 0.66Q48.05 0.66 45.34-0.53L45.34-0.53L45.34-0.53Q44.39-0.96 43.69-1.58ZM52.07-11.55L50.33-1.88L50.33-1.88Q51.02-1.29 51.88-1.29L51.88-1.29L51.88-1.29Q52.73-1.29 53.23-1.62L53.23-1.62L53.23-1.62Q53.72-1.95 54.09-2.61L54.09-2.61L54.09-2.61Q55.08-4.39 55.87-9.83L55.87-9.83L55.87-9.83Q56.10-11.38 56.10-12.94L56.10-12.94L56.10-12.94Q56.10-14.49 55.75-14.98L55.75-14.98L55.75-14.98Q55.41-15.48 54.75-15.48L54.75-15.48L54.75-15.48Q52.73-15.48 52.07-11.55L52.07-11.55ZM71.58 0.66L71.58 0.66L71.58 0.66Q64.32 0.66 64.32-6.17L64.32-6.17L64.32-6.17Q64.32-11.02 66.99-14.16L66.99-14.16L66.99-14.16Q69.83-17.49 74.75-17.49L74.75-17.49L74.75-17.49Q78.31-17.49 80.12-15.84L80.12-15.84L80.12-15.84Q81.94-14.19 81.94-10.72L81.94-10.72L81.94-10.72Q81.94-5.45 79.10-2.38L79.10-2.38L79.10-2.38Q76.33 0.66 71.58 0.66ZM72.44-13.70L72.44-13.70L72.44-13.70Q72.04-12.80 71.73-11.47L71.73-11.47L71.73-11.47Q71.41-10.13 71.02-8.02L71.02-8.02L71.02-8.02Q70.62-5.91 70.62-3.30L70.62-3.30L70.62-3.30Q70.62-2.44 70.90-1.88L70.90-1.88L70.90-1.88Q71.18-1.32 71.94-1.32L71.94-1.32L71.94-1.32Q72.70-1.32 73.18-1.68L73.18-1.68L73.18-1.68Q73.66-2.05 74.02-2.90L74.02-2.90L74.02-2.90Q74.68-4.42 75.21-7.24L75.21-7.24L75.21-7.24Q75.73-10.07 75.78-11.29L75.78-11.29L75.78-11.29Q75.83-12.51 75.83-13.41L75.83-13.41L75.83-13.41Q75.83-14.32 75.57-14.92L75.57-14.92L75.57-14.92Q75.31-15.51 74.56-15.51L74.56-15.51L74.56-15.51Q73.82-15.51 73.33-15.05L73.33-15.05L73.33-15.05Q72.83-14.59 72.44-13.70ZM91.08 0.66L91.08 0.66L91.08 0.66Q83.82 0.66 83.82-6.17L83.82-6.17L83.82-6.17Q83.82-11.02 86.49-14.16L86.49-14.16L86.49-14.16Q89.33-17.49 94.25-17.49L94.25-17.49L94.25-17.49Q97.81-17.49 99.63-15.84L99.63-15.84L99.63-15.84Q101.44-14.19 101.44-10.72L101.44-10.72L101.44-10.72Q101.44-5.45 98.60-2.38L98.60-2.38L98.60-2.38Q95.83 0.66 91.08 0.66ZM91.94-13.70L91.94-13.70L91.94-13.70Q91.54-12.80 91.23-11.47L91.23-11.47L91.23-11.47Q90.92-10.13 90.52-8.02L90.52-8.02L90.52-8.02Q90.12-5.91 90.12-3.30L90.12-3.30L90.12-3.30Q90.12-2.44 90.40-1.88L90.40-1.88L90.40-1.88Q90.68-1.32 91.44-1.32L91.44-1.32L91.44-1.32Q92.20-1.32 92.68-1.68L92.68-1.68L92.68-1.68Q93.16-2.05 93.52-2.90L93.52-2.90L93.52-2.90Q94.18-4.42 94.71-7.24L94.71-7.24L94.71-7.24Q95.24-10.07 95.29-11.29L95.29-11.29L95.29-11.29Q95.34-12.51 95.34-13.41L95.34-13.41L95.34-13.41Q95.34-14.32 95.07-14.92L95.07-14.92L95.07-14.92Q94.81-15.51 94.07-15.51L94.07-15.51L94.07-15.51Q93.32-15.51 92.83-15.05L92.83-15.05L92.83-15.05Q92.33-14.59 91.94-13.70ZM113.72-9.27L113.72-9.27L113.72-9.27Q114.91-11.38 114.91-13.53L114.91-13.53L114.91-13.53Q114.91-14.95 113.88-14.95L113.88-14.95L113.88-14.95Q113.09-14.95 112.27-13.60L112.27-13.60L112.27-13.60Q111.41-12.24 111.14-10.49L111.14-10.49L109.43 0L102.60 0.66L105.96-16.83L111.41-17.49L110.81-14.16L110.81-14.16Q112.43-17.49 116.06-17.49L116.06-17.49L116.06-17.49Q117.98-17.49 119.01-16.50L119.01-16.50L119.01-16.50Q120.05-15.51 120.05-13.48L120.05-13.48L120.05-13.48Q120.05-11.45 118.72-10.16L118.72-10.16L118.72-10.16Q117.38-8.88 115.10-8.88L115.10-8.88L115.10-8.88Q114.11-8.88 113.72-9.27ZM131.18-1.39L131.18-1.39L131.18-1.39Q129.59 0.66 125.66 0.66L125.66 0.66L125.66 0.66Q123.62 0.66 122.13-0.58L122.13-0.58L122.13-0.58Q120.65-1.82 120.65-3.60L120.65-3.60L120.65-3.60Q120.65-4.59 120.75-5.08L120.75-5.08L122.96-16.83L129.66-17.49L127.25-4.75L127.25-4.75Q127.12-4.03 127.12-3.60L127.12-3.60L127.12-3.60Q127.12-1.68 128.27-1.68L128.27-1.68L128.27-1.68Q129.56-1.68 130.48-3.43L130.48-3.43L130.48-3.43Q130.78-3.99 130.91-4.72L130.91-4.72L133.25-16.83L139.75-17.49L137.31-4.62L137.31-4.62Q137.21-4.13 137.21-3.60L137.21-3.60L137.21-3.60Q137.21-3.07 137.51-2.49L137.51-2.49L137.51-2.49Q137.81-1.91 138.76-1.78L138.76-1.78L138.76-1.78Q138.57-0.99 137.87-0.46L137.87-0.46L137.87-0.46Q136.42 0.66 134.85 0.66L134.85 0.66L134.85 0.66Q133.29 0.66 132.36 0.10L132.36 0.10L132.36 0.10Q131.44-0.46 131.18-1.39Z",
+                                        fill: "#ccc"
+                                      }
+                                    })
+                                  ]
+                                )
+                              ]
+                            )
+                          ]
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
                     _c(
-                      "svg",
+                      "p",
                       {
-                        staticStyle: { background: "rgba(0, 0, 0, 0)" },
+                        staticClass:
+                          "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
+                      },
+                      [_vm._v("Create")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "router-link",
+                      {
+                        staticClass:
+                          "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
                         attrs: {
-                          width: "175.76005859375px",
-                          height: "72.80615234375px",
-                          xmlns: "http://www.w3.org/2000/svg",
-                          viewBox:
-                            "144.119970703125 38.596923828125 211.76005859375 72.80615234375",
-                          preserveAspectRatio: "xMidYMid"
+                          to: {
+                            name: "Create",
+                            params: { api_token: _vm.someone.api_token }
+                          }
                         }
                       },
                       [
-                        _c("defs", [
-                          _c(
-                            "filter",
-                            {
+                        _c(
+                          "svg",
+                          {
+                            staticClass: "fill-current text-blue-600 w-5 h-5",
+                            attrs: { viewBox: "0 0 24 24" }
+                          },
+                          [
+                            _c("path", {
                               attrs: {
-                                id: "editing-hole",
-                                x: "-100%",
-                                y: "-100%",
-                                width: "300%",
-                                height: "300%"
+                                d:
+                                  "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
                               }
-                            },
-                            [
-                              _c("feFlood", {
+                            }),
+                            _vm._v(".\n                        ")
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                          _vm._v("Add new")
+                        ])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "p",
+                      {
+                        staticClass:
+                          "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
+                      },
+                      [_vm._v("Tag")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { on: { click: _vm.flushAndReset } },
+                      [
+                        _c(
+                          "router-link",
+                          {
+                            staticClass:
+                              "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                            attrs: { to: "/tags" }
+                          },
+                          [
+                            _c(
+                              "svg",
+                              {
+                                staticClass:
+                                  "fill-current text-blue-600 w-5 h-5",
                                 attrs: {
-                                  "flood-color": "#000",
-                                  result: "black"
+                                  xmlns: "http://www.w3.org/2000/svg",
+                                  viewBox: "0 0 24 24"
                                 }
-                              }),
-                              _c("feMorphology", {
-                                attrs: {
-                                  operator: "dilate",
-                                  radius: "2",
-                                  in: "SourceGraphic",
-                                  result: "erode"
-                                }
-                              }),
-                              _c("feGaussianBlur", {
-                                attrs: {
-                                  in: "erode",
-                                  stdDeviation: "4",
-                                  result: "blur"
-                                }
-                              }),
-                              _c("feOffset", {
-                                attrs: {
-                                  in: "blur",
-                                  dx: "2",
-                                  dy: "2",
-                                  result: "offset"
-                                }
-                              }),
-                              _c("feComposite", {
-                                attrs: {
-                                  operator: "atop",
-                                  in: "offset",
-                                  in2: "black",
-                                  result: "merge"
-                                }
-                              }),
-                              _c("feComposite", {
-                                attrs: {
-                                  operator: "in",
-                                  in: "merge",
-                                  in2: "SourceGraphic",
-                                  result: "inner-shadow"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        ]),
-                        _c("g", { attrs: { filter: "url(#editing-hole)" } }, [
-                          _c(
-                            "g",
-                            {
+                              },
+                              [
+                                _c("path", {
+                                  staticClass: "st0",
+                                  attrs: {
+                                    d:
+                                      "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
+                                  }
+                                })
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                              _vm._v("Tag list")
+                            ])
+                          ]
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "p",
+                      {
+                        staticClass:
+                          "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
+                      },
+                      [_vm._v("Settings")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "router-link",
+                      {
+                        staticClass:
+                          "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                        attrs: { to: "/logout" }
+                      },
+                      [
+                        _c(
+                          "svg",
+                          {
+                            staticClass: "fill-current text-blue-600 w-5 h-5",
+                            attrs: { viewBox: "0 0 24 24" }
+                          },
+                          [
+                            _c("path", {
                               attrs: {
-                                transform:
-                                  "translate(179.5799981355667, 87.12406253814697)"
+                                d:
+                                  "M21 3h-3.8c-.7 0-1.3-.6-1.3-1.3S16.5.4 17.2.4h5.1c.7 0 1.3.6 1.3 1.3v20.5c0 .7-.6 1.3-1.3 1.3h-5.1c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3H21V3zm-6.9 7.7L8.6 5.2c-.5-.5-.6-1.3-.1-1.8s1.3-.5 1.8 0l7.7 7.7c.8.8.2 2.2-.9 2.2H1.8c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3h12.3zm-1.6 4.8c.5-.5 1.3-.4 1.8.1s.4 1.3-.1 1.8l-3.8 3.2c-.5.5-1.3.4-1.8-.1-.6-.5-.5-1.3 0-1.7l3.9-3.3z"
                               }
-                            },
-                            [
-                              _c("path", {
-                                attrs: {
-                                  d:
-                                    "M1.09-3.30L1.09-3.30L1.09-3.30Q1.09-4.19 1.55-6.44L1.55-6.44L3.30-15.35L1.35-15.35L1.49-16.34L1.49-16.34Q5.45-17.52 9.27-20.43L9.27-20.43L10.86-20.43L10.07-16.83L12.64-16.83L12.34-15.35L9.80-15.35L8.12-6.44L8.12-6.44Q7.69-4.39 7.69-3.70L7.69-3.70L7.69-3.70Q7.69-2.11 9.08-1.78L9.08-1.78L9.08-1.78Q8.75-0.66 7.56 0L7.56 0L7.56 0Q6.37 0.66 4.69 0.66L4.69 0.66L4.69 0.66Q3.00 0.66 2.05-0.40L2.05-0.40L2.05-0.40Q1.09-1.45 1.09-3.30ZM23.07-1.39L23.07-1.39L23.07-1.39Q21.48 0.66 17.56 0.66L17.56 0.66L17.56 0.66Q15.51 0.66 14.03-0.58L14.03-0.58L14.03-0.58Q12.54-1.82 12.54-3.60L12.54-3.60L12.54-3.60Q12.54-4.59 12.64-5.08L12.64-5.08L14.85-16.83L21.55-17.49L19.14-4.75L19.14-4.75Q19.01-4.03 19.01-3.60L19.01-3.60L19.01-3.60Q19.01-1.68 20.16-1.68L20.16-1.68L20.16-1.68Q21.45-1.68 22.37-3.43L22.37-3.43L22.37-3.43Q22.67-3.99 22.80-4.72L22.80-4.72L25.15-16.83L31.65-17.49L29.21-4.62L29.21-4.62Q29.11-4.13 29.11-3.60L29.11-3.60L29.11-3.60Q29.11-3.07 29.40-2.49L29.40-2.49L29.40-2.49Q29.70-1.91 30.66-1.78L30.66-1.78L30.66-1.78Q30.46-0.99 29.77-0.46L29.77-0.46L29.77-0.46Q28.31 0.66 26.75 0.66L26.75 0.66L26.75 0.66Q25.18 0.66 24.26 0.10L24.26 0.10L24.26 0.10Q23.33-0.46 23.07-1.39ZM41.32-1.82L41.32-1.82L41.32-1.82Q40.29 0.66 37.03 0.66L37.03 0.66L37.03 0.66Q35.38 0.66 34.32-0.49L34.32-0.49L34.32-0.49Q33.46-1.45 33.46-2.54L33.46-2.54L33.46-2.54Q33.46-5.02 34.62-10.43L34.62-10.43L37.03-23.10L43.73-23.76L40.52-7.06L40.52-7.06Q39.96-4.62 39.96-3.76L39.96-3.76L39.96-3.76Q39.96-1.88 41.32-1.82ZM43.69-1.58L43.69-1.58L47.78-23.10L54.48-23.76L53.46-18.71L53.46-18.71Q53.10-17.16 52.64-16.07L52.64-16.07L52.64-16.07Q53.36-17.00 54.95-17.36L54.95-17.36L54.95-17.36Q55.41-17.49 55.97-17.49L55.97-17.49L55.97-17.49Q59.04-17.49 60.72-15.63L60.72-15.63L60.72-15.63Q62.40-13.76 62.40-10.16L62.40-10.16L62.40-10.16Q62.40-5.48 59.73-2.54L59.73-2.54L59.73-2.54Q56.86 0.66 51.65 0.66L51.65 0.66L51.65 0.66Q48.05 0.66 45.34-0.53L45.34-0.53L45.34-0.53Q44.39-0.96 43.69-1.58ZM52.07-11.55L50.33-1.88L50.33-1.88Q51.02-1.29 51.88-1.29L51.88-1.29L51.88-1.29Q52.73-1.29 53.23-1.62L53.23-1.62L53.23-1.62Q53.72-1.95 54.09-2.61L54.09-2.61L54.09-2.61Q55.08-4.39 55.87-9.83L55.87-9.83L55.87-9.83Q56.10-11.38 56.10-12.94L56.10-12.94L56.10-12.94Q56.10-14.49 55.75-14.98L55.75-14.98L55.75-14.98Q55.41-15.48 54.75-15.48L54.75-15.48L54.75-15.48Q52.73-15.48 52.07-11.55L52.07-11.55ZM71.58 0.66L71.58 0.66L71.58 0.66Q64.32 0.66 64.32-6.17L64.32-6.17L64.32-6.17Q64.32-11.02 66.99-14.16L66.99-14.16L66.99-14.16Q69.83-17.49 74.75-17.49L74.75-17.49L74.75-17.49Q78.31-17.49 80.12-15.84L80.12-15.84L80.12-15.84Q81.94-14.19 81.94-10.72L81.94-10.72L81.94-10.72Q81.94-5.45 79.10-2.38L79.10-2.38L79.10-2.38Q76.33 0.66 71.58 0.66ZM72.44-13.70L72.44-13.70L72.44-13.70Q72.04-12.80 71.73-11.47L71.73-11.47L71.73-11.47Q71.41-10.13 71.02-8.02L71.02-8.02L71.02-8.02Q70.62-5.91 70.62-3.30L70.62-3.30L70.62-3.30Q70.62-2.44 70.90-1.88L70.90-1.88L70.90-1.88Q71.18-1.32 71.94-1.32L71.94-1.32L71.94-1.32Q72.70-1.32 73.18-1.68L73.18-1.68L73.18-1.68Q73.66-2.05 74.02-2.90L74.02-2.90L74.02-2.90Q74.68-4.42 75.21-7.24L75.21-7.24L75.21-7.24Q75.73-10.07 75.78-11.29L75.78-11.29L75.78-11.29Q75.83-12.51 75.83-13.41L75.83-13.41L75.83-13.41Q75.83-14.32 75.57-14.92L75.57-14.92L75.57-14.92Q75.31-15.51 74.56-15.51L74.56-15.51L74.56-15.51Q73.82-15.51 73.33-15.05L73.33-15.05L73.33-15.05Q72.83-14.59 72.44-13.70ZM91.08 0.66L91.08 0.66L91.08 0.66Q83.82 0.66 83.82-6.17L83.82-6.17L83.82-6.17Q83.82-11.02 86.49-14.16L86.49-14.16L86.49-14.16Q89.33-17.49 94.25-17.49L94.25-17.49L94.25-17.49Q97.81-17.49 99.63-15.84L99.63-15.84L99.63-15.84Q101.44-14.19 101.44-10.72L101.44-10.72L101.44-10.72Q101.44-5.45 98.60-2.38L98.60-2.38L98.60-2.38Q95.83 0.66 91.08 0.66ZM91.94-13.70L91.94-13.70L91.94-13.70Q91.54-12.80 91.23-11.47L91.23-11.47L91.23-11.47Q90.92-10.13 90.52-8.02L90.52-8.02L90.52-8.02Q90.12-5.91 90.12-3.30L90.12-3.30L90.12-3.30Q90.12-2.44 90.40-1.88L90.40-1.88L90.40-1.88Q90.68-1.32 91.44-1.32L91.44-1.32L91.44-1.32Q92.20-1.32 92.68-1.68L92.68-1.68L92.68-1.68Q93.16-2.05 93.52-2.90L93.52-2.90L93.52-2.90Q94.18-4.42 94.71-7.24L94.71-7.24L94.71-7.24Q95.24-10.07 95.29-11.29L95.29-11.29L95.29-11.29Q95.34-12.51 95.34-13.41L95.34-13.41L95.34-13.41Q95.34-14.32 95.07-14.92L95.07-14.92L95.07-14.92Q94.81-15.51 94.07-15.51L94.07-15.51L94.07-15.51Q93.32-15.51 92.83-15.05L92.83-15.05L92.83-15.05Q92.33-14.59 91.94-13.70ZM113.72-9.27L113.72-9.27L113.72-9.27Q114.91-11.38 114.91-13.53L114.91-13.53L114.91-13.53Q114.91-14.95 113.88-14.95L113.88-14.95L113.88-14.95Q113.09-14.95 112.27-13.60L112.27-13.60L112.27-13.60Q111.41-12.24 111.14-10.49L111.14-10.49L109.43 0L102.60 0.66L105.96-16.83L111.41-17.49L110.81-14.16L110.81-14.16Q112.43-17.49 116.06-17.49L116.06-17.49L116.06-17.49Q117.98-17.49 119.01-16.50L119.01-16.50L119.01-16.50Q120.05-15.51 120.05-13.48L120.05-13.48L120.05-13.48Q120.05-11.45 118.72-10.16L118.72-10.16L118.72-10.16Q117.38-8.88 115.10-8.88L115.10-8.88L115.10-8.88Q114.11-8.88 113.72-9.27ZM131.18-1.39L131.18-1.39L131.18-1.39Q129.59 0.66 125.66 0.66L125.66 0.66L125.66 0.66Q123.62 0.66 122.13-0.58L122.13-0.58L122.13-0.58Q120.65-1.82 120.65-3.60L120.65-3.60L120.65-3.60Q120.65-4.59 120.75-5.08L120.75-5.08L122.96-16.83L129.66-17.49L127.25-4.75L127.25-4.75Q127.12-4.03 127.12-3.60L127.12-3.60L127.12-3.60Q127.12-1.68 128.27-1.68L128.27-1.68L128.27-1.68Q129.56-1.68 130.48-3.43L130.48-3.43L130.48-3.43Q130.78-3.99 130.91-4.72L130.91-4.72L133.25-16.83L139.75-17.49L137.31-4.62L137.31-4.62Q137.21-4.13 137.21-3.60L137.21-3.60L137.21-3.60Q137.21-3.07 137.51-2.49L137.51-2.49L137.51-2.49Q137.81-1.91 138.76-1.78L138.76-1.78L138.76-1.78Q138.57-0.99 137.87-0.46L137.87-0.46L137.87-0.46Q136.42 0.66 134.85 0.66L134.85 0.66L134.85 0.66Q133.29 0.66 132.36 0.10L132.36 0.10L132.36 0.10Q131.44-0.46 131.18-1.39Z",
-                                  fill: "#ccc"
-                                }
-                              })
-                            ]
-                          )
+                            })
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                          _vm._v("Logout")
                         ])
                       ]
                     )
+                  ],
+                  1
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "flex flex-col flex-1 h-screen" },
+              [
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "h-16 px-6 border-b border-gray-400 flex items-center justify-between"
+                  },
+                  [
+                    _c("div", { staticClass: "mr-64" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(_vm.message) +
+                          "\n                    "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _vm.on == true
+                      ? _c(
+                          "div",
+                          [
+                            _c("SearchBar", {
+                              attrs: { id: "search_bar" },
+                              on: {
+                                search: function($event) {
+                                  return _vm.tagSearchInit($event)
+                                }
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      : _vm._e()
                   ]
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "p",
-                {
-                  staticClass:
-                    "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
-                },
-                [_vm._v("Create")]
-              ),
-              _vm._v(" "),
-              _c(
-                "router-link",
-                {
-                  staticClass:
-                    "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                  attrs: { to: "/imgs/create" }
-                },
-                [
-                  _c(
-                    "svg",
-                    {
-                      staticClass: "fill-current text-blue-600 w-5 h-5",
-                      attrs: { viewBox: "0 0 24 24" }
-                    },
-                    [
-                      _c("path", {
-                        attrs: {
-                          d:
-                            "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
-                        }
-                      }),
-                      _vm._v(".\n                    ")
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                    _vm._v("Add New")
-                  ])
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "p",
-                {
-                  staticClass:
-                    "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
-                },
-                [_vm._v("Posts")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  on: {
-                    click: function($event) {
-                      _vm.on = true
-                      _vm.message = ""
-                    }
+                ),
+                _vm._v(" "),
+                _c("router-view", {
+                  staticClass: "flex flex-1 flex-wrap p-6",
+                  attrs: {
+                    api_token: _vm.someone.api_token,
+                    user_id: _vm.someone.id
                   }
-                },
-                [
-                  _c(
-                    "router-link",
-                    {
-                      staticClass:
-                        "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                      attrs: { to: "/imgs" }
-                    },
-                    [
-                      _c(
-                        "svg",
-                        {
-                          staticClass: "fill-current text-blue-600 w-5 h-5",
-                          attrs: {
-                            xmlns: "http://www.w3.org/2000/svg",
-                            viewBox: "0 0 24 24"
-                          }
-                        },
-                        [
-                          _c("path", {
-                            staticClass: "st0",
-                            attrs: {
-                              d:
-                                "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
-                            }
-                          })
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                        _vm._v("Posts")
-                      ])
-                    ]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "p",
-                {
-                  staticClass:
-                    "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
-                },
-                [_vm._v("Settings")]
-              ),
-              _vm._v(" "),
-              _c(
-                "router-link",
-                {
-                  staticClass:
-                    "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                  attrs: { to: "/logout" }
-                },
-                [
-                  _c(
-                    "svg",
-                    {
-                      staticClass: "fill-current text-blue-600 w-5 h-5",
-                      attrs: { viewBox: "0 0 24 24" }
-                    },
-                    [
-                      _c("path", {
-                        attrs: {
-                          d:
-                            "M21 3h-3.8c-.7 0-1.3-.6-1.3-1.3S16.5.4 17.2.4h5.1c.7 0 1.3.6 1.3 1.3v20.5c0 .7-.6 1.3-1.3 1.3h-5.1c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3H21V3zm-6.9 7.7L8.6 5.2c-.5-.5-.6-1.3-.1-1.8s1.3-.5 1.8 0l7.7 7.7c.8.8.2 2.2-.9 2.2H1.8c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3h12.3zm-1.6 4.8c.5-.5 1.3-.4 1.8.1s.4 1.3-.1 1.8l-3.8 3.2c-.5.5-1.3.4-1.8-.1-.6-.5-.5-1.3 0-1.7l3.9-3.3z"
-                        }
-                      })
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                    _vm._v("Logout")
-                  ])
-                ]
-              )
-            ],
-            1
-          )
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "flex flex-col flex-1 h-screen" },
-        [
-          _c(
-            "div",
-            {
-              staticClass:
-                "h-16 px-6 border-b border-gray-400 flex items-center justify-between"
-            },
-            [
-              _c("div", { staticClass: "mr-64" }, [
-                _vm._v(
-                  "\n                     " +
-                    _vm._s(_vm.message) +
-                    "\n                "
-                )
-              ]),
-              _vm._v(" "),
-              _vm.on == true
-                ? _c(
-                    "div",
-                    [
-                      _c("SearchBar", {
-                        attrs: {
-                          id: "search_bar",
-                          api_token: _vm.user.api_token
-                        },
-                        on: {
-                          search: function($event) {
-                            _vm.on = false
-                            _vm.showMessage($event)
-                          }
-                        }
-                      })
-                    ],
-                    1
-                  )
-                : _vm._e()
-            ]
-          ),
-          _vm._v(" "),
-          _c("router-view", {
-            staticClass: "flex flex-1 flex-wrap p-6",
-            attrs: { api_token: _vm.user.api_token, user_id: _vm.user.id }
-          })
-        ],
-        1
-      )
-    ])
-  ])
+                })
+              ],
+              1
+            )
+          ])
+        ])
+      ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -20691,7 +20760,7 @@ var render = function() {
           on: {
             click: function($event) {
               _vm.focus = false
-              _vm.results = []
+              _vm.serchResults = []
             }
           }
         })
@@ -20732,7 +20801,11 @@ var render = function() {
           ],
           staticClass:
             "w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm \n                                                                                                                focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100",
-          attrs: { type: "text", placeholder: _vm.tagNames, id: "searchTerm" },
+          attrs: {
+            type: "text",
+            placeholder: _vm.selectedTagNames,
+            id: "searchTerm"
+          },
           domProps: { value: _vm.searchTerm },
           on: {
             input: [
@@ -20758,15 +20831,17 @@ var render = function() {
                   "absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20"
               },
               [
-                _vm.results == 0
+                _vm.serchResults == 0
                   ? _c("div", [
                       _vm._v(
-                        "No results found for '" + _vm._s(_vm.searchTerm) + "'"
+                        "No serchResults found for '" +
+                          _vm._s(_vm.searchTerm) +
+                          "'"
                       )
                     ])
                   : _vm._e(),
                 _vm._v(" "),
-                _vm._l(_vm.results, function(result) {
+                _vm._l(_vm.serchResults, function(result) {
                   return _c("div", [
                     _c(
                       "p",
@@ -20778,7 +20853,7 @@ var render = function() {
                             _vm.AddTagId(result.id)
                             _vm.AddTagName(result.tag_name)
                             _vm.hide(result.id)
-                            _vm.results = []
+                            _vm.serchResults = []
                             _vm.searchTerm = ""
                             _vm.focus = false
                           }
@@ -20793,31 +20868,51 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _c(
-          "router-link",
-          { attrs: { to: { name: "Tags", params: { t: _vm.selectedTags } } } },
-          [
-            _vm.selectedTags.length > 0
-              ? _c("div", { staticClass: "inline" }, [
-                  _c(
-                    "button",
-                    {
-                      on: {
-                        click: function($event) {
-                          return _vm.$emit("search", _vm.tagNames)
-                        }
+        _c("router-link", { attrs: { to: { name: "Tags" } } }, [
+          this.$tag_ids.length > 0
+            ? _c("div", { staticClass: "inline" }, [
+                _c(
+                  "button",
+                  {
+                    on: {
+                      click: function($event) {
+                        return _vm.$emit("search", _vm.selectedTagNames)
                       }
-                    },
-                    [_vm._v("Search")]
-                  )
-                ])
-              : _vm._e()
-          ]
-        )
+                    }
+                  },
+                  [_vm._v("Search")]
+                )
+              ])
+            : _vm._e()
+        ])
       ],
       1
     )
   ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/views/AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div")
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -20843,152 +20938,159 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "overflow-x-hidden" }, [
     _c("div", { staticClass: "flex flex-1 flex-col" }, [
-      _c(
-        "form",
-        {
-          on: {
-            submit: function($event) {
-              $event.preventDefault()
-              return _vm.submitForm($event)
-            }
-          }
-        },
-        [
-          _c("div", { staticClass: "pb-2" }, [
+      _vm.loading
+        ? _c("div", [_vm._v("Loading....")])
+        : _c("div", [
             _c(
-              "label",
+              "form",
               {
-                staticClass: "text-blue-500 pt-2 uppercase text-xs font-bold",
-                attrs: { for: "image" }
-              },
-              [_vm._v("Image")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              ref: "file",
-              staticClass:
-                "pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400",
-              attrs: {
-                id: "image",
-                type: "file",
-                accept: ".jpeg,.jpg,.png,.gif",
-                enctype: "multipart/form-data"
-              },
-              on: {
-                change: _vm.fileHandle,
-                click: function($event) {
-                  return _vm.clearError("error_image")
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("p", {
-            staticClass: "text-red-600 text-sm font-bold",
-            attrs: { id: "error_image" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "py-8" }, [
-            _c(
-              "label",
-              {
-                staticClass: "text-blue-500 pt-2 uppercase text-xs font-bold",
-                attrs: { for: "description" }
-              },
-              [_vm._v("Description")]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "pt-5" },
-              [
-                _c("ckeditor", {
-                  attrs: { id: "description", type: "classic" },
-                  model: {
-                    value: _vm.form.description,
-                    callback: function($$v) {
-                      _vm.$set(_vm.form, "description", $$v)
-                    },
-                    expression: "form.description"
-                  }
-                })
-              ],
-              1
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "pb-2" }, [
-            _c(
-              "label",
-              {
-                staticClass: "text-blue-500 pt-2 uppercase text-xs font-bold",
-                attrs: { for: "tag" }
-              },
-              [_vm._v("Tags")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.form.tags,
-                  expression: "form.tags"
-                }
-              ],
-              staticClass:
-                "pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400",
-              attrs: { id: "tag", type: "text" },
-              domProps: { value: _vm.form.tags },
-              on: {
-                input: [
-                  function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.form, "tags", $event.target.value)
-                  },
-                  function($event) {
-                    return _vm.clearError("error_tag")
-                  }
-                ]
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("p", {
-            staticClass: "text-red-600 text-sm font-bold",
-            attrs: { id: "error_tag" }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "flex justify-end pt-8" }, [
-            _c(
-              "a",
-              {
-                staticClass:
-                  "py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700",
-                attrs: { href: "#" },
                 on: {
-                  click: function($event) {
-                    return _vm.$router.back()
+                  submit: function($event) {
+                    $event.preventDefault()
+                    return _vm.submitForm($event)
                   }
                 }
               },
-              [_vm._v("Cancel")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass:
-                  "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400",
-                attrs: { id: "submitButton" }
-              },
-              [_vm._v("Add New Image")]
+              [
+                _c("div", { staticClass: "pb-2" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass:
+                        "text-blue-500 pt-2 uppercase text-xs font-bold",
+                      attrs: { for: "image" }
+                    },
+                    [_vm._v("Image")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    ref: "file",
+                    staticClass:
+                      "pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400",
+                    attrs: {
+                      id: "image",
+                      type: "file",
+                      accept: ".jpeg,.jpg,.png,.gif",
+                      enctype: "multipart/form-data"
+                    },
+                    on: {
+                      change: _vm.fileHandle,
+                      click: function($event) {
+                        return _vm.clearError("error_image")
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("p", {
+                  staticClass: "text-red-600 text-sm font-bold",
+                  attrs: { id: "error_image" }
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "py-8" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass:
+                        "text-blue-500 pt-2 uppercase text-xs font-bold",
+                      attrs: { for: "description" }
+                    },
+                    [_vm._v("Description")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "pt-5" },
+                    [
+                      _c("ckeditor", {
+                        attrs: { id: "description", type: "classic" },
+                        model: {
+                          value: _vm.form.description,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "description", $$v)
+                          },
+                          expression: "form.description"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "pb-2" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass:
+                        "text-blue-500 pt-2 uppercase text-xs font-bold",
+                      attrs: { for: "tag" }
+                    },
+                    [_vm._v("Tags")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.form.tags,
+                        expression: "form.tags"
+                      }
+                    ],
+                    staticClass:
+                      "pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400",
+                    attrs: { id: "tag", type: "text" },
+                    domProps: { value: _vm.form.tags },
+                    on: {
+                      input: [
+                        function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.form, "tags", $event.target.value)
+                        },
+                        function($event) {
+                          return _vm.clearError("error_tag")
+                        }
+                      ]
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("p", {
+                  staticClass: "text-red-600 text-sm font-bold",
+                  attrs: { id: "error_tag" }
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "flex justify-end pt-8" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "py-2 px-4 text-red-700 border rounded mr-5 hover:border-red-700",
+                      attrs: { href: "#" },
+                      on: {
+                        click: function($event) {
+                          return _vm.$router.back()
+                        }
+                      }
+                    },
+                    [_vm._v("Cancel")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass:
+                        "bg-blue-500 py-2 px-4 text-white rounded hover:bg-blue-400",
+                      attrs: { id: "submitButton" }
+                    },
+                    [_vm._v("Add New Image")]
+                  )
+                ])
+              ]
             )
           ])
-        ]
-      )
     ])
   ])
 }
@@ -21205,10 +21307,12 @@ var render = function() {
         )
       }),
       _vm._v(" "),
-      _c("div", { staticClass: "flex flex-1 justify-between" }, [
+      _c("div", { staticClass: "absolute bottom-0 mb-10" }, [
         _c(
           "button",
           {
+            staticClass:
+              "mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
                 _vm.changeCurrentPage(_vm.index - 1)
@@ -21222,6 +21326,8 @@ var render = function() {
         _c(
           "button",
           {
+            staticClass:
+              "ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
                 _vm.changeCurrentPage(_vm.index + 1)
@@ -21275,7 +21381,6 @@ var render = function() {
                     name: "ImageShow",
                     params: {
                       id: each.data.image_id,
-                      t: _vm.t,
                       mode: "tag",
                       currentPageIndex: _vm.index
                     }
@@ -21294,10 +21399,12 @@ var render = function() {
         )
       }),
       _vm._v(" "),
-      _c("div", { staticClass: "flex flex-1 justify-between" }, [
+      _c("div", { staticClass: "absolute bottom-0 mb-10" }, [
         _c(
           "button",
           {
+            staticClass:
+              "mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
                 _vm.changeCurrentPage(_vm.index - 1)
@@ -21311,6 +21418,8 @@ var render = function() {
         _c(
           "button",
           {
+            staticClass:
+              "ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
                 _vm.changeCurrentPage(_vm.index + 1)
@@ -21432,10 +21541,7 @@ var render = function() {
                           attrs: {
                             to: {
                               name: "Tags",
-                              params: {
-                                t: _vm.tags,
-                                currentPageIndex: _vm.index
-                              }
+                              params: { currentPageIndex: _vm.index }
                             }
                           }
                         },
@@ -21447,40 +21553,88 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _c("div", { staticClass: "relative" }, [
-                _vm.post.user_id == _vm.user_id || _vm.user_id == 3
-                  ? _c(
-                      "div",
-                      [
-                        _c(
-                          "router-link",
-                          {
-                            staticClass:
-                              "px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4",
-                            attrs: {
-                              to: "/imgs/" + _vm.post.image_id + "/edit"
-                            }
-                          },
-                          [_vm._v("Edit")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold",
-                            attrs: { href: "#" },
-                            on: {
-                              click: function($event) {
-                                _vm.modal = !_vm.modal
+                _c("div", [
+                  _vm.post.user_id != _vm.user_id
+                    ? _c("div", { staticClass: "inline-block" }, [
+                        _vm.post.reported_count < this.$maxCount
+                          ? _c("div", [
+                              _c(
+                                "a",
+                                {
+                                  staticClass:
+                                    "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.report($event)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "Report (" +
+                                      _vm._s(_vm.post.reported_count) +
+                                      ")"
+                                  )
+                                ]
+                              )
+                            ])
+                          : _c("div", [
+                              _c(
+                                "a",
+                                {
+                                  staticClass:
+                                    "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      _vm.modal = !_vm.modal
+                                    }
+                                  }
+                                },
+                                [_vm._v("Delete")]
+                              )
+                            ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.post.user_id == _vm.user_id ||
+                  _vm.user_id == this.$adminId
+                    ? _c(
+                        "div",
+                        { staticClass: "inline-block" },
+                        [
+                          _c(
+                            "router-link",
+                            {
+                              staticClass:
+                                "px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4",
+                              attrs: {
+                                to: "/imgs/" + _vm.post.image_id + "/edit"
                               }
-                            }
-                          },
-                          [_vm._v("Delete")]
-                        )
-                      ],
-                      1
-                    )
-                  : _vm._e(),
+                            },
+                            [_vm._v("Edit")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass:
+                                "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.modal = !_vm.modal
+                                }
+                              }
+                            },
+                            [_vm._v("Delete")]
+                          )
+                        ],
+                        1
+                      )
+                    : _vm._e()
+                ]),
                 _vm._v(" "),
                 _vm.modal
                   ? _c(
@@ -36752,6 +36906,9 @@ var options = {
   },
   name: 'ckeditor'
 };
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$adminId = 1;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxCount = 5;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$tag_ids = [];
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
@@ -36967,7 +37124,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _views_ImageEdit__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./views/ImageEdit */ "./resources/js/views/ImageEdit.vue");
 /* harmony import */ var _views_ImageIndexWithUser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./views/ImageIndexWithUser */ "./resources/js/views/ImageIndexWithUser.vue");
 /* harmony import */ var _views_ImageIndexWithTags__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./views/ImageIndexWithTags */ "./resources/js/views/ImageIndexWithTags.vue");
-/* harmony import */ var _Actions_Logout__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Actions/Logout */ "./resources/js/Actions/Logout.vue");
+/* harmony import */ var _views_AllTags__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./views/AllTags */ "./resources/js/views/AllTags.vue");
+/* harmony import */ var _Actions_Logout__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Actions/Logout */ "./resources/js/Actions/Logout.vue");
+
 
 
 
@@ -36984,6 +37143,10 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     path: '/imgs',
     name: 'Index',
     component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
+  }, {
+    path: '/imgs/create',
+    name: 'Create',
+    component: _views_ImageCreate__WEBPACK_IMPORTED_MODULE_3__["default"]
   }, {
     path: '/imgs/index/:id',
     component: _views_ImageIndexWithUser__WEBPACK_IMPORTED_MODULE_6__["default"]
@@ -37002,12 +37165,85 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     path: '/imgs/:id/edit',
     component: _views_ImageEdit__WEBPACK_IMPORTED_MODULE_5__["default"]
   }, {
+    path: '/tags',
+    name: 'allTags',
+    component: _views_AllTags__WEBPACK_IMPORTED_MODULE_8__["default"]
+  }, {
     path: '/logout',
-    component: _Actions_Logout__WEBPACK_IMPORTED_MODULE_8__["default"]
+    component: _Actions_Logout__WEBPACK_IMPORTED_MODULE_9__["default"]
   }],
   mode: 'history' // turn off backwards compatibility (for modern web browser)
 
 }));
+
+/***/ }),
+
+/***/ "./resources/js/views/AllTags.vue":
+/*!****************************************!*\
+  !*** ./resources/js/views/AllTags.vue ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AllTags_vue_vue_type_template_id_0dfa7eea_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true& */ "./resources/js/views/AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true&");
+/* harmony import */ var _AllTags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AllTags.vue?vue&type=script&lang=js& */ "./resources/js/views/AllTags.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _AllTags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AllTags_vue_vue_type_template_id_0dfa7eea_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AllTags_vue_vue_type_template_id_0dfa7eea_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "0dfa7eea",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/views/AllTags.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/views/AllTags.vue?vue&type=script&lang=js&":
+/*!*****************************************************************!*\
+  !*** ./resources/js/views/AllTags.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AllTags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./AllTags.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/AllTags.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AllTags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/views/AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true&":
+/*!***********************************************************************************!*\
+  !*** ./resources/js/views/AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true& ***!
+  \***********************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AllTags_vue_vue_type_template_id_0dfa7eea_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/views/AllTags.vue?vue&type=template&id=0dfa7eea&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AllTags_vue_vue_type_template_id_0dfa7eea_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AllTags_vue_vue_type_template_id_0dfa7eea_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 

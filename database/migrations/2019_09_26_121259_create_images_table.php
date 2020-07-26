@@ -18,6 +18,7 @@ class CreateImagesTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('url');
             $table->text('description')->nullable();
+            $table->unsignedSmallInteger('reported_count')->default('0');
             $table->timestamps();
         });
     }

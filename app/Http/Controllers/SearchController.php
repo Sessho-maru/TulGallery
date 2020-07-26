@@ -16,4 +16,10 @@ class SearchController extends Controller
         $tag = Tag::search($validated['searchTerm'])->get();
         return $tag;
     }
+
+    public function all()
+    {
+        $allTags = Tag::orderBy('name')->get();
+        return $allTags;
+    }
 }

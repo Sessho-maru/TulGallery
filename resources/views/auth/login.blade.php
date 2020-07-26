@@ -37,10 +37,9 @@
                 </div>
             </div>
 
-            <div class="pt-8">
-                <button type="submit" class="w-full bg-gray-400 py-2 px-3 text-left uppercase rounded text-gray-100 text-blue-800 font-bold">
-                        Login
-                </button>
+            <div class="pt-8 flex flex-1">
+                <button type="submit" class="w-8/12 bg-gray-400 py-2 px-3 text-left uppercase rounded text-gray-100 text-blue-800 font-bold">Login</button>
+                <a href="/imgs" class="ml-4 w-4/12 bg-gray-400 py-2 px-3 text-left uppercase rounded text-gray-100 text-blue-800 font-bold">I'm guest</a>
             </div>
 
             <div class="flex justify-between pt-8 text-white text-sm font-bold">

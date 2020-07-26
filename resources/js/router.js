@@ -7,6 +7,7 @@ import ImageShow from './views/ImageShow';
 import ImageEdit from './views/ImageEdit';
 import ImageIndexWithUser from './views/ImageIndexWithUser';
 import ImageIndexWithTags from './views/ImageIndexWithTags';
+import AllTags from './views/AllTags'
 import Logout from './Actions/Logout';
 
 Vue.use(VueRouter); // use VueRouter
@@ -17,6 +18,11 @@ export default new VueRouter({
             path: '/imgs',
             name: 'Index',
             component: ImageIndex
+        },
+        {
+            path: '/imgs/create',
+            name: 'Create',
+            component: ImageCreate
         },
         {
             path: '/imgs/index/:id',
@@ -39,6 +45,11 @@ export default new VueRouter({
         {
             path: '/imgs/:id/edit',
             component: ImageEdit
+        },
+        {
+            path:'/tags',
+            name: 'allTags',
+            component: AllTags
         },
         {
             path: '/logout',

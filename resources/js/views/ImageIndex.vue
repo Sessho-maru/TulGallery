@@ -7,9 +7,9 @@
             </router-link>
         </div>
 
-        <div class="flex flex-1 justify-between">
-            <button @click="changeCurrentPage(index - 1); index--;">Prev</button>
-            <button @click="changeCurrentPage(index + 1); index++;">Next</button>
+        <div class="absolute bottom-0 mb-10">
+            <button class="mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold" @click="changeCurrentPage(index - 1); index--;">Prev</button>
+            <button class="ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold" @click="changeCurrentPage(index + 1); index++;">Next</button>
         </div>
 
     </div>
@@ -19,11 +19,7 @@
 export default {
 
     name: "ImageIndex",
-
-    props: [
-        'api_token'
-    ],
-
+    
     data() {
         return {
             paginated: [],

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('Layouts.baseLayout')
+    @include('layouts.baseLayout')
 
         <h2 class="text-blue-300 pt-8">Enter new password</h2>
 

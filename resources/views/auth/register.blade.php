@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('Layouts.baseLayout') <!-- It Contains 2 <div> tags -->
+    @include('layouts.baseLayout') <!-- It Contains 2 <div> tags -->
 
         <h1 class="text-white text-3xl pt-8">Join</h1>
         <h2 class="text-blue-300">Enter your information below</h2>

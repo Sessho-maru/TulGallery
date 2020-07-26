@@ -45,7 +45,6 @@ class ImagesController extends Controller
 
     public function index_withUser()
     {
-        // dd("STOP");
         // $this->authorize('viewAny', Image::class); All Registered User can view any Images
         return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
     }
@@ -53,7 +52,6 @@ class ImagesController extends Controller
     public function index_withTags()
     {
         // dd(request()->data);
-
         $tags = request()->data;
         $images = [];
         $image_ids = [];
@@ -80,9 +78,10 @@ class ImagesController extends Controller
 
         $validated = $this->validateData();
 
-        // $validated['tags'] = substr($validated['tags'], 0, -1);
+        $description = htmlspecialchars($validated['description']);
+        $tags = htmlspecialchars($validated['tags']);
 
-        $tagNames = explode(",", $validated['tags']);
+        $tagNames = explode(",", $tags);
         // 전달된 태그 문자열을 ',' 기준으로 분할
 
         foreach ($tagNames as $tagName)
@@ -93,7 +92,7 @@ class ImagesController extends Controller
             {
                 return response()->json([
                     'status' => 'error',
-                    'msg' => 'Tag names inserted incorrectly',
+                    'msg' => 'tag names inserted incorrectly',
                 ], 422);
             }
         }
@@ -105,8 +104,6 @@ class ImagesController extends Controller
             'description' => $validated['description']
         ]);
         // image 생성
-
-        // 추가 할 수 있는것: if $image->url === "http://via.placeholder.com/350x150" then $image->delete() and return
 
         foreach ($tagNames as $tagName)
         {
@@ -169,10 +166,19 @@ class ImagesController extends Controller
         return (new ImageResource($image))->response()->setStatusCode(200);
     }
 
+    public function report($id)
+    {
+        $image = Image::find($id);
+        $updated_count = ($image->reported_count) + 1;
+        $image->update(['reported_count' =>  $updated_count]);
+
+        return response($updated_count, 200);
+    }
+
     public function destroy($id)
     {
         $image = Image::find($id);
-        $this->authorize('delete', $image);
+        // $this->authorize('delete', $image);
         
         DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
 
