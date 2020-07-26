@@ -68,7 +68,7 @@ export default {
 
         fileHandle()
         {
-            let maxFileSize = 15;
+            let maxFileSize = 20;
             this.file = this.$refs.file.files[0];
             console.log(this.file);
 

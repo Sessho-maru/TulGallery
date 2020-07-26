@@ -19,6 +19,7 @@ class CreateImagesTable extends Migration
             $table->string('url');
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('reported_count')->default('0');
+            $table->string('format');
             $table->timestamps();
         });
     }

@@ -25,5 +25,5 @@ Route::get('/imgs/{id}', 'ImagesController@show')->name('show');
 Route::get('/imgs/index/{id}', 'ImagesController@index_withUser')->name('indexWithUser');
 Route::post('search', 'SearchController@index');
 
-Route::get('/tag', 'SearhControlller@all')->name('all');
+Route::get('/tags', 'SearchController@all')->name('all');
 Route::get('/imgs/{id}/report', 'ImagesController@report')->name('report');

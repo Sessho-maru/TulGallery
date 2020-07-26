@@ -19,7 +19,7 @@ class SearchController extends Controller
 
     public function all()
     {
-        $allTags = Tag::orderBy('name')->get();
+        $allTags = Tag::orderBy('tag_name')->get();
         return $allTags;
     }
 }

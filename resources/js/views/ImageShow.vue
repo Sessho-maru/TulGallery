@@ -6,13 +6,7 @@
             <div v-else>
             
                 <div class="flex justify-between">
-                    <div v-if="mode == 'normal'" class="text-blue-400">
-                        <router-link :to="{ name: 'Index', params: { currentPageIndex: index } }">< Back</router-link>
-                    </div>
-
-                    <div v-if="mode == 'tag'">
-                        <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
-                    </div>
+                    <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
                         
                     <div class="relative">
                         <div>
@@ -87,7 +81,6 @@ export default {
             post: null,
             modal: false,
             loading: true,
-            mode: "",
             index: 0,
         }
     },
@@ -100,15 +93,6 @@ export default {
             this.index = this.$route.params.currentPageIndex;
         }
         
-        if (this.$route.params.mode == 'normal' || this.$route.params.mode == null)
-        {
-            this.mode = "normal";
-        }
-        else
-        {
-            this.mode = "tag";
-        }
-
         axios.get('/api/imgs/' + this.$route.params.id)
                 .then( response => {
                     this.post = response.data.data;

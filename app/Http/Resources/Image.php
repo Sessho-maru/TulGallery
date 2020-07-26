@@ -23,7 +23,8 @@ class Image extends JsonResource
                 'description' => $this->description,
                 'tags' => $this->tags->pluck('tag_name')->toArray(),
                 'last_updated' => $this->updated_at->diffForHumans(),
-                'reported_count' => $this->reported_count
+                'reported_count' => $this->reported_count,
+                'format' => $this->format
             ],
             'links' => [
                 'self' => $this->path()

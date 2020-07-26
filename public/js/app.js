@@ -2097,12 +2097,53 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'AllTags',
+  data: function data() {
+    return {
+      tags: [],
+      letter: [],
+      index: 0
+    };
+  },
   mounted: function mounted() {
-    axios.get('/tags').then(function (response) {
-      console.log(response.data);
-    })["catch"](function (errors) {});
+    var _this = this;
+
+    axios.get('/api/tags').then(function (response) {
+      _this.tags = response.data;
+
+      _this.tags.map(function (each) {
+        console.log("letter.peek(): ", _this.letter[_this.letter.length - 1]);
+        console.log("each.tag_name.first element: ", each.tag_name[0]);
+
+        if (_this.letter[_this.letter.length - 1] !== each.tag_name[0]) {
+          _this.letter.push(each.tag_name[0]);
+
+          console.log("this.letter was inserted, ", _this.letter);
+        }
+
+        console.log("------------------------------");
+      });
+    })["catch"](function (errors) {
+      alert("unable to patch");
+    });
   }
 });
 
@@ -2183,7 +2224,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   methods: {
     fileHandle: function fileHandle() {
-      var maxFileSize = 15;
+      var maxFileSize = 20;
       this.file = this.$refs.file.files[0];
       console.log(this.file);
 
@@ -2694,12 +2735,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageShow",
   props: ['api_token', 'user_id'],
@@ -2708,7 +2743,6 @@ __webpack_require__.r(__webpack_exports__);
       post: null,
       modal: false,
       loading: true,
-      mode: "",
       index: 0
     };
   },
@@ -2718,12 +2752,6 @@ __webpack_require__.r(__webpack_exports__);
     if (this.$route.params.currentPageIndex != null) {
       console.log(this.$route.params.currentPageIndex);
       this.index = this.$route.params.currentPageIndex;
-    }
-
-    if (this.$route.params.mode == 'normal' || this.$route.params.mode == null) {
-      this.mode = "normal";
-    } else {
-      this.mode = "tag";
     }
 
     axios.get('/api/imgs/' + this.$route.params.id).then(function (response) {
@@ -20912,7 +20940,46 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div")
+  return _c("div", { staticClass: "overflow-x-hidden" }, [
+    _c(
+      "div",
+      { staticClass: "flex flex-1 flex-col" },
+      _vm._l(_vm.letter, function(char) {
+        return _c(
+          "div",
+          { key: char },
+          [
+            _c(
+              "p",
+              { staticClass: "pt-6 text-gray-600 font-bold uppercase text-sm" },
+              [_vm._v(_vm._s(char))]
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.tags, function(tag) {
+              return _c("div", { key: tag.id }, [
+                char === tag.tag_name[0]
+                  ? _c("div", [
+                      _c("div", { staticClass: "flex flex-row px-2 py-2" }, [
+                        _c(
+                          "span",
+                          {
+                            staticClass:
+                              "inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-4"
+                          },
+                          [_vm._v(_vm._s(tag.tag_name))]
+                        )
+                      ])
+                    ])
+                  : _vm._e()
+              ])
+            })
+          ],
+          2
+        )
+      }),
+      0
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -21508,191 +21575,170 @@ var render = function() {
       _vm.loading
         ? _c("div", [_vm._v("Loading...")])
         : _c("div", [
-            _c("div", { staticClass: "flex justify-between" }, [
-              _vm.mode == "normal"
-                ? _c(
-                    "div",
-                    { staticClass: "text-blue-400" },
-                    [
-                      _c(
-                        "router-link",
-                        {
-                          attrs: {
-                            to: {
-                              name: "Index",
-                              params: { currentPageIndex: _vm.index }
-                            }
-                          }
-                        },
-                        [_vm._v("< Back")]
-                      )
-                    ],
-                    1
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.mode == "tag"
-                ? _c(
-                    "div",
-                    [
-                      _c(
-                        "router-link",
-                        {
-                          attrs: {
-                            to: {
-                              name: "Tags",
-                              params: { currentPageIndex: _vm.index }
-                            }
-                          }
-                        },
-                        [_vm._v("< Back")]
-                      )
-                    ],
-                    1
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              _c("div", { staticClass: "relative" }, [
-                _c("div", [
-                  _vm.post.user_id != _vm.user_id
-                    ? _c("div", { staticClass: "inline-block" }, [
-                        _vm.post.reported_count < this.$maxCount
-                          ? _c("div", [
-                              _c(
-                                "a",
-                                {
-                                  staticClass:
-                                    "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
-                                  on: {
-                                    click: function($event) {
-                                      $event.preventDefault()
-                                      return _vm.report($event)
+            _c(
+              "div",
+              { staticClass: "flex justify-between" },
+              [
+                _c(
+                  "router-link",
+                  {
+                    attrs: {
+                      to: {
+                        name: "Tags",
+                        params: { currentPageIndex: _vm.index }
+                      }
+                    }
+                  },
+                  [_vm._v("< Back")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "relative" }, [
+                  _c("div", [
+                    _vm.post.user_id != _vm.user_id
+                      ? _c("div", { staticClass: "inline-block" }, [
+                          _vm.post.reported_count < this.$maxCount
+                            ? _c("div", [
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass:
+                                      "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                    on: {
+                                      click: function($event) {
+                                        $event.preventDefault()
+                                        return _vm.report($event)
+                                      }
                                     }
+                                  },
+                                  [
+                                    _vm._v(
+                                      "Report (" +
+                                        _vm._s(_vm.post.reported_count) +
+                                        ")"
+                                    )
+                                  ]
+                                )
+                              ])
+                            : _c("div", [
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass:
+                                      "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                    on: {
+                                      click: function($event) {
+                                        $event.preventDefault()
+                                        _vm.modal = !_vm.modal
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Delete")]
+                                )
+                              ])
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.post.user_id == _vm.user_id ||
+                    _vm.user_id == this.$adminId
+                      ? _c(
+                          "div",
+                          { staticClass: "inline-block" },
+                          [
+                            _c(
+                              "router-link",
+                              {
+                                staticClass:
+                                  "px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4",
+                                attrs: {
+                                  to: "/imgs/" + _vm.post.image_id + "/edit"
+                                }
+                              },
+                              [_vm._v("Edit")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    _vm.modal = !_vm.modal
                                   }
-                                },
-                                [
-                                  _vm._v(
-                                    "Report (" +
-                                      _vm._s(_vm.post.reported_count) +
-                                      ")"
-                                  )
-                                ]
-                              )
-                            ])
-                          : _c("div", [
+                                }
+                              },
+                              [_vm._v("Delete")]
+                            )
+                          ],
+                          1
+                        )
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _vm.modal
+                    ? _c(
+                        "div",
+                        {
+                          staticClass:
+                            "absolute bg-blue-900 text-white rounded-lg z-20 p-8 w-64 right-0 mt-2 mr-6"
+                        },
+                        [
+                          _c("p", [
+                            _vm._v(
+                              "Are you sure you want to delete this Image?"
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass: "flex items-center mt-6 justify-end"
+                            },
+                            [
                               _c(
-                                "a",
+                                "button",
                                 {
-                                  staticClass:
-                                    "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                  staticClass: "text-white pr-4",
                                   on: {
                                     click: function($event) {
-                                      $event.preventDefault()
                                       _vm.modal = !_vm.modal
                                     }
                                   }
                                 },
+                                [_vm._v("Cancel")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "px-4 py-2 bg-red-500 rounded text-sm font-bold text-white",
+                                  on: { click: _vm.destroy }
+                                },
                                 [_vm._v("Delete")]
                               )
-                            ])
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.post.user_id == _vm.user_id ||
-                  _vm.user_id == this.$adminId
-                    ? _c(
-                        "div",
-                        { staticClass: "inline-block" },
-                        [
-                          _c(
-                            "router-link",
-                            {
-                              staticClass:
-                                "px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4",
-                              attrs: {
-                                to: "/imgs/" + _vm.post.image_id + "/edit"
-                              }
-                            },
-                            [_vm._v("Edit")]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              staticClass:
-                                "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  _vm.modal = !_vm.modal
-                                }
-                              }
-                            },
-                            [_vm._v("Delete")]
+                            ]
                           )
-                        ],
-                        1
+                        ]
                       )
                     : _vm._e()
                 ]),
                 _vm._v(" "),
                 _vm.modal
-                  ? _c(
-                      "div",
-                      {
-                        staticClass:
-                          "absolute bg-blue-900 text-white rounded-lg z-20 p-8 w-64 right-0 mt-2 mr-6"
-                      },
-                      [
-                        _c("p", [
-                          _vm._v("Are you sure you want to delete this Image?")
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "flex items-center mt-6 justify-end" },
-                          [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "text-white pr-4",
-                                on: {
-                                  click: function($event) {
-                                    _vm.modal = !_vm.modal
-                                  }
-                                }
-                              },
-                              [_vm._v("Cancel")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "px-4 py-2 bg-red-500 rounded text-sm font-bold text-white",
-                                on: { click: _vm.destroy }
-                              },
-                              [_vm._v("Delete")]
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  : _vm._e()
-              ]),
-              _vm._v(" "),
-              _vm.modal
-                ? _c("div", {
-                    staticClass:
-                      "bg-black opacity-25 absolute right-0 left-0 top-0 bottom-0 z-10",
-                    on: {
-                      click: function($event) {
-                        _vm.modal = !_vm.modal
+                  ? _c("div", {
+                      staticClass:
+                        "bg-black opacity-25 absolute right-0 left-0 top-0 bottom-0 z-10",
+                      on: {
+                        click: function($event) {
+                          _vm.modal = !_vm.modal
+                        }
                       }
-                    }
-                  })
-                : _vm._e()
-            ]),
+                    })
+                  : _vm._e()
+              ],
+              1
+            ),
             _vm._v(" "),
             _c("div", { staticClass: "pt-8" }, [
               _c("img", { attrs: { src: _vm.post.url, alt: "" } })
