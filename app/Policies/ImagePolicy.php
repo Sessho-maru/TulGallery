@@ -30,7 +30,7 @@ class ImagePolicy
      */
     public function view(User $user, Image $image)
     {
-        return $user->id == $image->user_id;
+        return $user->id === $image->user_id;
     }
 
     /**
@@ -53,12 +53,12 @@ class ImagePolicy
      */
     public function update(User $user, Image $image)
     {
-        if ($user->id == 3)
+        if ($user->id === 3)
         {
             return true;
         }
 
-        return $user->id == $image->user_id;
+        return $user->id === $image->user_id;
     }
 
     /**
@@ -70,12 +70,12 @@ class ImagePolicy
      */
     public function delete(User $user, Image $image)
     {
-        if ($user->id == 3)
+        if ($user->id === 3)
         {
             return true;
         }
         
-        return $user->id == $image->user_id;
+        return $user->id === $image->user_id;
     }
 
     /**

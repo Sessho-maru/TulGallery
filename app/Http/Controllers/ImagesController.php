@@ -19,8 +19,31 @@ class ImagesController extends Controller
         return request()->validate([
             'url' => 'required|active_url',
             'description' => '',
-            'tags' => 'required'
+            'tags' => 'required',
+            'format' => ''
         ]);
+    }
+
+    private function tagVaildation($tags)
+    {
+        $tagNames = explode(",", $tags);
+        // split given $tags(string) by ','
+
+        foreach ($tagNames as $tagName)
+        {
+            $returned = Tag::where('tag_name', $tagName)->first();
+
+            if ($returned === null)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'tag names inserted incorrectly',
+                ], 422);
+            }
+        }
+        // if $tagName is cannot be found in Tag model then, return 422
+
+        return $tagNames;
     }
 
     private function urlUpdate()
@@ -81,36 +104,21 @@ class ImagesController extends Controller
         $description = htmlspecialchars($validated['description']);
         $tags = htmlspecialchars($validated['tags']);
 
-        $tagNames = explode(",", $tags);
-        // 전달된 태그 문자열을 ',' 기준으로 분할
-
-        foreach ($tagNames as $tagName)
-        {
-            $returned = Tag::where('tag_name', $tagName)->first();
-
-            if ($returned == null)
-            {
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => 'tag names inserted incorrectly',
-                ], 422);
-            }
-        }
-        // 분할된 태그들 중 유효하지 않는 것이 있는지 검사, 있으면 422 error 와 return
+        $tagNames = $this->tagVaildation($tags);
 
         $image = request()->user()->images()->create([
             'user_id' => request()->user()->id,
             'url' => $validated['url'],
-            'description' => $validated['description']
+            'description' => $validated['description'],
+            'format' => $validated['format']
         ]);
-        // image 생성
 
         foreach ($tagNames as $tagName)
         {
             $tag_id = Tag::where('tag_name', $tagName)->first()->id;
             DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
         }
-        // 유효한 태그들을 image_tag 테이블에 등록
+        // register vaild $tag_id into each image using image's id
 
         return (new ImageResource($image))->response()->setStatusCode(201);
     }
@@ -136,29 +144,17 @@ class ImagesController extends Controller
         if (request()->flag == "post_update")
         {
             $validated = $this->validateData();
+            $tags = htmlspecialchars($validated['tags']);
 
-            $tagNames = explode(",", $validated['tags']);
-
-            foreach ($tagNames as $tagName)
-            {
-                $returned = Tag::where('tag_name', $tagName)->first();
-
-                if ($returned == null)
-                {
-                    return response()->json([
-                        'status' => 'error',
-                        'msg' => 'Tag names inserted incorrectly',
-                    ], 422);
-                }
-            }
+            $tagNames = $this->tagVaildation($tags);
             
             DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
-        
             foreach ($tagNames as $tagName)
             {
                 $tag_id = Tag::where('tag_name', $tagName)->first()->id;
                 DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
             }
+            // register vaild $tag_id into each image using image's id
 
             $image->update($this->postUpdate());
         }

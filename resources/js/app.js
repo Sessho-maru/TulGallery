@@ -12,8 +12,10 @@ const options = {
 }
 
 Vue.prototype.$adminId = 1;
-Vue.prototype.$maxCount = 5;
+Vue.prototype.$maxReportedCount = 5;
 Vue.prototype.$tag_ids = [];
+Vue.prototype.$itemNumPerPage = 24;
+Vue.prototype.$maxSizePerEachItem = 20;
 
 Vue.use(VueCkeditor.plugin, options);
 require('./bootstrap');

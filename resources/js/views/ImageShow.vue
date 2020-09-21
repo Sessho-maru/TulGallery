@@ -6,12 +6,17 @@
             <div v-else>
             
                 <div class="flex justify-between">
-                    <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
+                    <div v-if="isTaged">
+                        <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
+                    </div>
+                    <div v-else>
+                        <router-link :to="{ name: 'Index', params: { currentPageIndex: index } }">< Back</router-link>
+                    </div>
                         
                     <div class="relative">
                         <div>
                             <div class="inline-block" v-if="post.user_id != user_id">
-                                <div v-if="post.reported_count < this.$maxCount">
+                                <div v-if="post.reported_count < this.$maxReportedCount">
                                     <a v-on:click.prevent="report" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Report ({{ post.reported_count }})</a>    
                                 </div>
                                 <div v-else>
@@ -38,10 +43,18 @@
                     <div v-if="modal" class="bg-black opacity-25 absolute right-0 left-0 top-0 bottom-0 z-10" @click="modal = !modal"></div>
                 </div>
 
-
-                <div class="pt-8">
-                    <img v-bind:src="post.url" alt="">
+                <div v-if="post.format === 'webm'">
+                    <video class="" controls loop>
+                        <source v-bind:src="post.url" type="video/webm">
+                    </video>
                 </div>
+                <div v-else>
+                    <div class="pt-8">
+                        <img v-bind:src="post.url" alt="">
+                    </div>
+                </div>
+
+                
 
                 <div class="">
                     <div class="border-b border-gray-500">
@@ -81,6 +94,7 @@ export default {
             post: null,
             modal: false,
             loading: true,
+            isTaged: false,
             index: 0,
         }
     },
@@ -97,7 +111,6 @@ export default {
                 .then( response => {
                     this.post = response.data.data;
                     this.loading = false;
-                    console.log(this.post);
                 })
                 .catch( errors => {
                     if (errors.response.status === 404 || errors.response.status === 403)
@@ -105,6 +118,11 @@ export default {
                         this.$router.push('/imgs');
                     }
                 });
+            
+        if (this.$route.params.isTaged)
+        {
+            this.isTaged = true;
+        }
     },
 
     methods: {

@@ -7,7 +7,7 @@
                 <form @submit.prevent="submitForm">
                     <div class="pb-2">
                         <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
-                        <input id="image" type="file" ref="file" accept=".jpeg,.jpg,.png,.gif" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
+                        <input id="image" type="file" ref="file" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
                     </div>
                     <p id="error_image" class="text-red-600 text-sm font-bold"></p>
 
@@ -43,11 +43,14 @@ export default {
     {
         return {
             file: "",
+
             form: {
                 url: "http://via.placeholder.com/350x150",
                 description: "",
                 tags: "",
+                format: ""
             },
+
             loading: true,
             fileLoaded: false,
         }
@@ -56,7 +59,7 @@ export default {
     mounted() {
         if (this.$route.params.api_token === undefined)
         {
-            window.location.href = "http://alpha.test/login";
+            window.location.href = "http://dev.test/login";
         }
         else
         {
@@ -68,21 +71,29 @@ export default {
 
         fileHandle()
         {
-            let maxFileSize = 20;
             this.file = this.$refs.file.files[0];
             console.log(this.file);
 
-            if ( this.file.size > maxFileSize * 1024 * 1024 )
+            if ( this.file.size > this.$maxSizePerEachItem * 1024 * 1024 )
             {
-                document.getElementById('error_image').innerHTML = "Too large file size (Maximum: 15MB)";
+                document.getElementById('error_image').innerHTML = "Too large file size (Maximum: "+ this.$maxSizePerEachItem +"MB)";
                 document.getElementById('image').value = '';
                 this.file = null;
                 return;
             }
 
-            let extension = this.file.name.split('.').pop();
+            let extension = this.file.type;
+            console.log(extension);
 
-            if (extension != 'jpeg' && extension != 'jpg' && extension != 'png' && extension != 'gif')
+            if (extension === 'image/jpeg' || extension === 'image/png')
+            {
+                this.form.format = "photo";
+            }
+            else if (extension === 'video/webm' || extension === 'video/mp4')
+            {
+                this.form.format = "webm";
+            }
+            else
             {
                 alert("not supported");
                 this.file = null;

@@ -2,7 +2,7 @@
     <div class="overflow-x-hidden">
 
         <div v-for="each in currentPage" class="mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6">
-            <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, mode: 'tag', currentPageIndex: index } }">
+            <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, isTaged: true, currentPageIndex: index } }">
                 <img class="block h-auto w-full hover:opacity-75" v-bind:src="each.data.url" alt="placeholder">
             </router-link>
         </div>
@@ -49,7 +49,7 @@ export default {
                 {
                     this.paginated[i][j] = posts[total];
 
-                    if (j % 23 == 0 && j != 0)
+                    if (j % (this.$maxSizePerEachItem - 1) === 0 && j !== 0)
                     {
                         i++;
                         j = 0;

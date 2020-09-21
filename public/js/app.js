@@ -2209,7 +2209,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       form: {
         url: "http://via.placeholder.com/350x150",
         description: "",
-        tags: ""
+        tags: "",
+        format: ""
       },
       loading: true,
       fileLoaded: false
@@ -2217,27 +2218,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   mounted: function mounted() {
     if (this.$route.params.api_token === undefined) {
-      window.location.href = "http://alpha.test/login";
+      window.location.href = "http://dev.test/login";
     } else {
       this.loading = false;
     }
   },
   methods: {
     fileHandle: function fileHandle() {
-      var maxFileSize = 20;
       this.file = this.$refs.file.files[0];
       console.log(this.file);
 
-      if (this.file.size > maxFileSize * 1024 * 1024) {
-        document.getElementById('error_image').innerHTML = "Too large file size (Maximum: 15MB)";
+      if (this.file.size > this.$maxSizePerEachItem * 1024 * 1024) {
+        document.getElementById('error_image').innerHTML = "Too large file size (Maximum: " + this.$maxSizePerEachItem + "MB)";
         document.getElementById('image').value = '';
         this.file = null;
         return;
       }
 
-      var extension = this.file.name.split('.').pop();
+      var extension = this.file.type;
+      console.log(extension);
 
-      if (extension != 'jpeg' && extension != 'jpg' && extension != 'png' && extension != 'gif') {
+      if (extension === 'image/jpeg' || extension === 'image/png') {
+        this.form.format = "photo";
+      } else if (extension === 'video/webm' || extension === 'video/mp4') {
+        this.form.format = "webm";
+      } else {
         alert("not supported");
         this.file = null;
         return;
@@ -2453,6 +2458,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageIndex",
   data: function data() {
@@ -2467,6 +2481,7 @@ __webpack_require__.r(__webpack_exports__);
 
     axios.get('/api/imgs').then(function (response) {
       var posts = response.data.data;
+      console.log(posts);
       var pageSize = Math.ceil(posts.length / 24);
 
       for (var _i = 0; _i < pageSize; _i++) {
@@ -2480,7 +2495,7 @@ __webpack_require__.r(__webpack_exports__);
       for (total; total >= 0; total--) {
         _this.paginated[i][j] = posts[total];
 
-        if (j % 23 == 0 && j != 0) {
+        if (j % (_this.$maxSizePerEachItem - 1) === 0 && j !== 0) {
           i++;
           j = 0;
         } else {
@@ -2577,7 +2592,7 @@ __webpack_require__.r(__webpack_exports__);
       for (total; total >= 0; total--) {
         _this.paginated[i][j] = posts[total];
 
-        if (j % 23 == 0 && j != 0) {
+        if (j % (_this.$maxSizePerEachItem - 1) === 0 && j !== 0) {
           i++;
           j = 0;
         } else {
@@ -2735,6 +2750,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageShow",
   props: ['api_token', 'user_id'],
@@ -2743,6 +2771,7 @@ __webpack_require__.r(__webpack_exports__);
       post: null,
       modal: false,
       loading: true,
+      isTaged: false,
       index: 0
     };
   },
@@ -2757,12 +2786,15 @@ __webpack_require__.r(__webpack_exports__);
     axios.get('/api/imgs/' + this.$route.params.id).then(function (response) {
       _this.post = response.data.data;
       _this.loading = false;
-      console.log(_this.post);
     })["catch"](function (errors) {
       if (errors.response.status === 404 || errors.response.status === 403) {
         _this.$router.push('/imgs');
       }
     });
+
+    if (this.$route.params.isTaged) {
+      this.isTaged = true;
+    }
   },
   methods: {
     report: function report() {
@@ -21037,7 +21069,6 @@ var render = function() {
                     attrs: {
                       id: "image",
                       type: "file",
-                      accept: ".jpeg,.jpg,.png,.gif",
                       enctype: "multipart/form-data"
                     },
                     on: {
@@ -21346,31 +21377,72 @@ var render = function() {
       _vm._l(_vm.currentPage, function(each) {
         return _c(
           "div",
-          { staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6" },
+          {
+            key: each.data.image_id,
+            staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6"
+          },
           [
-            _c(
-              "router-link",
-              {
-                attrs: {
-                  to: {
-                    name: "ImageShow",
-                    params: {
-                      id: each.data.image_id,
-                      mode: "normal",
-                      currentPageIndex: _vm.index
-                    }
-                  }
-                }
-              },
-              [
-                _c("img", {
-                  staticClass: "block h-auto w-full hover:opacity-75",
-                  attrs: { src: each.data.url, alt: "placeholder" }
-                })
-              ]
-            )
-          ],
-          1
+            each.data.format === "webm"
+              ? _c(
+                  "div",
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        attrs: {
+                          to: {
+                            name: "ImageShow",
+                            params: {
+                              id: each.data.image_id,
+                              currentPageIndex: _vm.index
+                            }
+                          }
+                        }
+                      },
+                      [
+                        _c(
+                          "video",
+                          {
+                            staticClass: "block h-auto w-full hover:opacity-75"
+                          },
+                          [
+                            _c("source", {
+                              attrs: { src: each.data.url, type: "video/webm" }
+                            })
+                          ]
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                )
+              : _c(
+                  "div",
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        attrs: {
+                          to: {
+                            name: "ImageShow",
+                            params: {
+                              id: each.data.image_id,
+                              currentPageIndex: _vm.index
+                            }
+                          }
+                        }
+                      },
+                      [
+                        _c("img", {
+                          staticClass: "block h-auto w-full hover:opacity-75",
+                          attrs: { src: each.data.url, alt: "placeholder" }
+                        })
+                      ]
+                    )
+                  ],
+                  1
+                )
+          ]
         )
       }),
       _vm._v(" "),
@@ -21448,7 +21520,7 @@ var render = function() {
                     name: "ImageShow",
                     params: {
                       id: each.data.image_id,
-                      mode: "tag",
+                      isTaged: true,
                       currentPageIndex: _vm.index
                     }
                   }
@@ -21575,174 +21647,200 @@ var render = function() {
       _vm.loading
         ? _c("div", [_vm._v("Loading...")])
         : _c("div", [
-            _c(
-              "div",
-              { staticClass: "flex justify-between" },
-              [
-                _c(
-                  "router-link",
-                  {
-                    attrs: {
-                      to: {
-                        name: "Tags",
-                        params: { currentPageIndex: _vm.index }
-                      }
-                    }
-                  },
-                  [_vm._v("< Back")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "relative" }, [
-                  _c("div", [
-                    _vm.post.user_id != _vm.user_id
-                      ? _c("div", { staticClass: "inline-block" }, [
-                          _vm.post.reported_count < this.$maxCount
-                            ? _c("div", [
-                                _c(
-                                  "a",
-                                  {
-                                    staticClass:
-                                      "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
-                                    on: {
-                                      click: function($event) {
-                                        $event.preventDefault()
-                                        return _vm.report($event)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      "Report (" +
-                                        _vm._s(_vm.post.reported_count) +
-                                        ")"
-                                    )
-                                  ]
-                                )
-                              ])
-                            : _c("div", [
-                                _c(
-                                  "a",
-                                  {
-                                    staticClass:
-                                      "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
-                                    on: {
-                                      click: function($event) {
-                                        $event.preventDefault()
-                                        _vm.modal = !_vm.modal
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Delete")]
-                                )
-                              ])
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.post.user_id == _vm.user_id ||
-                    _vm.user_id == this.$adminId
-                      ? _c(
-                          "div",
-                          { staticClass: "inline-block" },
-                          [
-                            _c(
-                              "router-link",
-                              {
-                                staticClass:
-                                  "px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4",
-                                attrs: {
-                                  to: "/imgs/" + _vm.post.image_id + "/edit"
-                                }
-                              },
-                              [_vm._v("Edit")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "a",
-                              {
-                                staticClass:
-                                  "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
-                                on: {
-                                  click: function($event) {
-                                    $event.preventDefault()
-                                    _vm.modal = !_vm.modal
-                                  }
-                                }
-                              },
-                              [_vm._v("Delete")]
-                            )
-                          ],
-                          1
-                        )
-                      : _vm._e()
-                  ]),
-                  _vm._v(" "),
-                  _vm.modal
-                    ? _c(
-                        "div",
+            _c("div", { staticClass: "flex justify-between" }, [
+              _vm.isTaged
+                ? _c(
+                    "div",
+                    [
+                      _c(
+                        "router-link",
                         {
-                          staticClass:
-                            "absolute bg-blue-900 text-white rounded-lg z-20 p-8 w-64 right-0 mt-2 mr-6"
+                          attrs: {
+                            to: {
+                              name: "Tags",
+                              params: { currentPageIndex: _vm.index }
+                            }
+                          }
                         },
-                        [
-                          _c("p", [
-                            _vm._v(
-                              "Are you sure you want to delete this Image?"
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass: "flex items-center mt-6 justify-end"
-                            },
-                            [
+                        [_vm._v("< Back")]
+                      )
+                    ],
+                    1
+                  )
+                : _c(
+                    "div",
+                    [
+                      _c(
+                        "router-link",
+                        {
+                          attrs: {
+                            to: {
+                              name: "Index",
+                              params: { currentPageIndex: _vm.index }
+                            }
+                          }
+                        },
+                        [_vm._v("< Back")]
+                      )
+                    ],
+                    1
+                  ),
+              _vm._v(" "),
+              _c("div", { staticClass: "relative" }, [
+                _c("div", [
+                  _vm.post.user_id != _vm.user_id
+                    ? _c("div", { staticClass: "inline-block" }, [
+                        _vm.post.reported_count < this.$maxReportedCount
+                          ? _c("div", [
                               _c(
-                                "button",
+                                "a",
                                 {
-                                  staticClass: "text-white pr-4",
+                                  staticClass:
+                                    "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
                                   on: {
                                     click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.report($event)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "Report (" +
+                                      _vm._s(_vm.post.reported_count) +
+                                      ")"
+                                  )
+                                ]
+                              )
+                            ])
+                          : _c("div", [
+                              _c(
+                                "a",
+                                {
+                                  staticClass:
+                                    "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
                                       _vm.modal = !_vm.modal
                                     }
                                   }
                                 },
-                                [_vm._v("Cancel")]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "px-4 py-2 bg-red-500 rounded text-sm font-bold text-white",
-                                  on: { click: _vm.destroy }
-                                },
                                 [_vm._v("Delete")]
                               )
-                            ]
+                            ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.post.user_id == _vm.user_id ||
+                  _vm.user_id == this.$adminId
+                    ? _c(
+                        "div",
+                        { staticClass: "inline-block" },
+                        [
+                          _c(
+                            "router-link",
+                            {
+                              staticClass:
+                                "px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4",
+                              attrs: {
+                                to: "/imgs/" + _vm.post.image_id + "/edit"
+                              }
+                            },
+                            [_vm._v("Edit")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass:
+                                "px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer",
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.modal = !_vm.modal
+                                }
+                              }
+                            },
+                            [_vm._v("Delete")]
                           )
-                        ]
+                        ],
+                        1
                       )
                     : _vm._e()
                 ]),
                 _vm._v(" "),
                 _vm.modal
-                  ? _c("div", {
-                      staticClass:
-                        "bg-black opacity-25 absolute right-0 left-0 top-0 bottom-0 z-10",
-                      on: {
-                        click: function($event) {
-                          _vm.modal = !_vm.modal
-                        }
-                      }
-                    })
+                  ? _c(
+                      "div",
+                      {
+                        staticClass:
+                          "absolute bg-blue-900 text-white rounded-lg z-20 p-8 w-64 right-0 mt-2 mr-6"
+                      },
+                      [
+                        _c("p", [
+                          _vm._v("Are you sure you want to delete this Image?")
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "flex items-center mt-6 justify-end" },
+                          [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "text-white pr-4",
+                                on: {
+                                  click: function($event) {
+                                    _vm.modal = !_vm.modal
+                                  }
+                                }
+                              },
+                              [_vm._v("Cancel")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "px-4 py-2 bg-red-500 rounded text-sm font-bold text-white",
+                                on: { click: _vm.destroy }
+                              },
+                              [_vm._v("Delete")]
+                            )
+                          ]
+                        )
+                      ]
+                    )
                   : _vm._e()
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "pt-8" }, [
-              _c("img", { attrs: { src: _vm.post.url, alt: "" } })
+              ]),
+              _vm._v(" "),
+              _vm.modal
+                ? _c("div", {
+                    staticClass:
+                      "bg-black opacity-25 absolute right-0 left-0 top-0 bottom-0 z-10",
+                    on: {
+                      click: function($event) {
+                        _vm.modal = !_vm.modal
+                      }
+                    }
+                  })
+                : _vm._e()
             ]),
+            _vm._v(" "),
+            _vm.post.format === "webm"
+              ? _c("div", [
+                  _c("video", { attrs: { controls: "", loop: "" } }, [
+                    _c("source", {
+                      attrs: { src: _vm.post.url, type: "video/webm" }
+                    })
+                  ])
+                ])
+              : _c("div", [
+                  _c("div", { staticClass: "pt-8" }, [
+                    _c("img", { attrs: { src: _vm.post.url, alt: "" } })
+                  ])
+                ]),
             _vm._v(" "),
             _c(
               "div",
@@ -36953,8 +37051,10 @@ var options = {
   name: 'ckeditor'
 };
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$adminId = 1;
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxCount = 5;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxReportedCount = 5;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$tag_ids = [];
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 24;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxSizePerEachItem = 20;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");

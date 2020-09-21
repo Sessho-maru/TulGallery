@@ -1,10 +1,19 @@
 <template>
     <div class="overflow-x-hidden">
 
-        <div v-for="each in currentPage" class="mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6">
-            <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, mode: 'normal', currentPageIndex: index } }">
-                <img class="block h-auto w-full hover:opacity-75" v-bind:src="each.data.url" alt="placeholder">
-            </router-link>
+        <div v-bind:key="each.data.image_id" v-for="each in currentPage" class="mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6">
+            <div v-if="each.data.format === 'webm'">
+                <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, currentPageIndex: index } }">
+                    <video class="block h-auto w-full hover:opacity-75">
+                        <source v-bind:src="each.data.url" type="video/webm">
+                    </video>
+                </router-link>
+            </div>
+            <div v-else>
+                <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, currentPageIndex: index } }">
+                    <img class="block h-auto w-full hover:opacity-75" v-bind:src="each.data.url" alt="placeholder">
+                </router-link>
+            </div>
         </div>
 
         <div class="absolute bottom-0 mb-10">
@@ -32,6 +41,7 @@ export default {
         axios.get('/api/imgs')
             .then( response => {
                 let posts = response.data.data;
+                console.log(posts);
                 let pageSize = Math.ceil(posts.length / 24);
 
                 for (let i = 0; i < pageSize; i++)
@@ -47,7 +57,7 @@ export default {
                 {
                     this.paginated[i][j] = posts[total];
 
-                    if (j % 23 == 0 && j != 0)
+                    if (j % (this.$maxSizePerEachItem - 1) === 0 && j !== 0)
                     {
                         i++;
                         j = 0;
