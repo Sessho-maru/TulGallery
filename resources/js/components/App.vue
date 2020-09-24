@@ -60,7 +60,7 @@
                             {{ message }}
                         </div>
                         
-                        <div v-if="on == true">
+                        <div v-if="SearchBarVisible == true">
                             <SearchBar id="search_bar" @search="tagSearchInit($event)"/>
                         </div>
                     </div> <!-- top section -->
@@ -85,7 +85,7 @@ export default {
     data()
     {
         return {
-            on: true,
+            SearchBarVisible: true,
             message: "",
             someone: {}
         }
@@ -111,7 +111,7 @@ export default {
     methods: {
         flushAndReset()
         {
-            this.on = true;
+            this.SearchBarVisible = true;
             this.message = '';
             
             while (this.$tag_ids.length > 0)
@@ -122,7 +122,7 @@ export default {
 
         tagSearchInit(string)
         {
-            this.on = false;
+            this.SearchBarVisible = false;
             this.showMessage(string);
         },
 

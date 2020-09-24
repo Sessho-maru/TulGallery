@@ -1974,7 +1974,7 @@ __webpack_require__.r(__webpack_exports__);
   name: "App",
   data: function data() {
     return {
-      on: true,
+      SearchBarVisible: true,
       message: "",
       someone: {}
     };
@@ -1992,7 +1992,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     flushAndReset: function flushAndReset() {
-      this.on = true;
+      this.SearchBarVisible = true;
       this.message = '';
 
       while (this.$tag_ids.length > 0) {
@@ -2000,7 +2000,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     tagSearchInit: function tagSearchInit(string) {
-      this.on = false;
+      this.SearchBarVisible = false;
       this.showMessage(string);
     },
     showMessage: function showMessage(tagNames) {
@@ -2022,7 +2022,6 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
-//
 //
 //
 //
@@ -2572,7 +2571,7 @@ __webpack_require__.r(__webpack_exports__);
     axios.get('/api/imgs').then(function (response) {
       var posts = response.data.data;
       console.log(posts);
-      var pageSize = Math.ceil(posts.length / 24);
+      var pageSize = Math.ceil(posts.length / _this.$maxSizePerEachItem);
 
       for (var _i = 0; _i < pageSize; _i++) {
         _this.paginated[_i] = new Array();
@@ -2663,13 +2662,14 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     console.log(this.$tag_ids);
-    axios.get('/imgs/tags/', {
+    axios.get('/api/tag', {
       params: {
         data: this.$tag_ids
       }
     }).then(function (response) {
       var posts = response.data.data;
-      var pageSize = Math.ceil(posts.length / 24);
+      console.log(posts);
+      var pageSize = Math.ceil(posts.length / _this.$maxSizePerEachItem);
 
       for (var _i = 0; _i < pageSize; _i++) {
         _this.paginated[_i] = new Array();
@@ -2698,7 +2698,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.changeCurrentPage(_this.index);
       }
     })["catch"](function (errors) {
-      alert("Unable to Fetch Images. Tag ids are missing");
+      console.log(errors);
     });
   },
   methods: {
@@ -2753,7 +2753,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/imgs/index/' + this.$route.params.id).then(function (response) {
+    axios.get('/api/imgs/user/' + this.$route.params.id).then(function (response) {
       _this.post = response.data.data;
     })["catch"](function (errors) {
       alert("Unable to Fetch Images");
@@ -21584,7 +21584,7 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _vm.on == true
+                    _vm.SearchBarVisible == true
                       ? _c(
                           "div",
                           [
@@ -21687,7 +21687,7 @@ var render = function() {
             }
           ],
           staticClass:
-            "w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm \n                                                                                                                focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100",
+            "w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100",
           attrs: {
             type: "text",
             placeholder: _vm.selectedTagNames,
@@ -21729,7 +21729,7 @@ var render = function() {
                   : _vm._e(),
                 _vm._v(" "),
                 _vm._l(_vm.serchResults, function(result) {
-                  return _c("div", [
+                  return _c("div", { key: result.id }, [
                     _c(
                       "p",
                       {
@@ -22357,8 +22357,9 @@ var render = function() {
               },
               [
                 _c("img", {
-                  staticClass: "block h-auto w-full hover:opacity-75",
-                  attrs: { src: each.data.url, alt: "placeholder" }
+                  staticClass:
+                    "block h-64 w-64 object-none object-cover hover:opacity-75",
+                  attrs: { src: each.data.thumbnail_url, alt: "placeholder" }
                 })
               ]
             )

@@ -3,7 +3,7 @@
 
         <div v-for="each in currentPage" class="mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/6">
             <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, isTaged: true, currentPageIndex: index } }">
-                <img class="block h-auto w-full hover:opacity-75" v-bind:src="each.data.url" alt="placeholder">
+                <img class="block h-64 w-64 object-none object-cover hover:opacity-75" v-bind:src="each.data.thumbnail_url" alt="placeholder">
             </router-link>
         </div>
 
@@ -31,10 +31,11 @@ export default {
     mounted() {
         console.log(this.$tag_ids);
 
-        axios.get('/imgs/tags/', { params: { data: this.$tag_ids } })
+        axios.get('/api/tag', { params: { data: this.$tag_ids } })
             .then( response => {
                 let posts = response.data.data;
-                let pageSize = Math.ceil(posts.length / 24);
+                console.log(posts);
+                let pageSize = Math.ceil(posts.length / this.$maxSizePerEachItem);
 
                 for (let i = 0; i < pageSize; i++)
                 {
@@ -73,7 +74,7 @@ export default {
                 
             })
             .catch( errors => {
-                alert("Unable to Fetch Images. Tag ids are missing");
+                console.log(errors);
             });
     },
 

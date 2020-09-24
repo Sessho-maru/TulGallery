@@ -26,7 +26,7 @@ export default {
     },
 
     mounted() {
-        axios.get('/api/imgs/index/' + this.$route.params.id)
+        axios.get('/api/imgs/user/' + this.$route.params.id)
             .then( response => {
                 this.post = response.data.data;
             })

@@ -22,7 +22,10 @@ Route::middleware('auth:api')->group(function ()
 
 Route::get('/imgs', 'ImagesController@index')->name('index');
 Route::get('/imgs/{id}', 'ImagesController@show')->name('show');
-Route::get('/imgs/index/{id}', 'ImagesController@index_withUser')->name('indexWithUser');
+
+Route::get('/imgs/user/{id}', 'ImagesController@index_withUser')->name('indexWithUser');
+Route::get('/tag', 'ImagesController@indexByTag');
+
 Route::post('search', 'SearchController@index');
 
 Route::get('/tags', 'SearchController@all')->name('all');

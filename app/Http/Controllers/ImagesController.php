@@ -68,15 +68,8 @@ class ImagesController extends Controller
         return (ImageResource::collection(Image::all()))->response()->setStatusCode(200);
     }
 
-    public function index_withUser()
+    public function indexByTag()
     {
-        // $this->authorize('viewAny', Image::class); All Registered User can view any Images
-        return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
-    }
-
-    public function index_withTags()
-    {
-        // dd(request()->data);
         $tags = request()->data;
         $images = [];
         $image_ids = [];
@@ -190,4 +183,13 @@ class ImagesController extends Controller
 
         return response([], 204);
     }
+
+
+    /*
+    public function index_withUser()
+    {
+        // $this->authorize('viewAny', Image::class); All Registered User can view any Images
+        return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
+    }
+    */
 }

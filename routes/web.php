@@ -44,6 +44,5 @@ Route::post('/imgs/upload/thumb', function()
 });
 
 Route::get('/{any}', 'AppController@index')->where('any', '.*');
-Route::get('/imgs/tags', 'ImagesController@index_withTags');
 Route::post('/pw_check', 'PasswordController@check')->name('check');
 Route::post('/pw_reset', 'PasswordController@reset')->name('reset');

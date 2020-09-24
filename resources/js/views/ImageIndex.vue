@@ -42,7 +42,7 @@ export default {
             .then( response => {
                 let posts = response.data.data;
                 console.log(posts);
-                let pageSize = Math.ceil(posts.length / 24);
+                let pageSize = Math.ceil(posts.length / this.$maxSizePerEachItem);
 
                 for (let i = 0; i < pageSize; i++)
                 {
