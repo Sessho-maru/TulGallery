@@ -18,6 +18,7 @@ class ImagesController extends Controller
     {
         return request()->validate([
             'url' => 'required|active_url',
+            'thumbnail_url' => 'required|active_url',
             'description' => '',
             'tags' => 'required',
             'format' => ''
@@ -50,6 +51,7 @@ class ImagesController extends Controller
     {
         return request()->validate([
             'url' => 'required|active_url',
+            'thumbnail_url' => 'required'
         ]);
     }
 
@@ -109,8 +111,9 @@ class ImagesController extends Controller
         $image = request()->user()->images()->create([
             'user_id' => request()->user()->id,
             'url' => $validated['url'],
+            'thumbnail_url' => $validated['thumbnail_url'],
             'description' => $validated['description'],
-            'format' => $validated['format']
+            'format' => $validated['format']['type']
         ]);
 
         foreach ($tagNames as $tagName)
@@ -177,6 +180,8 @@ class ImagesController extends Controller
         // $this->authorize('delete', $image);
         
         DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
+
+        // dd($image->url);
 
         $fileName = explode('images/', $image->url);
         Storage::disk('s3')->delete('images/' . $fileName[1]);

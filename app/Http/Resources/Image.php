@@ -20,6 +20,7 @@ class Image extends JsonResource
                 'user_name' => $this->user->user_name,
                 'image_id' => $this->id,
                 'url' => $this->url,
+                'thumbnail_url' => $this->thumbnail_url,
                 'description' => $this->description,
                 'tags' => $this->tags->pluck('tag_name')->toArray(),
                 'last_updated' => $this->updated_at->diffForHumans(),

@@ -39,25 +39,32 @@
 export default {
     name: "ImageCreate",
 
+    props: [
+        'api_token',
+    ],
+
     data()
     {
         return {
             file: "",
 
             form: {
-                url: "http://via.placeholder.com/350x150",
+                image_id: 0,
+                url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png",
+                thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png",
                 description: "",
                 tags: "",
-                format: ""
+                format: {}
             },
 
             loading: true,
             fileLoaded: false,
+            img: ""
         }
     },
 
     mounted() {
-        if (this.$route.params.api_token === undefined)
+        if (this.api_token === undefined)
         {
             window.location.href = "http://dev.test/login";
         }
@@ -69,10 +76,71 @@ export default {
 
     methods: {
 
+        hasDuplicates(array) {
+            return (new Set(array)).size !== array.length;
+        },
+
+        clearError(target)
+        {
+            document.getElementById(target).innerHTML = "";
+        },
+
+        drawThumbnail(imgUrl, scale)
+        {
+            this.img = new Image();
+            this.img.src = imgUrl;
+            this.img.crossOrigin = "anonymous";
+
+            return new Promise( (resolve, reject) => {
+                this.img.onload = () => {
+                    const elem = document.createElement('canvas');
+                    elem.width = Math.floor(this.img.width * scale);
+                    elem.height = Math.floor(this.img.height * scale);
+
+                    const ctx = elem.getContext('2d');
+                    
+                    ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, elem.width, elem.height);
+
+                    ctx.canvas.toBlob((blob) => {
+                        const file = new File([blob], 'test', {
+                            type: this.form.format.extension
+                        });
+                        resolve(file);
+                    }, this.form.format.extension, 1);
+                }
+            });
+        },
+
+        async uploadThumbnail(imgUrl, scale)
+        {
+            const thumbnail = await this.drawThumbnail(imgUrl, scale);
+            console.log("thumbnail image: ", thumbnail);
+
+            let formData = new FormData();
+            formData.append('file', thumbnail);
+
+            axios.post('/imgs/upload/thumb', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+                .then( res => {
+                    console.log(res.data.url);
+                    
+                    axios.patch('/api/imgs/' + this.form.image_id, { 'api_token': this.api_token, 'url': imgUrl, 'thumbnail_url': res.data.url, 'flag': "url_update" }) // Url update request
+                            .then( resopnse => {
+                                this.$router.push(resopnse.data.links.self);
+                            })
+                            .catch( error => {
+                                console.log(error);
+                            });
+                })
+                .catch( err => {
+                    console.log(err);
+                    console.log("failed");
+                });
+        },
+        
         fileHandle()
         {
             this.file = this.$refs.file.files[0];
-            console.log(this.file);
+            console.log("original image: ", this.file);
 
             if ( this.file.size > this.$maxSizePerEachItem * 1024 * 1024 )
             {
@@ -82,16 +150,15 @@ export default {
                 return;
             }
 
-            let extension = this.file.type;
-            console.log(extension);
-
-            if (extension === 'image/jpeg' || extension === 'image/png')
+            if (this.file.type === 'image/jpeg' || this.file.type === 'image/png' || this.file.type === 'image/gif')
             {
-                this.form.format = "photo";
+                this.form.format.type = "photo";
+                this.form.format.extension = this.file.type;
             }
-            else if (extension === 'video/webm' || extension === 'video/mp4')
+            else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
             {
-                this.form.format = "webm";
+                this.form.format.type = "webm";
+                this.form.format.extension = this.file.type;
             }
             else
             {
@@ -126,48 +193,29 @@ export default {
 
             document.getElementById("submitButton").disabled = true;
 
-            axios.post('/api/imgs', {...this.form, api_token: this.$route.params.api_token}) // Image form request
+            axios.post('/api/imgs', {...this.form, api_token: this.api_token}) // Image form request
                     .then( response => {
 
-                        let image_id = response.data.data.image_id;
+                        this.form.image_id = response.data.data.image_id;
                     
                         let formData = new FormData();
                         formData.append('file', this.file);
 
                         axios.post('/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }) // Image upload request
                             .then( response => {
-                                axios.patch('/api/imgs/' + image_id, { 'api_token': this.$route.params.api_token, 'url': response.data.url, 'flag': "url_update" }) // Url update request
-                                        .then( resopnse => {
-                                            this.$router.push(resopnse.data.links.self);
-                                        })
-                                        .catch( errors => {
-                                            //
-                                        });
+                                this.uploadThumbnail(response.data.url, 1/5);
                             })
                             .catch( errors => {
+                                console.log(errors);
                                 document.getElementById('error_image').innerHTML = errors.response.data.msg;
                                 document.getElementById("submitButton").disabled = false;
                             });
                     })
                     .catch( errors => {
+                        console.log(errors);
                         document.getElementById('error_tag').innerHTML = errors.response.data.msg;
                         document.getElementById("submitButton").disabled = false;
                     });
-        },
-
-        hasDuplicates(array) {
-            return (new Set(array)).size !== array.length;
-        },
-
-        clearError(field)
-        {
-            document.getElementById(field).innerHTML = "";
-        },
-
-        disable(id)
-        {
-            var element = document.getElementById(id);
-            element.disabled = true;
         }
     }
 }

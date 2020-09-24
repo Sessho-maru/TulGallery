@@ -17,6 +17,7 @@ class CreateImagesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->string('url');
+            $table->string('thumbnail_url');
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('reported_count')->default('0');
             $table->string('format');
