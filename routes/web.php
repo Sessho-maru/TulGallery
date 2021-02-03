@@ -27,7 +27,7 @@ Route::post('/imgs/upload', function()
     );
 
     return [ 
-        'url' => 'https://tulbooru.s3.ap-northeast-2.amazonaws.com/' . $uploaded,
+        'url' => 'https://tulgallery.s3-us-west-2.amazonaws.com/' . $uploaded
     ];
 });
 
@@ -39,7 +39,7 @@ Route::post('/imgs/upload/thumb', function()
     );
 
     return [ 
-        'url' => 'https://tulbooru.s3.ap-northeast-2.amazonaws.com/' . $uploaded,
+        'url' => 'https://tulgallery.s3-us-west-2.amazonaws.com/' . $uploaded
     ];
 });
 
