@@ -155,14 +155,14 @@ export default {
                 this.form.format.type = "photo";
                 this.form.format.extension = this.file.type;
             }
-            else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
-            {
-                this.form.format.type = "webm";
-                this.form.format.extension = this.file.type;
-            }
+            // else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
+            // {
+            //     this.form.format.type = "webm";
+            //     this.form.format.extension = this.file.type;
+            // }
             else
             {
-                alert("not supported");
+                alert("Demo only supports image file formats");
                 this.file = null;
                 return;
             }
