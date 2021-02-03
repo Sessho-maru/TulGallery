@@ -2241,7 +2241,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   mounted: function mounted() {
     if (this.api_token === undefined) {
-      window.location.href = "http://dev.test/login";
+      window.location.href = "/logout";
     } else {
       this.loading = false;
     }
@@ -2344,14 +2344,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       if (this.file.type === 'image/jpeg' || this.file.type === 'image/png' || this.file.type === 'image/gif') {
         this.form.format.type = "photo";
         this.form.format.extension = this.file.type;
-      } else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4') {
-        this.form.format.type = "webm";
-        this.form.format.extension = this.file.type;
-      } else {
-        alert("not supported");
-        this.file = null;
-        return;
-      }
+      } // else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
+      // {
+      //     this.form.format.type = "webm";
+      //     this.form.format.extension = this.file.type;
+      // }
+      else {
+          alert("Demo only supports image file formats");
+          this.file = null;
+          return;
+        }
 
       this.fileLoaded = true;
     },

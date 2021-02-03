@@ -66,7 +66,7 @@ export default {
     mounted() {
         if (this.api_token === undefined)
         {
-            window.location.href = "http://dev.test/login";
+            window.location.href = "/logout";
         }
         else
         {
