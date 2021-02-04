@@ -20,7 +20,7 @@
 
                     <div class="pb-2">
                         <label for="tag" class="text-blue-500 pt-2 uppercase text-xs font-bold">Tags</label>
-                        <input id="tag" type="text" v-model="form.tags" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" @input="clearError('error_tag')">
+                        <input id="tag" type="text" v-model="form.tags" placeholder="All the tag inputs must be devied by ','" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" @input="clearError('error_tag')">
                     </div>
                     <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
                 
@@ -66,7 +66,7 @@ export default {
     mounted() {
         if (this.api_token === undefined)
         {
-            window.location.href = "/logout";
+            window.location.href = "/login";
         }
         else
         {
@@ -120,10 +120,10 @@ export default {
             formData.append('file', thumbnail);
 
             axios.post('/imgs/upload/thumb', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-                .then( res => {
-                    console.log(res.data.url);
+                .then( response => {
+                    console.log("thumbnail image url: ", response.data.url);
                     
-                    axios.patch('/api/imgs/' + this.form.image_id, { 'api_token': this.api_token, 'url': imgUrl, 'thumbnail_url': res.data.url, 'flag': "url_update" }) // Url update request
+                    axios.patch('/api/imgs/' + this.form.image_id, { 'api_token': this.api_token, 'url': imgUrl, 'thumbnail_url': response.data.url, 'flag': "url_update" }) // Url update request
                             .then( resopnse => {
                                 this.$router.push(resopnse.data.links.self);
                             })
@@ -139,16 +139,15 @@ export default {
         
         fileHandle()
         {
-            this.file = this.$refs.file.files[0];
-            console.log("original image: ", this.file);
-
-            if ( this.file.size > this.$maxSizePerEachItem * 1024 * 1024 )
+            if ( this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024 )
             {
                 document.getElementById('error_image').innerHTML = "Too large file size (Maximum: "+ this.$maxSizePerEachItem +"MB)";
                 document.getElementById('image').value = '';
-                this.file = null;
                 return;
             }
+
+            this.file = this.$refs.file.files[0];
+            console.log("original image: ", this.file);
 
             if (this.file.type === 'image/jpeg' || this.file.type === 'image/png' || this.file.type === 'image/gif')
             {
@@ -159,7 +158,7 @@ export default {
             // {
             //     this.form.format.type = "webm";
             //     this.form.format.extension = this.file.type;
-            // }
+            // } // Demo only supports image file formats
             else
             {
                 alert("Demo only supports image file formats");

@@ -20,7 +20,7 @@
                                     <a v-on:click.prevent="report" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Report ({{ post.reported_count }})</a>    
                                 </div>
                                 <div v-else>
-                                    <a v-on:click.prevent="modal = !modal" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Delete</a>    
+                                    <a v-on:click.prevent="modal = !modal" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Delete</a>
                                 </div>
                             </div>
                             
@@ -133,6 +133,7 @@ export default {
                     this.post.reported_count = response.data;
                 })
                 .catch( error => {
+                    console.log(error);
                 });
         },
 
@@ -143,6 +144,7 @@ export default {
                         this.$router.push('/imgs');
                     })
                     .catch( errors => {
+                        console.log(errors);
                         alert("Internal Error. Unable to delete Image");
                     });
         }

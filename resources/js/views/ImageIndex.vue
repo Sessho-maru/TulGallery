@@ -32,7 +32,7 @@ export default {
     data() {
         return {
             paginated: [],
-            currentPage: "",
+            currentPage: [],
             index: 0
         }
     },
@@ -41,7 +41,7 @@ export default {
         axios.get('/api/imgs')
             .then( response => {
                 let posts = response.data.data;
-                console.log(posts);
+                console.log("Received image posts", posts);
                 let pageSize = Math.ceil(posts.length / this.$maxSizePerEachItem);
 
                 for (let i = 0; i < pageSize; i++)
@@ -66,7 +66,7 @@ export default {
                     {
                         j++;
                     }
-                }
+                } // split entire image posts per $maxSizePerEachItem(24) newest first order
 
                 if (this.$route.params.currentPageIndex != null)
                 {
@@ -78,8 +78,11 @@ export default {
                 {
                     this.changeCurrentPage(this.index);
                 }
+
+                console.log("Pagenated content", this.paginated);
             })
             .catch( errors => {
+                console.log(errors);
                 alert("Unable to Fetch Images");
             });
     },

@@ -51,7 +51,7 @@ class ImagesController extends Controller
     {
         return request()->validate([
             'url' => 'required|active_url',
-            'thumbnail_url' => 'required'
+            'thumbnail_url' => 'required|active_url'
         ]);
     }
 
@@ -95,11 +95,14 @@ class ImagesController extends Controller
         $this->authorize('create', Image::class);
 
         $validated = $this->validateData();
-
-        $description = htmlspecialchars($validated['description']);
         $tags = htmlspecialchars($validated['tags']);
 
-        $tagNames = $this->tagVaildation($tags);
+        $tags_vaildated = $this->tagVaildation($tags);
+
+        if (gettype($tags_vaildated) === 'object')
+        {
+            return $tags_vaildated;
+        } // $tags_vaildated would be object type when tagVaildation() fail
 
         $image = request()->user()->images()->create([
             'user_id' => request()->user()->id,
@@ -109,7 +112,7 @@ class ImagesController extends Controller
             'format' => $validated['format']['type']
         ]);
 
-        foreach ($tagNames as $tagName)
+        foreach ($tags_vaildated as $tagName)
         {
             $tag_id = Tag::where('tag_name', $tagName)->first()->id;
             DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
@@ -142,10 +145,15 @@ class ImagesController extends Controller
             $validated = $this->validateData();
             $tags = htmlspecialchars($validated['tags']);
 
-            $tagNames = $this->tagVaildation($tags);
+            $tags_vaildated = $this->tagVaildation($tags);
+
+            if (gettype($tags_vaildated) === 'object')
+            {
+                return $tags_vaildated;
+            } // $tags_vaildated would be object type when tagVaildation() fail
             
             DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
-            foreach ($tagNames as $tagName)
+            foreach ($tags_vaildated as $tagName)
             {
                 $tag_id = Tag::where('tag_name', $tagName)->first()->id;
                 DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
@@ -170,11 +178,8 @@ class ImagesController extends Controller
     public function destroy($id)
     {
         $image = Image::find($id);
-        // $this->authorize('delete', $image);
         
         DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
-
-        // dd($image->url);
 
         $fileName = explode('images/', $image->url);
         Storage::disk('s3')->delete('images/' . $fileName[1]);
@@ -183,7 +188,6 @@ class ImagesController extends Controller
 
         return response([], 204);
     }
-
 
     /*
     public function index_withUser()

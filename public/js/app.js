@@ -1984,11 +1984,12 @@ __webpack_require__.r(__webpack_exports__);
     SearchBar: _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   mounted: function mounted() {
-    if (this.user === undefined === false) {
+    if (this.user === undefined) {
+      console.log("Guest");
+    } else {
       this.someone = this.user;
+      console.log("User login as", this.someone);
     }
-
-    console.log(this.someone);
   },
   methods: {
     flushAndReset: function flushAndReset() {
@@ -2241,7 +2242,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   mounted: function mounted() {
     if (this.api_token === undefined) {
-      window.location.href = "/logout";
+      window.location.href = "/login";
     } else {
       this.loading = false;
     }
@@ -2298,12 +2299,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   headers: {
                     'Content-Type': 'multipart/form-data'
                   }
-                }).then(function (res) {
-                  console.log(res.data.url);
+                }).then(function (response) {
+                  console.log("thumbnail image url: ", response.data.url);
                   axios.patch('/api/imgs/' + _this2.form.image_id, {
                     'api_token': _this2.api_token,
                     'url': imgUrl,
-                    'thumbnail_url': res.data.url,
+                    'thumbnail_url': response.data.url,
                     'flag': "url_update"
                   }) // Url update request
                   .then(function (resopnse) {
@@ -2331,15 +2332,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return uploadThumbnail;
     }(),
     fileHandle: function fileHandle() {
-      this.file = this.$refs.file.files[0];
-      console.log("original image: ", this.file);
-
-      if (this.file.size > this.$maxSizePerEachItem * 1024 * 1024) {
+      if (this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024) {
         document.getElementById('error_image').innerHTML = "Too large file size (Maximum: " + this.$maxSizePerEachItem + "MB)";
         document.getElementById('image').value = '';
-        this.file = null;
         return;
       }
+
+      this.file = this.$refs.file.files[0];
+      console.log("original image: ", this.file);
 
       if (this.file.type === 'image/jpeg' || this.file.type === 'image/png' || this.file.type === 'image/gif') {
         this.form.format.type = "photo";
@@ -2348,7 +2348,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       // {
       //     this.form.format.type = "webm";
       //     this.form.format.extension = this.file.type;
-      // }
+      // } // Demo only supports image file formats
       else {
           alert("Demo only supports image file formats");
           this.file = null;
@@ -2475,7 +2475,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/imgs/' + this.$route.params.id + '?api_token=' + this.api_token).then(function (response) {
+    axios.get('/api/imgs/' + this.$route.params.id).then(function (response) {
       _this.post = response.data.data;
       _this.post.tags = _this.post.tags.toString();
       _this.loading = false;
@@ -2563,7 +2563,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       paginated: [],
-      currentPage: "",
+      currentPage: [],
       index: 0
     };
   },
@@ -2572,7 +2572,7 @@ __webpack_require__.r(__webpack_exports__);
 
     axios.get('/api/imgs').then(function (response) {
       var posts = response.data.data;
-      console.log(posts);
+      console.log("Received image posts", posts);
       var pageSize = Math.ceil(posts.length / _this.$maxSizePerEachItem);
 
       for (var _i = 0; _i < pageSize; _i++) {
@@ -2592,7 +2592,8 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           j++;
         }
-      }
+      } // split entire image posts per $maxSizePerEachItem(24) newest first order
+
 
       if (_this.$route.params.currentPageIndex != null) {
         _this.currentPage = _this.paginated[_this.$route.params.currentPageIndex];
@@ -2601,7 +2602,10 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         _this.changeCurrentPage(_this.index);
       }
+
+      console.log("Pagenated content", _this.paginated);
     })["catch"](function (errors) {
+      console.log(errors);
       alert("Unable to Fetch Images");
     });
   },
@@ -2894,7 +2898,9 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get('/api/imgs/' + this.$route.params.id + '/report').then(function (response) {
         _this2.post.reported_count = response.data;
-      })["catch"](function (error) {});
+      })["catch"](function (error) {
+        console.log(error);
+      });
     },
     destroy: function destroy() {
       var _this3 = this;
@@ -2902,6 +2908,7 @@ __webpack_require__.r(__webpack_exports__);
       axios["delete"]('/api/imgs/' + this.$route.params.id + '?api_token=' + this.api_token).then(function (response) {
         _this3.$router.push('/imgs');
       })["catch"](function (errors) {
+        console.log(errors);
         alert("Internal Error. Unable to delete Image");
       });
     }
@@ -21966,7 +21973,11 @@ var render = function() {
                     ],
                     staticClass:
                       "pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400",
-                    attrs: { id: "tag", type: "text" },
+                    attrs: {
+                      id: "tag",
+                      type: "text",
+                      placeholder: "All the tag inputs must be devied by ','"
+                    },
                     domProps: { value: _vm.form.tags },
                     on: {
                       input: [
@@ -22130,7 +22141,11 @@ var render = function() {
                     ],
                     staticClass:
                       "pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400",
-                    attrs: { id: "tag", type: "text" },
+                    attrs: {
+                      id: "tag",
+                      type: "text",
+                      placeholder: "All the tag inputs must be devied by ','"
+                    },
                     domProps: { value: _vm.post.tags },
                     on: {
                       input: [

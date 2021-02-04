@@ -100,12 +100,15 @@ export default {
     },
 
     mounted() {
-        if ((this.user === undefined) === false)
+        if (this.user === undefined)
+        {
+            console.log("Guest");
+        }
+        else
         {
             this.someone = this.user;
+            console.log("User login as", this.someone);
         }
-
-        console.log(this.someone);
     },
 
     methods: {

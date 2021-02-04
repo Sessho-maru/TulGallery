@@ -23,7 +23,7 @@
 
                     <div class="pb-2">
                         <label for="tag" class="text-blue-500 pt-2 uppercase text-xs font-bold">Tags</label>
-                        <input id="tag" type="text" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" v-model="post.tags" @input="clearError('error_tag')">
+                        <input id="tag" type="text" placeholder="All the tag inputs must be devied by ','" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" v-model="post.tags" @input="clearError('error_tag')">
                     </div>
                     <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
                 
@@ -54,9 +54,9 @@ export default {
         }
     },
 
-     mounted()
+    mounted()
     {
-        axios.get('/api/imgs/' + this.$route.params.id + '?api_token=' + this.api_token)
+        axios.get('/api/imgs/' + this.$route.params.id)
             .then( response => {
                 this.post = response.data.data;
                 this.post.tags = this.post.tags.toString();
