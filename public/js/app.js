@@ -2562,6 +2562,7 @@ __webpack_require__.r(__webpack_exports__);
   name: "ImageIndex",
   data: function data() {
     return {
+      fetched: [],
       paginated: [],
       currentPage: [],
       index: 0
@@ -2570,13 +2571,39 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/imgs').then(function (response) {
-      var posts = response.data.data;
+    console.log("this.$globalParams: ", this.$globalParams); // with Params
+
+    if (this.$route.params.indexWithParam !== undefined) {
+      if (this.$route.params.indexWithParam.postedBy !== undefined) {
+        this.$globalParams.postedBy = this.$route.params.indexWithParam.postedBy;
+        console.log("All posts posted by user: ", this.$globalParams.postedBy);
+        axios.get('/api/imgs/user/' + this.$globalParams.postedBy).then(function (response) {
+          _this.fetched = response.data.data;
+
+          _this.pagenatedPosts(_this.fetched);
+        })["catch"](function (errors) {
+          console.log(errors);
+          alert("Unable to Fetch Images");
+        });
+      }
+    } else {
+      axios.get('/api/imgs').then(function (response) {
+        _this.fetched = response.data.data;
+
+        _this.pagenatedPosts(_this.fetched);
+      })["catch"](function (errors) {
+        console.log(errors);
+        alert("Unable to Fetch Images");
+      });
+    }
+  },
+  methods: {
+    pagenatedPosts: function pagenatedPosts(posts) {
       console.log("Received image posts", posts);
-      var pageSize = Math.ceil(posts.length / _this.$maxSizePerEachItem);
+      var pageSize = Math.ceil(posts.length / this.$itemNumPerPage);
 
       for (var _i = 0; _i < pageSize; _i++) {
-        _this.paginated[_i] = new Array();
+        this.paginated[_i] = new Array();
       }
 
       var total = posts.length - 1;
@@ -2584,9 +2611,9 @@ __webpack_require__.r(__webpack_exports__);
       var j = 0;
 
       for (total; total >= 0; total--) {
-        _this.paginated[i][j] = posts[total];
+        this.paginated[i][j] = posts[total];
 
-        if (j % (_this.$maxSizePerEachItem - 1) === 0 && j !== 0) {
+        if (j % (this.$itemNumPerPage - 1) === 0 && j !== 0) {
           i++;
           j = 0;
         } else {
@@ -2595,34 +2622,29 @@ __webpack_require__.r(__webpack_exports__);
       } // split entire image posts per $maxSizePerEachItem(24) newest first order
 
 
-      if (_this.$route.params.currentPageIndex != null) {
-        _this.currentPage = _this.paginated[_this.$route.params.currentPageIndex];
-        _this.index = _this.$route.params.currentPageIndex;
-        console.log("current Page Index = " + _this.index);
-      } else {
-        _this.changeCurrentPage(_this.index);
+      this.changeCurrentPage();
+      console.log("Pagenated content", this.paginated);
+      console.log("============================");
+    },
+    changeCurrentPage: function changeCurrentPage() {
+      var _char = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+
+      if (_char !== undefined) {
+        if (_char === '+') {
+          if (this.$globalParams.currentPageIndex < this.paginated.length - 1) {
+            this.$globalParams.currentPageIndex += 1;
+          }
+        }
+
+        if (_char === '-') {
+          if (this.$globalParams.currentPageIndex > 0) {
+            this.$globalParams.currentPageIndex -= 1;
+          }
+        }
       }
 
-      console.log("Pagenated content", _this.paginated);
-    })["catch"](function (errors) {
-      console.log(errors);
-      alert("Unable to Fetch Images");
-    });
-  },
-  methods: {
-    changeCurrentPage: function changeCurrentPage(index) {
-      if (index < 0) {
-        this.index++;
-        return;
-      }
-
-      if (index >= this.paginated.length) {
-        this.index--;
-        return;
-      }
-
-      console.log("current Page Index = " + index);
-      this.currentPage = this.paginated[index];
+      console.log("current Page Index: " + this.$globalParams.currentPageIndex);
+      this.currentPage = this.paginated[this.$globalParams.currentPageIndex];
     }
   }
 });
@@ -2859,6 +2881,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageShow",
   props: ['api_token', 'user_id'],
@@ -2866,19 +2892,13 @@ __webpack_require__.r(__webpack_exports__);
     return {
       post: null,
       modal: false,
-      loading: true,
-      isTaged: false,
-      index: 0
+      loading: true
     };
   },
   mounted: function mounted() {
     var _this = this;
 
-    if (this.$route.params.currentPageIndex != null) {
-      console.log(this.$route.params.currentPageIndex);
-      this.index = this.$route.params.currentPageIndex;
-    }
-
+    console.log("this.$globalParams: ", this.$globalParams);
     axios.get('/api/imgs/' + this.$route.params.id).then(function (response) {
       _this.post = response.data.data;
       _this.loading = false;
@@ -2887,10 +2907,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.$router.push('/imgs');
       }
     });
-
-    if (this.$route.params.isTaged) {
-      this.isTaged = true;
-    }
+    console.log("============================");
   },
   methods: {
     report: function report() {
@@ -21327,112 +21344,120 @@ var render = function() {
                   "nav",
                   { staticClass: "pt-4" },
                   [
-                    _c("router-link", { attrs: { to: "/imgs" } }, [
-                      _c("div", { on: { click: _vm.flushAndReset } }, [
-                        _c(
-                          "svg",
-                          {
-                            staticStyle: { background: "rgba(0, 0, 0, 0)" },
-                            attrs: {
-                              width: "175.76005859375px",
-                              height: "72.80615234375px",
-                              xmlns: "http://www.w3.org/2000/svg",
-                              viewBox:
-                                "144.119970703125 38.596923828125 211.76005859375 72.80615234375",
-                              preserveAspectRatio: "xMidYMid"
-                            }
-                          },
-                          [
-                            _c("defs", [
-                              _c(
-                                "filter",
-                                {
-                                  attrs: {
-                                    id: "editing-hole",
-                                    x: "-100%",
-                                    y: "-100%",
-                                    width: "300%",
-                                    height: "300%"
-                                  }
-                                },
-                                [
-                                  _c("feFlood", {
-                                    attrs: {
-                                      "flood-color": "#000",
-                                      result: "black"
-                                    }
-                                  }),
-                                  _c("feMorphology", {
-                                    attrs: {
-                                      operator: "dilate",
-                                      radius: "2",
-                                      in: "SourceGraphic",
-                                      result: "erode"
-                                    }
-                                  }),
-                                  _c("feGaussianBlur", {
-                                    attrs: {
-                                      in: "erode",
-                                      stdDeviation: "4",
-                                      result: "blur"
-                                    }
-                                  }),
-                                  _c("feOffset", {
-                                    attrs: {
-                                      in: "blur",
-                                      dx: "2",
-                                      dy: "2",
-                                      result: "offset"
-                                    }
-                                  }),
-                                  _c("feComposite", {
-                                    attrs: {
-                                      operator: "atop",
-                                      in: "offset",
-                                      in2: "black",
-                                      result: "merge"
-                                    }
-                                  }),
-                                  _c("feComposite", {
-                                    attrs: {
-                                      operator: "in",
-                                      in: "merge",
-                                      in2: "SourceGraphic",
-                                      result: "inner-shadow"
-                                    }
-                                  })
-                                ],
-                                1
-                              )
-                            ]),
-                            _c(
-                              "g",
-                              { attrs: { filter: "url(#editing-hole)" } },
-                              [
+                    _c(
+                      "a",
+                      {
+                        attrs: {
+                          href: _vm.$router.resolve({ name: "Index" }).href
+                        }
+                      },
+                      [
+                        _c("div", { on: { click: _vm.flushAndReset } }, [
+                          _c(
+                            "svg",
+                            {
+                              staticStyle: { background: "rgba(0, 0, 0, 0)" },
+                              attrs: {
+                                width: "175.76005859375px",
+                                height: "72.80615234375px",
+                                xmlns: "http://www.w3.org/2000/svg",
+                                viewBox:
+                                  "144.119970703125 38.596923828125 211.76005859375 72.80615234375",
+                                preserveAspectRatio: "xMidYMid"
+                              }
+                            },
+                            [
+                              _c("defs", [
                                 _c(
-                                  "g",
+                                  "filter",
                                   {
                                     attrs: {
-                                      transform:
-                                        "translate(179.5799981355667, 87.12406253814697)"
+                                      id: "editing-hole",
+                                      x: "-100%",
+                                      y: "-100%",
+                                      width: "300%",
+                                      height: "300%"
                                     }
                                   },
                                   [
-                                    _c("path", {
+                                    _c("feFlood", {
                                       attrs: {
-                                        d:
-                                          "M1.09-3.30L1.09-3.30L1.09-3.30Q1.09-4.19 1.55-6.44L1.55-6.44L3.30-15.35L1.35-15.35L1.49-16.34L1.49-16.34Q5.45-17.52 9.27-20.43L9.27-20.43L10.86-20.43L10.07-16.83L12.64-16.83L12.34-15.35L9.80-15.35L8.12-6.44L8.12-6.44Q7.69-4.39 7.69-3.70L7.69-3.70L7.69-3.70Q7.69-2.11 9.08-1.78L9.08-1.78L9.08-1.78Q8.75-0.66 7.56 0L7.56 0L7.56 0Q6.37 0.66 4.69 0.66L4.69 0.66L4.69 0.66Q3.00 0.66 2.05-0.40L2.05-0.40L2.05-0.40Q1.09-1.45 1.09-3.30ZM23.07-1.39L23.07-1.39L23.07-1.39Q21.48 0.66 17.56 0.66L17.56 0.66L17.56 0.66Q15.51 0.66 14.03-0.58L14.03-0.58L14.03-0.58Q12.54-1.82 12.54-3.60L12.54-3.60L12.54-3.60Q12.54-4.59 12.64-5.08L12.64-5.08L14.85-16.83L21.55-17.49L19.14-4.75L19.14-4.75Q19.01-4.03 19.01-3.60L19.01-3.60L19.01-3.60Q19.01-1.68 20.16-1.68L20.16-1.68L20.16-1.68Q21.45-1.68 22.37-3.43L22.37-3.43L22.37-3.43Q22.67-3.99 22.80-4.72L22.80-4.72L25.15-16.83L31.65-17.49L29.21-4.62L29.21-4.62Q29.11-4.13 29.11-3.60L29.11-3.60L29.11-3.60Q29.11-3.07 29.40-2.49L29.40-2.49L29.40-2.49Q29.70-1.91 30.66-1.78L30.66-1.78L30.66-1.78Q30.46-0.99 29.77-0.46L29.77-0.46L29.77-0.46Q28.31 0.66 26.75 0.66L26.75 0.66L26.75 0.66Q25.18 0.66 24.26 0.10L24.26 0.10L24.26 0.10Q23.33-0.46 23.07-1.39ZM41.32-1.82L41.32-1.82L41.32-1.82Q40.29 0.66 37.03 0.66L37.03 0.66L37.03 0.66Q35.38 0.66 34.32-0.49L34.32-0.49L34.32-0.49Q33.46-1.45 33.46-2.54L33.46-2.54L33.46-2.54Q33.46-5.02 34.62-10.43L34.62-10.43L37.03-23.10L43.73-23.76L40.52-7.06L40.52-7.06Q39.96-4.62 39.96-3.76L39.96-3.76L39.96-3.76Q39.96-1.88 41.32-1.82ZM43.69-1.58L43.69-1.58L47.78-23.10L54.48-23.76L53.46-18.71L53.46-18.71Q53.10-17.16 52.64-16.07L52.64-16.07L52.64-16.07Q53.36-17.00 54.95-17.36L54.95-17.36L54.95-17.36Q55.41-17.49 55.97-17.49L55.97-17.49L55.97-17.49Q59.04-17.49 60.72-15.63L60.72-15.63L60.72-15.63Q62.40-13.76 62.40-10.16L62.40-10.16L62.40-10.16Q62.40-5.48 59.73-2.54L59.73-2.54L59.73-2.54Q56.86 0.66 51.65 0.66L51.65 0.66L51.65 0.66Q48.05 0.66 45.34-0.53L45.34-0.53L45.34-0.53Q44.39-0.96 43.69-1.58ZM52.07-11.55L50.33-1.88L50.33-1.88Q51.02-1.29 51.88-1.29L51.88-1.29L51.88-1.29Q52.73-1.29 53.23-1.62L53.23-1.62L53.23-1.62Q53.72-1.95 54.09-2.61L54.09-2.61L54.09-2.61Q55.08-4.39 55.87-9.83L55.87-9.83L55.87-9.83Q56.10-11.38 56.10-12.94L56.10-12.94L56.10-12.94Q56.10-14.49 55.75-14.98L55.75-14.98L55.75-14.98Q55.41-15.48 54.75-15.48L54.75-15.48L54.75-15.48Q52.73-15.48 52.07-11.55L52.07-11.55ZM71.58 0.66L71.58 0.66L71.58 0.66Q64.32 0.66 64.32-6.17L64.32-6.17L64.32-6.17Q64.32-11.02 66.99-14.16L66.99-14.16L66.99-14.16Q69.83-17.49 74.75-17.49L74.75-17.49L74.75-17.49Q78.31-17.49 80.12-15.84L80.12-15.84L80.12-15.84Q81.94-14.19 81.94-10.72L81.94-10.72L81.94-10.72Q81.94-5.45 79.10-2.38L79.10-2.38L79.10-2.38Q76.33 0.66 71.58 0.66ZM72.44-13.70L72.44-13.70L72.44-13.70Q72.04-12.80 71.73-11.47L71.73-11.47L71.73-11.47Q71.41-10.13 71.02-8.02L71.02-8.02L71.02-8.02Q70.62-5.91 70.62-3.30L70.62-3.30L70.62-3.30Q70.62-2.44 70.90-1.88L70.90-1.88L70.90-1.88Q71.18-1.32 71.94-1.32L71.94-1.32L71.94-1.32Q72.70-1.32 73.18-1.68L73.18-1.68L73.18-1.68Q73.66-2.05 74.02-2.90L74.02-2.90L74.02-2.90Q74.68-4.42 75.21-7.24L75.21-7.24L75.21-7.24Q75.73-10.07 75.78-11.29L75.78-11.29L75.78-11.29Q75.83-12.51 75.83-13.41L75.83-13.41L75.83-13.41Q75.83-14.32 75.57-14.92L75.57-14.92L75.57-14.92Q75.31-15.51 74.56-15.51L74.56-15.51L74.56-15.51Q73.82-15.51 73.33-15.05L73.33-15.05L73.33-15.05Q72.83-14.59 72.44-13.70ZM91.08 0.66L91.08 0.66L91.08 0.66Q83.82 0.66 83.82-6.17L83.82-6.17L83.82-6.17Q83.82-11.02 86.49-14.16L86.49-14.16L86.49-14.16Q89.33-17.49 94.25-17.49L94.25-17.49L94.25-17.49Q97.81-17.49 99.63-15.84L99.63-15.84L99.63-15.84Q101.44-14.19 101.44-10.72L101.44-10.72L101.44-10.72Q101.44-5.45 98.60-2.38L98.60-2.38L98.60-2.38Q95.83 0.66 91.08 0.66ZM91.94-13.70L91.94-13.70L91.94-13.70Q91.54-12.80 91.23-11.47L91.23-11.47L91.23-11.47Q90.92-10.13 90.52-8.02L90.52-8.02L90.52-8.02Q90.12-5.91 90.12-3.30L90.12-3.30L90.12-3.30Q90.12-2.44 90.40-1.88L90.40-1.88L90.40-1.88Q90.68-1.32 91.44-1.32L91.44-1.32L91.44-1.32Q92.20-1.32 92.68-1.68L92.68-1.68L92.68-1.68Q93.16-2.05 93.52-2.90L93.52-2.90L93.52-2.90Q94.18-4.42 94.71-7.24L94.71-7.24L94.71-7.24Q95.24-10.07 95.29-11.29L95.29-11.29L95.29-11.29Q95.34-12.51 95.34-13.41L95.34-13.41L95.34-13.41Q95.34-14.32 95.07-14.92L95.07-14.92L95.07-14.92Q94.81-15.51 94.07-15.51L94.07-15.51L94.07-15.51Q93.32-15.51 92.83-15.05L92.83-15.05L92.83-15.05Q92.33-14.59 91.94-13.70ZM113.72-9.27L113.72-9.27L113.72-9.27Q114.91-11.38 114.91-13.53L114.91-13.53L114.91-13.53Q114.91-14.95 113.88-14.95L113.88-14.95L113.88-14.95Q113.09-14.95 112.27-13.60L112.27-13.60L112.27-13.60Q111.41-12.24 111.14-10.49L111.14-10.49L109.43 0L102.60 0.66L105.96-16.83L111.41-17.49L110.81-14.16L110.81-14.16Q112.43-17.49 116.06-17.49L116.06-17.49L116.06-17.49Q117.98-17.49 119.01-16.50L119.01-16.50L119.01-16.50Q120.05-15.51 120.05-13.48L120.05-13.48L120.05-13.48Q120.05-11.45 118.72-10.16L118.72-10.16L118.72-10.16Q117.38-8.88 115.10-8.88L115.10-8.88L115.10-8.88Q114.11-8.88 113.72-9.27ZM131.18-1.39L131.18-1.39L131.18-1.39Q129.59 0.66 125.66 0.66L125.66 0.66L125.66 0.66Q123.62 0.66 122.13-0.58L122.13-0.58L122.13-0.58Q120.65-1.82 120.65-3.60L120.65-3.60L120.65-3.60Q120.65-4.59 120.75-5.08L120.75-5.08L122.96-16.83L129.66-17.49L127.25-4.75L127.25-4.75Q127.12-4.03 127.12-3.60L127.12-3.60L127.12-3.60Q127.12-1.68 128.27-1.68L128.27-1.68L128.27-1.68Q129.56-1.68 130.48-3.43L130.48-3.43L130.48-3.43Q130.78-3.99 130.91-4.72L130.91-4.72L133.25-16.83L139.75-17.49L137.31-4.62L137.31-4.62Q137.21-4.13 137.21-3.60L137.21-3.60L137.21-3.60Q137.21-3.07 137.51-2.49L137.51-2.49L137.51-2.49Q137.81-1.91 138.76-1.78L138.76-1.78L138.76-1.78Q138.57-0.99 137.87-0.46L137.87-0.46L137.87-0.46Q136.42 0.66 134.85 0.66L134.85 0.66L134.85 0.66Q133.29 0.66 132.36 0.10L132.36 0.10L132.36 0.10Q131.44-0.46 131.18-1.39Z",
-                                        fill: "#ccc"
+                                        "flood-color": "#000",
+                                        result: "black"
+                                      }
+                                    }),
+                                    _c("feMorphology", {
+                                      attrs: {
+                                        operator: "dilate",
+                                        radius: "2",
+                                        in: "SourceGraphic",
+                                        result: "erode"
+                                      }
+                                    }),
+                                    _c("feGaussianBlur", {
+                                      attrs: {
+                                        in: "erode",
+                                        stdDeviation: "4",
+                                        result: "blur"
+                                      }
+                                    }),
+                                    _c("feOffset", {
+                                      attrs: {
+                                        in: "blur",
+                                        dx: "2",
+                                        dy: "2",
+                                        result: "offset"
+                                      }
+                                    }),
+                                    _c("feComposite", {
+                                      attrs: {
+                                        operator: "atop",
+                                        in: "offset",
+                                        in2: "black",
+                                        result: "merge"
+                                      }
+                                    }),
+                                    _c("feComposite", {
+                                      attrs: {
+                                        operator: "in",
+                                        in: "merge",
+                                        in2: "SourceGraphic",
+                                        result: "inner-shadow"
                                       }
                                     })
-                                  ]
+                                  ],
+                                  1
                                 )
-                              ]
-                            )
-                          ]
-                        )
-                      ])
-                    ]),
+                              ]),
+                              _c(
+                                "g",
+                                { attrs: { filter: "url(#editing-hole)" } },
+                                [
+                                  _c(
+                                    "g",
+                                    {
+                                      attrs: {
+                                        transform:
+                                          "translate(179.5799981355667, 87.12406253814697)"
+                                      }
+                                    },
+                                    [
+                                      _c("path", {
+                                        attrs: {
+                                          d:
+                                            "M1.09-3.30L1.09-3.30L1.09-3.30Q1.09-4.19 1.55-6.44L1.55-6.44L3.30-15.35L1.35-15.35L1.49-16.34L1.49-16.34Q5.45-17.52 9.27-20.43L9.27-20.43L10.86-20.43L10.07-16.83L12.64-16.83L12.34-15.35L9.80-15.35L8.12-6.44L8.12-6.44Q7.69-4.39 7.69-3.70L7.69-3.70L7.69-3.70Q7.69-2.11 9.08-1.78L9.08-1.78L9.08-1.78Q8.75-0.66 7.56 0L7.56 0L7.56 0Q6.37 0.66 4.69 0.66L4.69 0.66L4.69 0.66Q3.00 0.66 2.05-0.40L2.05-0.40L2.05-0.40Q1.09-1.45 1.09-3.30ZM23.07-1.39L23.07-1.39L23.07-1.39Q21.48 0.66 17.56 0.66L17.56 0.66L17.56 0.66Q15.51 0.66 14.03-0.58L14.03-0.58L14.03-0.58Q12.54-1.82 12.54-3.60L12.54-3.60L12.54-3.60Q12.54-4.59 12.64-5.08L12.64-5.08L14.85-16.83L21.55-17.49L19.14-4.75L19.14-4.75Q19.01-4.03 19.01-3.60L19.01-3.60L19.01-3.60Q19.01-1.68 20.16-1.68L20.16-1.68L20.16-1.68Q21.45-1.68 22.37-3.43L22.37-3.43L22.37-3.43Q22.67-3.99 22.80-4.72L22.80-4.72L25.15-16.83L31.65-17.49L29.21-4.62L29.21-4.62Q29.11-4.13 29.11-3.60L29.11-3.60L29.11-3.60Q29.11-3.07 29.40-2.49L29.40-2.49L29.40-2.49Q29.70-1.91 30.66-1.78L30.66-1.78L30.66-1.78Q30.46-0.99 29.77-0.46L29.77-0.46L29.77-0.46Q28.31 0.66 26.75 0.66L26.75 0.66L26.75 0.66Q25.18 0.66 24.26 0.10L24.26 0.10L24.26 0.10Q23.33-0.46 23.07-1.39ZM41.32-1.82L41.32-1.82L41.32-1.82Q40.29 0.66 37.03 0.66L37.03 0.66L37.03 0.66Q35.38 0.66 34.32-0.49L34.32-0.49L34.32-0.49Q33.46-1.45 33.46-2.54L33.46-2.54L33.46-2.54Q33.46-5.02 34.62-10.43L34.62-10.43L37.03-23.10L43.73-23.76L40.52-7.06L40.52-7.06Q39.96-4.62 39.96-3.76L39.96-3.76L39.96-3.76Q39.96-1.88 41.32-1.82ZM43.69-1.58L43.69-1.58L47.78-23.10L54.48-23.76L53.46-18.71L53.46-18.71Q53.10-17.16 52.64-16.07L52.64-16.07L52.64-16.07Q53.36-17.00 54.95-17.36L54.95-17.36L54.95-17.36Q55.41-17.49 55.97-17.49L55.97-17.49L55.97-17.49Q59.04-17.49 60.72-15.63L60.72-15.63L60.72-15.63Q62.40-13.76 62.40-10.16L62.40-10.16L62.40-10.16Q62.40-5.48 59.73-2.54L59.73-2.54L59.73-2.54Q56.86 0.66 51.65 0.66L51.65 0.66L51.65 0.66Q48.05 0.66 45.34-0.53L45.34-0.53L45.34-0.53Q44.39-0.96 43.69-1.58ZM52.07-11.55L50.33-1.88L50.33-1.88Q51.02-1.29 51.88-1.29L51.88-1.29L51.88-1.29Q52.73-1.29 53.23-1.62L53.23-1.62L53.23-1.62Q53.72-1.95 54.09-2.61L54.09-2.61L54.09-2.61Q55.08-4.39 55.87-9.83L55.87-9.83L55.87-9.83Q56.10-11.38 56.10-12.94L56.10-12.94L56.10-12.94Q56.10-14.49 55.75-14.98L55.75-14.98L55.75-14.98Q55.41-15.48 54.75-15.48L54.75-15.48L54.75-15.48Q52.73-15.48 52.07-11.55L52.07-11.55ZM71.58 0.66L71.58 0.66L71.58 0.66Q64.32 0.66 64.32-6.17L64.32-6.17L64.32-6.17Q64.32-11.02 66.99-14.16L66.99-14.16L66.99-14.16Q69.83-17.49 74.75-17.49L74.75-17.49L74.75-17.49Q78.31-17.49 80.12-15.84L80.12-15.84L80.12-15.84Q81.94-14.19 81.94-10.72L81.94-10.72L81.94-10.72Q81.94-5.45 79.10-2.38L79.10-2.38L79.10-2.38Q76.33 0.66 71.58 0.66ZM72.44-13.70L72.44-13.70L72.44-13.70Q72.04-12.80 71.73-11.47L71.73-11.47L71.73-11.47Q71.41-10.13 71.02-8.02L71.02-8.02L71.02-8.02Q70.62-5.91 70.62-3.30L70.62-3.30L70.62-3.30Q70.62-2.44 70.90-1.88L70.90-1.88L70.90-1.88Q71.18-1.32 71.94-1.32L71.94-1.32L71.94-1.32Q72.70-1.32 73.18-1.68L73.18-1.68L73.18-1.68Q73.66-2.05 74.02-2.90L74.02-2.90L74.02-2.90Q74.68-4.42 75.21-7.24L75.21-7.24L75.21-7.24Q75.73-10.07 75.78-11.29L75.78-11.29L75.78-11.29Q75.83-12.51 75.83-13.41L75.83-13.41L75.83-13.41Q75.83-14.32 75.57-14.92L75.57-14.92L75.57-14.92Q75.31-15.51 74.56-15.51L74.56-15.51L74.56-15.51Q73.82-15.51 73.33-15.05L73.33-15.05L73.33-15.05Q72.83-14.59 72.44-13.70ZM91.08 0.66L91.08 0.66L91.08 0.66Q83.82 0.66 83.82-6.17L83.82-6.17L83.82-6.17Q83.82-11.02 86.49-14.16L86.49-14.16L86.49-14.16Q89.33-17.49 94.25-17.49L94.25-17.49L94.25-17.49Q97.81-17.49 99.63-15.84L99.63-15.84L99.63-15.84Q101.44-14.19 101.44-10.72L101.44-10.72L101.44-10.72Q101.44-5.45 98.60-2.38L98.60-2.38L98.60-2.38Q95.83 0.66 91.08 0.66ZM91.94-13.70L91.94-13.70L91.94-13.70Q91.54-12.80 91.23-11.47L91.23-11.47L91.23-11.47Q90.92-10.13 90.52-8.02L90.52-8.02L90.52-8.02Q90.12-5.91 90.12-3.30L90.12-3.30L90.12-3.30Q90.12-2.44 90.40-1.88L90.40-1.88L90.40-1.88Q90.68-1.32 91.44-1.32L91.44-1.32L91.44-1.32Q92.20-1.32 92.68-1.68L92.68-1.68L92.68-1.68Q93.16-2.05 93.52-2.90L93.52-2.90L93.52-2.90Q94.18-4.42 94.71-7.24L94.71-7.24L94.71-7.24Q95.24-10.07 95.29-11.29L95.29-11.29L95.29-11.29Q95.34-12.51 95.34-13.41L95.34-13.41L95.34-13.41Q95.34-14.32 95.07-14.92L95.07-14.92L95.07-14.92Q94.81-15.51 94.07-15.51L94.07-15.51L94.07-15.51Q93.32-15.51 92.83-15.05L92.83-15.05L92.83-15.05Q92.33-14.59 91.94-13.70ZM113.72-9.27L113.72-9.27L113.72-9.27Q114.91-11.38 114.91-13.53L114.91-13.53L114.91-13.53Q114.91-14.95 113.88-14.95L113.88-14.95L113.88-14.95Q113.09-14.95 112.27-13.60L112.27-13.60L112.27-13.60Q111.41-12.24 111.14-10.49L111.14-10.49L109.43 0L102.60 0.66L105.96-16.83L111.41-17.49L110.81-14.16L110.81-14.16Q112.43-17.49 116.06-17.49L116.06-17.49L116.06-17.49Q117.98-17.49 119.01-16.50L119.01-16.50L119.01-16.50Q120.05-15.51 120.05-13.48L120.05-13.48L120.05-13.48Q120.05-11.45 118.72-10.16L118.72-10.16L118.72-10.16Q117.38-8.88 115.10-8.88L115.10-8.88L115.10-8.88Q114.11-8.88 113.72-9.27ZM131.18-1.39L131.18-1.39L131.18-1.39Q129.59 0.66 125.66 0.66L125.66 0.66L125.66 0.66Q123.62 0.66 122.13-0.58L122.13-0.58L122.13-0.58Q120.65-1.82 120.65-3.60L120.65-3.60L120.65-3.60Q120.65-4.59 120.75-5.08L120.75-5.08L122.96-16.83L129.66-17.49L127.25-4.75L127.25-4.75Q127.12-4.03 127.12-3.60L127.12-3.60L127.12-3.60Q127.12-1.68 128.27-1.68L128.27-1.68L128.27-1.68Q129.56-1.68 130.48-3.43L130.48-3.43L130.48-3.43Q130.78-3.99 130.91-4.72L130.91-4.72L133.25-16.83L139.75-17.49L137.31-4.62L137.31-4.62Q137.21-4.13 137.21-3.60L137.21-3.60L137.21-3.60Q137.21-3.07 137.51-2.49L137.51-2.49L137.51-2.49Q137.81-1.91 138.76-1.78L138.76-1.78L138.76-1.78Q138.57-0.99 137.87-0.46L137.87-0.46L137.87-0.46Q136.42 0.66 134.85 0.66L134.85 0.66L134.85 0.66Q133.29 0.66 132.36 0.10L132.36 0.10L132.36 0.10Q131.44-0.46 131.18-1.39Z",
+                                          fill: "#ccc"
+                                        }
+                                      })
+                                    ]
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        ])
+                      ]
+                    ),
                     _vm._v(" "),
                     _c(
                       "p",
@@ -22223,71 +22248,33 @@ var render = function() {
           "div",
           { key: each.data.image_id, staticClass: "w-1/2 md:w-1/3 lg:w-1/6" },
           [
-            each.data.format === "webm"
-              ? _c(
-                  "div",
+            _c(
+              "div",
+              [
+                _c(
+                  "router-link",
+                  {
+                    attrs: {
+                      to: {
+                        name: "ImageShow",
+                        params: { id: each.data.image_id }
+                      }
+                    }
+                  },
                   [
-                    _c(
-                      "router-link",
-                      {
-                        attrs: {
-                          to: {
-                            name: "ImageShow",
-                            params: {
-                              id: each.data.image_id,
-                              currentPageIndex: _vm.index
-                            }
-                          }
-                        }
-                      },
-                      [
-                        _c(
-                          "video",
-                          {
-                            staticClass:
-                              "block h-64 w-64 object-none object-cover hover:opacity-75"
-                          },
-                          [
-                            _c("source", {
-                              attrs: { src: each.data.url, type: "video/webm" }
-                            })
-                          ]
-                        )
-                      ]
-                    )
-                  ],
-                  1
+                    _c("img", {
+                      staticClass:
+                        "block h-64 w-64 object-none object-cover hover:opacity-75",
+                      attrs: {
+                        src: each.data.thumbnail_url,
+                        alt: "placeholder"
+                      }
+                    })
+                  ]
                 )
-              : _c(
-                  "div",
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        attrs: {
-                          to: {
-                            name: "ImageShow",
-                            params: {
-                              id: each.data.image_id,
-                              currentPageIndex: _vm.index
-                            }
-                          }
-                        }
-                      },
-                      [
-                        _c("img", {
-                          staticClass:
-                            "block h-64 w-64 object-none object-cover hover:opacity-75",
-                          attrs: {
-                            src: each.data.thumbnail_url,
-                            alt: "placeholder"
-                          }
-                        })
-                      ]
-                    )
-                  ],
-                  1
-                )
+              ],
+              1
+            )
           ]
         )
       }),
@@ -22300,8 +22287,7 @@ var render = function() {
               "mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
-                _vm.changeCurrentPage(_vm.index - 1)
-                _vm.index--
+                return _vm.changeCurrentPage("-")
               }
             }
           },
@@ -22315,8 +22301,7 @@ var render = function() {
               "ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
-                _vm.changeCurrentPage(_vm.index + 1)
-                _vm.index++
+                return _vm.changeCurrentPage("+")
               }
             }
           },
@@ -22495,7 +22480,7 @@ var render = function() {
         ? _c("div", [_vm._v("Loading...")])
         : _c("div", [
             _c("div", { staticClass: "flex justify-between" }, [
-              _vm.isTaged
+              this.$globalParams.postedBy !== undefined
                 ? _c(
                     "div",
                     [
@@ -22504,8 +22489,13 @@ var render = function() {
                         {
                           attrs: {
                             to: {
-                              name: "Tags",
-                              params: { currentPageIndex: _vm.index }
+                              name: "IndexPostedBy",
+                              params: {
+                                id: this.$globalParams.postedBy,
+                                indexWithParam: {
+                                  postedBy: this.$globalParams.postedBy
+                                }
+                              }
                             }
                           }
                         },
@@ -22517,18 +22507,9 @@ var render = function() {
                 : _c(
                     "div",
                     [
-                      _c(
-                        "router-link",
-                        {
-                          attrs: {
-                            to: {
-                              name: "Index",
-                              params: { currentPageIndex: _vm.index }
-                            }
-                          }
-                        },
-                        [_vm._v("< Back")]
-                      )
+                      _c("router-link", { attrs: { to: { name: "Index" } } }, [
+                        _vm._v("< Back")
+                      ])
                     ],
                     1
                   ),
@@ -22751,7 +22732,15 @@ var render = function() {
                 _c(
                   "router-link",
                   {
-                    attrs: { to: { path: "/imgs/index/" + _vm.post.user_id } }
+                    attrs: {
+                      to: {
+                        name: "IndexPostedBy",
+                        params: {
+                          id: _vm.post.user_id,
+                          indexWithParam: { postedBy: _vm.post.user_id }
+                        }
+                      }
+                    }
                   },
                   [_vm._v(_vm._s(_vm.post.user_name))]
                 )
@@ -37899,8 +37888,13 @@ var options = {
 };
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$adminId = 1;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxReportedCount = 5;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$globalParams = {
+  currentPageIndex: 0,
+  postedBy: undefined,
+  tagIDs: undefined
+};
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$tag_ids = [];
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 24;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 2;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxSizePerEachItem = 20;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 
@@ -38137,12 +38131,13 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     name: 'Index',
     component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
   }, {
+    path: '/imgs/user/:id',
+    name: 'IndexPostedBy',
+    component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
+  }, {
     path: '/imgs/create',
     name: 'Create',
     component: _views_ImageCreate__WEBPACK_IMPORTED_MODULE_3__["default"]
-  }, {
-    path: '/imgs/index/:id',
-    component: _views_ImageIndexWithUser__WEBPACK_IMPORTED_MODULE_6__["default"]
   }, {
     path: '/imgs/tags',
     name: 'Tags',

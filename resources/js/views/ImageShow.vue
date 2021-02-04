@@ -6,12 +6,18 @@
             <div v-else>
             
                 <div class="flex justify-between">
-                    <div v-if="isTaged">
+                    <div v-if="this.$globalParams.postedBy !== undefined">
+                        <router-link :to="{ name: 'IndexPostedBy', params: { id: this.$globalParams.postedBy, indexWithParam: { postedBy: this.$globalParams.postedBy } } }">< Back</router-link>
+                    </div>
+                    <div v-else>
+                        <router-link :to="{ name: 'Index' }">< Back</router-link>
+                    </div>
+                    <!-- <div v-if="isTaged">
                         <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
                     </div>
                     <div v-else>
                         <router-link :to="{ name: 'Index', params: { currentPageIndex: index } }">< Back</router-link>
-                    </div>
+                    </div> -->
                         
                     <div class="relative">
                         <div>
@@ -54,8 +60,6 @@
                     </div>
                 </div>
 
-                
-
                 <div class="">
                     <div class="border-b border-gray-500">
                         <p class="pt-6 text-gray-600 font-bold uppercase text-sm">Description</p>
@@ -70,7 +74,7 @@
                     </div>
 
                     <p class="pt-6 pb-2 text-gray-600 font-bold uppercase text-sm">Uploader</p>
-                    <router-link :to="{ path: '/imgs/index/' + post.user_id }">{{ post.user_name }}</router-link>
+                    <router-link :to="{ name: 'IndexPostedBy', params: { id: post.user_id, indexWithParam: { postedBy: post.user_id } } }">{{ post.user_name }}</router-link>
                 </div>
 
             </div>
@@ -93,19 +97,13 @@ export default {
         return {
             post: null,
             modal: false,
-            loading: true,
-            isTaged: false,
-            index: 0,
+            loading: true
         }
     },
 
     mounted()
     {
-        if (this.$route.params.currentPageIndex != null)
-        {
-            console.log(this.$route.params.currentPageIndex);
-            this.index = this.$route.params.currentPageIndex;
-        }
+        console.log("this.$globalParams: ", this.$globalParams);
         
         axios.get('/api/imgs/' + this.$route.params.id)
                 .then( response => {
@@ -118,11 +116,7 @@ export default {
                         this.$router.push('/imgs');
                     }
                 });
-            
-        if (this.$route.params.isTaged)
-        {
-            this.isTaged = true;
-        }
+        console.log("============================");
     },
 
     methods: {

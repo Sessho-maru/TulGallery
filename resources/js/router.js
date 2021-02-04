@@ -20,13 +20,14 @@ export default new VueRouter({
             component: ImageIndex
         },
         {
+            path: '/imgs/user/:id',
+            name: 'IndexPostedBy',
+            component: ImageIndex
+        },
+        {
             path: '/imgs/create',
             name: 'Create',
             component: ImageCreate
-        },
-        {
-            path: '/imgs/index/:id',
-            component: ImageIndexWithUser
         },
         {
             path: '/imgs/tags',

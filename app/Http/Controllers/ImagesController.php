@@ -102,7 +102,7 @@ class ImagesController extends Controller
         if (gettype($tags_vaildated) === 'object')
         {
             return $tags_vaildated;
-        } // $tags_vaildated would be object type when tagVaildation() fail
+        } // $tags_vaildated would be resopnseObject type when tagVaildation() fail
 
         $image = request()->user()->images()->create([
             'user_id' => request()->user()->id,
@@ -150,7 +150,7 @@ class ImagesController extends Controller
             if (gettype($tags_vaildated) === 'object')
             {
                 return $tags_vaildated;
-            } // $tags_vaildated would be object type when tagVaildation() fail
+            } // $tags_vaildated would be resopnseObject type when tagVaildation() fail
             
             DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
             foreach ($tags_vaildated as $tagName)
@@ -189,11 +189,9 @@ class ImagesController extends Controller
         return response([], 204);
     }
 
-    /*
     public function index_withUser()
     {
         // $this->authorize('viewAny', Image::class); All Registered User can view any Images
         return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
     }
-    */
 }
