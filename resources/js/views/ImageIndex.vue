@@ -40,16 +40,19 @@ export default {
 
     mounted() {
 
-        console.log("this.$globalParams: ", this.$globalParams);
-        
         // with Params
         if (this.$route.params.indexWithParam !== undefined)
         {
+            if (this.$route.params.indexReset !== undefined)
+            {
+                this.$globalParams.currentPageIndex = this.$route.params.indexReset;
+            }
+
             if (this.$route.params.indexWithParam.postedBy !== undefined)
             {
                 this.$globalParams.postedBy = this.$route.params.indexWithParam.postedBy;
+                console.log("this.$globalParams: ", this.$globalParams);
                 
-                console.log("All posts posted by user: ", this.$globalParams.postedBy);
                 axios.get('/api/imgs/user/' + this.$globalParams.postedBy)
                     .then( response => {
                         this.fetched = response.data.data;

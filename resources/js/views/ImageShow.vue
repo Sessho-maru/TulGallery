@@ -74,7 +74,7 @@
                     </div>
 
                     <p class="pt-6 pb-2 text-gray-600 font-bold uppercase text-sm">Uploader</p>
-                    <router-link :to="{ name: 'IndexPostedBy', params: { id: post.user_id, indexWithParam: { postedBy: post.user_id } } }">{{ post.user_name }}</router-link>
+                    <router-link :to="{ name: 'IndexPostedBy', params: { id: post.user_id, indexWithParam: { postedBy: post.user_id }, indexReset: 0 } }">{{ post.user_name }}</router-link>
                 </div>
 
             </div>
