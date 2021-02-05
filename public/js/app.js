@@ -1891,6 +1891,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/SearchBar */ "./resources/js/components/SearchBar.vue");
+/* harmony import */ var _eventBus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../eventBus */ "./resources/js/eventBus.js");
 //
 //
 //
@@ -1969,6 +1970,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
@@ -1999,6 +2001,9 @@ __webpack_require__.r(__webpack_exports__);
       while (this.$tag_ids.length > 0) {
         console.log(this.$tag_ids.pop());
       }
+    },
+    tagInserted: function tagInserted() {
+      _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$emit('reRender');
     },
     tagSearchInit: function tagSearchInit(string) {
       this.SearchBarVisible = false;
@@ -2052,14 +2057,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "Searachbar",
+  name: "SearchBar",
   props: ['api_token'],
   data: function data() {
     return {
       searchTerm: "",
-      serchResults: [],
+      searchResult: [],
       selectedTagNames: "",
       focus: false
     };
@@ -2075,14 +2081,20 @@ __webpack_require__.r(__webpack_exports__);
           api_token: this.api_token,
           searchTerm: this.searchTerm
         }).then(function (response) {
-          _this.serchResults = response.data;
+          _this.searchResult = response.data;
         })["catch"](function (errors) {
           console.log(errors.resopnse);
         });
       }
     }, 300),
-    AddTagId: function AddTagId(id) {
-      this.$tag_ids.push(id);
+    addTag: function addTag(tagObject) {
+      this.$globalParams.tagObjectArray.push(tagObject);
+      console.log("New Tag inserted, GlobalTagObjectyArray", this.$globalParams.tagObjectArray);
+      var element = document.getElementById(tagObject.id);
+      element.classList.add("hidden");
+      this.searchResult = [];
+      this.searchTerm = '';
+      this.focus = false;
     },
     AddTagName: function AddTagName(tagName) {
       this.selectedTagNames += tagName + ' || ';
@@ -2532,6 +2544,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _eventBus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../eventBus */ "./resources/js/eventBus.js");
 //
 //
 //
@@ -2558,6 +2571,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+_eventBus__WEBPACK_IMPORTED_MODULE_0__["EVENT_BUS"].$on('reRender', function () {
+  console.log('receiving reRender event');
+});
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageIndex",
   data: function data() {
@@ -21627,11 +21644,7 @@ var render = function() {
                           [
                             _c("SearchBar", {
                               attrs: { id: "search_bar" },
-                              on: {
-                                search: function($event) {
-                                  return _vm.tagSearchInit($event)
-                                }
-                              }
+                              on: { newTagInserted: _vm.tagInserted }
                             })
                           ],
                           1
@@ -21684,134 +21697,104 @@ var render = function() {
           on: {
             click: function($event) {
               _vm.focus = false
-              _vm.serchResults = []
+              _vm.searchResult = []
             }
           }
         })
       : _vm._e(),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "relative z-10", attrs: { id: "search_bar" } },
-      [
-        _c("div", { staticClass: "absolute" }, [
-          _c(
-            "svg",
+    _c("div", { staticClass: "relative z-10", attrs: { id: "search_bar" } }, [
+      _c("div", { staticClass: "absolute" }, [
+        _c(
+          "svg",
+          { staticClass: "w-5 h-5 mt-2 ml-2", attrs: { viewBox: "0 0 24 24" } },
+          [
+            _c("path", {
+              attrs: {
+                "fill-rule": "evenodd",
+                d:
+                  "M20.2 18.1l-1.4 1.3-5.5-5.2 1.4-1.3 5.5 5.2zM7.5 12c-2.7 0-4.9-2.1-4.9-4.6s2.2-4.6 4.9-4.6 4.9 2.1 4.9 4.6S10.2 12 7.5 12zM7.5.8C3.7.8.7 3.7.7 7.3s3.1 6.5 6.8 6.5c3.8 0 6.8-2.9 6.8-6.5S11.3.8 7.5.8z",
+                "clip-rule": "evenodd"
+              }
+            })
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.searchTerm,
+            expression: "searchTerm"
+          }
+        ],
+        staticClass:
+          "w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100",
+        attrs: {
+          type: "text",
+          placeholder: _vm.selectedTagNames,
+          id: "searchTerm"
+        },
+        domProps: { value: _vm.searchTerm },
+        on: {
+          input: [
+            function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.searchTerm = $event.target.value
+            },
+            _vm.search
+          ],
+          focus: function($event) {
+            _vm.focus = true
+          }
+        }
+      }),
+      _vm._v(" "),
+      _vm.focus
+        ? _c(
+            "div",
             {
-              staticClass: "w-5 h-5 mt-2 ml-2",
-              attrs: { viewBox: "0 0 24 24" }
+              staticClass:
+                "absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20"
             },
             [
-              _c("path", {
-                attrs: {
-                  "fill-rule": "evenodd",
-                  d:
-                    "M20.2 18.1l-1.4 1.3-5.5-5.2 1.4-1.3 5.5 5.2zM7.5 12c-2.7 0-4.9-2.1-4.9-4.6s2.2-4.6 4.9-4.6 4.9 2.1 4.9 4.6S10.2 12 7.5 12zM7.5.8C3.7.8.7 3.7.7 7.3s3.1 6.5 6.8 6.5c3.8 0 6.8-2.9 6.8-6.5S11.3.8 7.5.8z",
-                  "clip-rule": "evenodd"
-                }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.searchTerm,
-              expression: "searchTerm"
-            }
-          ],
-          staticClass:
-            "w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100",
-          attrs: {
-            type: "text",
-            placeholder: _vm.selectedTagNames,
-            id: "searchTerm"
-          },
-          domProps: { value: _vm.searchTerm },
-          on: {
-            input: [
-              function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.searchTerm = $event.target.value
-              },
-              _vm.search
-            ],
-            focus: function($event) {
-              _vm.focus = true
-            }
-          }
-        }),
-        _vm._v(" "),
-        _vm.focus
-          ? _c(
-              "div",
-              {
-                staticClass:
-                  "absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20"
-              },
-              [
-                _vm.serchResults == 0
-                  ? _c("div", [
-                      _vm._v(
-                        "No serchResults found for '" +
-                          _vm._s(_vm.searchTerm) +
-                          "'"
-                      )
-                    ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm._l(_vm.serchResults, function(result) {
-                  return _c("div", { key: result.id }, [
-                    _c(
-                      "p",
-                      {
-                        staticClass: "py-2",
-                        attrs: { id: result.id },
-                        on: {
-                          click: function($event) {
-                            _vm.AddTagId(result.id)
-                            _vm.AddTagName(result.tag_name)
-                            _vm.hide(result.id)
-                            _vm.serchResults = []
-                            _vm.searchTerm = ""
-                            _vm.focus = false
-                          }
-                        }
-                      },
-                      [_vm._v(_vm._s(result.tag_name))]
+              _vm.searchResult.length === 0
+                ? _c("div", [
+                    _vm._v(
+                      "No searchResult found for '" +
+                        _vm._s(_vm.searchTerm) +
+                        "'"
                     )
                   ])
-                })
-              ],
-              2
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _c("router-link", { attrs: { to: { name: "Tags" } } }, [
-          this.$tag_ids.length > 0
-            ? _c("div", { staticClass: "inline" }, [
-                _c(
-                  "button",
-                  {
-                    on: {
-                      click: function($event) {
-                        return _vm.$emit("search", _vm.selectedTagNames)
+                : _vm._e(),
+              _vm._v(" "),
+              _vm._l(_vm.searchResult, function(result) {
+                return _c("div", { key: result.id }, [
+                  _c(
+                    "p",
+                    {
+                      staticClass: "py-2",
+                      attrs: { id: result.id },
+                      on: {
+                        click: function($event) {
+                          _vm.addTag({ id: result.id, name: result.tag_name })
+                          _vm.$emit("newTagInserted")
+                        }
                       }
-                    }
-                  },
-                  [_vm._v("Search")]
-                )
-              ])
-            : _vm._e()
-        ])
-      ],
-      1
-    )
+                    },
+                    [_vm._v(_vm._s(result.tag_name))]
+                  )
+                ])
+              })
+            ],
+            2
+          )
+        : _vm._e()
+    ])
   ])
 }
 var staticRenderFns = []
@@ -37895,7 +37878,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxReportedCount = 5;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$globalParams = {
   currentPageIndex: 0,
   postedBy: undefined,
-  tagIDs: undefined
+  tagObjectArray: []
 };
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$tag_ids = [];
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 2;
@@ -38094,6 +38077,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SearchBar_vue_vue_type_template_id_6849e9f0_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/eventBus.js":
+/*!**********************************!*\
+  !*** ./resources/js/eventBus.js ***!
+  \**********************************/
+/*! exports provided: EVENT_BUS */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENT_BUS", function() { return EVENT_BUS; });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+
+var EVENT_BUS = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 
 /***/ }),
 

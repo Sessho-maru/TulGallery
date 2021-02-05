@@ -13,7 +13,7 @@ const options = {
 
 Vue.prototype.$adminId = 1;
 Vue.prototype.$maxReportedCount = 5;
-Vue.prototype.$globalParams = { currentPageIndex: 0, postedBy: undefined, tagIDs: undefined };
+Vue.prototype.$globalParams = { currentPageIndex: 0, postedBy: undefined, tagObjectArray: [] };
 
 Vue.prototype.$tag_ids = [];
 

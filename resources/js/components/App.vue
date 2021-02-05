@@ -61,7 +61,7 @@
                         </div>
                         
                         <div v-if="SearchBarVisible == true">
-                            <SearchBar id="search_bar" @search="tagSearchInit($event)"/>
+                            <SearchBar id="search_bar" @newTagInserted="tagInserted"/>
                         </div>
                     </div> <!-- top section -->
 
@@ -78,6 +78,7 @@
 
 <script>
 import SearchBar from '../components/SearchBar';
+import { EVENT_BUS } from '../eventBus';
 
 export default {
     name: "App",
@@ -121,6 +122,11 @@ export default {
             {
                 console.log(this.$tag_ids.pop());
             }
+        },
+
+        tagInserted()
+        {
+            EVENT_BUS.$emit('reRender');
         },
 
         tagSearchInit(string)

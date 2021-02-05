@@ -25,6 +25,12 @@
 </template>
 
 <script>
+import { EVENT_BUS } from '../eventBus';
+
+EVENT_BUS.$on('reRender', () => {
+    console.log('receiving reRender event');
+});
+
 export default {
 
     name: "ImageIndex",
@@ -52,7 +58,7 @@ export default {
             {
                 this.$globalParams.postedBy = this.$route.params.indexWithParam.postedBy;
                 console.log("this.$globalParams: ", this.$globalParams);
-                
+
                 axios.get('/api/imgs/user/' + this.$globalParams.postedBy)
                     .then( response => {
                         this.fetched = response.data.data;
