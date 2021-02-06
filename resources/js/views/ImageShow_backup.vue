@@ -7,13 +7,10 @@
             
                 <div class="flex justify-between">
                     <div v-if="this.$globalParams.postedBy !== undefined">
-                        <router-link :to="{ name: 'IndexPostedBy', params: { postedBy: this.$globalParams.postedBy } }" replace>< Back</router-link>
-                    </div>
-                    <div v-else-if="this.$globalParams.tagObjectArray.length !== 0">
-                        <router-link :to="{ name: 'IndexTaggedBy', params: { tagged: true } }" replace>< Back</router-link>
+                        <router-link :to="{ name: 'IndexPostedBy', params: { id: this.$globalParams.postedBy, indexWithParam: { postedBy: this.$globalParams.postedBy } } }">< Back</router-link>
                     </div>
                     <div v-else>
-                        <router-link :to="{ name: 'Index' }" replace>< Back</router-link>
+                        <router-link :to="{ name: 'Index' }">< Back</router-link>
                     </div>
                     <!-- <div v-if="isTaged">
                         <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
@@ -77,7 +74,7 @@
                     </div>
 
                     <p class="pt-6 pb-2 text-gray-600 font-bold uppercase text-sm">Uploader</p>
-                    <router-link :to="{ name: 'IndexPostedBy', params: { postedBy: post.user_id, pageIndexReset: true } }">{{ post.user_name }}</router-link>
+                    <router-link :to="{ name: 'IndexPostedBy', params: { id: post.user_id, indexWithParam: { postedBy: post.user_id }, indexReset: 0 } }">{{ post.user_name }}</router-link>
                 </div>
 
             </div>
@@ -119,6 +116,7 @@ export default {
                         this.$router.push('/imgs');
                     }
                 });
+        console.log("============================");
     },
 
     methods: {

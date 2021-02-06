@@ -57,12 +57,10 @@
 
                     <div class="h-16 px-6 border-b border-gray-400 flex items-center justify-between">
                         <div class="mr-64">
-                            {{ message }}
+                            {{ selectedTagNames }}
                         </div>
                         
-                        <div v-if="SearchBarVisible == true">
-                            <SearchBar id="search_bar" @newTagInserted="tagInserted"/>
-                        </div>
+                        <SearchBar id="search_bar"/>
                     </div> <!-- top section -->
 
                     <router-view v-bind:api_token="someone.api_token" v-bind:user_id="someone.id" class="flex flex-1 flex-wrap p-6" /><!-- bottom section -->
@@ -86,9 +84,9 @@ export default {
     data()
     {
         return {
+            someone: {},
+            selectedTagNames: "",
             SearchBarVisible: true,
-            message: "",
-            someone: {}
         }
     },
 
@@ -98,6 +96,16 @@ export default {
 
     components: {
         SearchBar
+    },
+
+    created()
+    {
+        EVENT_BUS.$on('NewTagAndReRender', () => {
+            this.selectedTagNames = "";
+            this.$globalParams.tagObjectArray.map( (each) => {
+                this.selectedTagNames += each.name;
+            });
+        });
     },
 
     mounted() {
@@ -112,11 +120,16 @@ export default {
         }
     },
 
+    destroyed()
+    {
+        EVENT_BUS.$off();
+    },
+
     methods: {
         flushAndReset()
         {
             this.SearchBarVisible = true;
-            this.message = '';
+            this.selectedTagNames = '';
             
             while (this.$tag_ids.length > 0)
             {
@@ -124,20 +137,24 @@ export default {
             }
         },
 
-        tagInserted()
-        {
-            EVENT_BUS.$emit('reRender');
-        },
+        // tagInserted()
+        // {
+        //     this.selectedTagNames = "";
+        //     this.$globalParams.tagObjectArray.map( (each) => {
+        //         this.selectedTagNames += each.name;
+        //     });
+
+        //     EVENT_BUS.$emit('NewTagAndReRender');
+        // },
 
         tagSearchInit(string)
         {
-            this.SearchBarVisible = false;
             this.showMessage(string);
         },
 
         showMessage(tagNames)
         {
-            this.message = `result with: ${tagNames.substring(0, tagNames.length - 3)}(click left logo to flush)`;
+            this.selectedTagNames = `result with: ${tagNames.substring(0, tagNames.length - 3)}(click left logo to flush)`;
         }
     }
 }

@@ -1968,22 +1968,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
   data: function data() {
     return {
-      SearchBarVisible: true,
-      message: "",
-      someone: {}
+      someone: {},
+      selectedTagNames: "",
+      SearchBarVisible: true
     };
   },
   props: ['user'],
   components: {
     SearchBar: _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  created: function created() {
+    var _this = this;
+
+    _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$on('NewTagAndReRender', function () {
+      _this.selectedTagNames = "";
+
+      _this.$globalParams.tagObjectArray.map(function (each) {
+        _this.selectedTagNames += each.name;
+      });
+    });
   },
   mounted: function mounted() {
     if (this.user === undefined) {
@@ -1993,24 +2002,31 @@ __webpack_require__.r(__webpack_exports__);
       console.log("User login as", this.someone);
     }
   },
+  destroyed: function destroyed() {
+    _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$off();
+  },
   methods: {
     flushAndReset: function flushAndReset() {
       this.SearchBarVisible = true;
-      this.message = '';
+      this.selectedTagNames = '';
 
       while (this.$tag_ids.length > 0) {
         console.log(this.$tag_ids.pop());
       }
     },
-    tagInserted: function tagInserted() {
-      _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$emit('reRender');
-    },
+    // tagInserted()
+    // {
+    //     this.selectedTagNames = "";
+    //     this.$globalParams.tagObjectArray.map( (each) => {
+    //         this.selectedTagNames += each.name;
+    //     });
+    //     EVENT_BUS.$emit('NewTagAndReRender');
+    // },
     tagSearchInit: function tagSearchInit(string) {
-      this.SearchBarVisible = false;
       this.showMessage(string);
     },
     showMessage: function showMessage(tagNames) {
-      this.message = "result with: ".concat(tagNames.substring(0, tagNames.length - 3), "(click left logo to flush)");
+      this.selectedTagNames = "result with: ".concat(tagNames.substring(0, tagNames.length - 3), "(click left logo to flush)");
     }
   }
 });
@@ -2028,6 +2044,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _eventBus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../eventBus */ "./resources/js/eventBus.js");
 //
 //
 //
@@ -2058,6 +2075,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "SearchBar",
@@ -2087,7 +2105,7 @@ __webpack_require__.r(__webpack_exports__);
         });
       }
     }, 300),
-    addTag: function addTag(tagObject) {
+    addTagAndEmitEvent: function addTagAndEmitEvent(tagObject) {
       this.$globalParams.tagObjectArray.push(tagObject);
       console.log("New Tag inserted, GlobalTagObjectyArray", this.$globalParams.tagObjectArray);
       var element = document.getElementById(tagObject.id);
@@ -2095,6 +2113,8 @@ __webpack_require__.r(__webpack_exports__);
       this.searchResult = [];
       this.searchTerm = '';
       this.focus = false;
+      $emit('NewTagInserted');
+      _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$emit('NewTagAndReRender');
     },
     AddTagName: function AddTagName(tagName) {
       this.selectedTagNames += tagName + ' || ';
@@ -2572,53 +2592,100 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
-_eventBus__WEBPACK_IMPORTED_MODULE_0__["EVENT_BUS"].$on('reRender', function () {
-  console.log('receiving reRender event');
-});
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageIndex",
   data: function data() {
     return {
       fetched: [],
       paginated: [],
-      currentPage: [],
-      index: 0
+      currentPage: []
     };
   },
-  mounted: function mounted() {
+  created: function created() {
     var _this = this;
 
-    // with Params
-    if (this.$route.params.indexWithParam !== undefined) {
-      if (this.$route.params.indexReset !== undefined) {
-        this.$globalParams.currentPageIndex = this.$route.params.indexReset;
+    _eventBus__WEBPACK_IMPORTED_MODULE_0__["EVENT_BUS"].$on('NewTagAndReRender', function () {
+      console.log("Search with: ", _this.$globalParams.tagObjectArray);
+      _this.$globalParams.currentPageIndex = 0;
+
+      if (_this.$globalParams.postedBy !== undefined) {
+        _this.$globalParams.postedBy = undefined;
       }
 
-      if (this.$route.params.indexWithParam.postedBy !== undefined) {
-        this.$globalParams.postedBy = this.$route.params.indexWithParam.postedBy;
-        console.log("this.$globalParams: ", this.$globalParams);
-        axios.get('/api/imgs/user/' + this.$globalParams.postedBy).then(function (response) {
-          _this.fetched = response.data.data;
+      _this.taggedBy();
+    });
+  },
+  mounted: function mounted() {
+    var _this2 = this;
 
-          _this.pagenatedPosts(_this.fetched);
-        })["catch"](function (errors) {
-          console.log(errors);
-          alert("Unable to Fetch Images");
-        });
+    console.log("Passed params from ImageShow Component: ", this.$route.params);
+
+    if (this.$route.params.postedBy !== undefined) {
+      if (this.$route.params.pageIndexReset === true) {
+        this.$globalParams.currentPageIndex = 0;
       }
-    } else {
-      axios.get('/api/imgs').then(function (response) {
-        _this.fetched = response.data.data;
 
-        _this.pagenatedPosts(_this.fetched);
+      if (this.$globalParams.tagObjectArray.length > 0) {
+        this.$globalParams.tagObjectArray = [];
+      }
+
+      this.$globalParams.postedBy = this.$route.params.postedBy;
+      this.postedBy();
+      return;
+    }
+
+    if (this.$route.params.tagged === true) {
+      this.taggedBy();
+      return;
+    }
+
+    axios.get('/api/imgs').then(function (response) {
+      _this2.fetched = response.data.data;
+
+      _this2.pagenatedPosts(_this2.fetched);
+    })["catch"](function (errors) {
+      console.log(errors);
+      alert("Unable to Fetch Images");
+    });
+  },
+  destroyed: function destroyed() {
+    _eventBus__WEBPACK_IMPORTED_MODULE_0__["EVENT_BUS"].$off();
+  },
+  methods: {
+    taggedBy: function taggedBy() {
+      var _this3 = this;
+
+      var tagIds = [];
+      this.$globalParams.tagObjectArray.map(function (each) {
+        tagIds.push(each.id);
+      });
+      axios.get('/api/tag', {
+        params: {
+          data: tagIds
+        }
+      }).then(function (response) {
+        _this3.fetched = response.data.data;
+
+        _this3.pagenatedPosts(_this3.fetched);
       })["catch"](function (errors) {
         console.log(errors);
         alert("Unable to Fetch Images");
       });
-    }
-  },
-  methods: {
+    },
+    postedBy: function postedBy() {
+      var _this4 = this;
+
+      axios.get('/api/imgs/user/' + this.$globalParams.postedBy).then(function (response) {
+        _this4.fetched = response.data.data;
+
+        _this4.pagenatedPosts(_this4.fetched);
+      })["catch"](function (errors) {
+        console.log(errors);
+        alert("Unable to Fetch Images");
+      });
+    },
     pagenatedPosts: function pagenatedPosts(posts) {
+      this.paginated = [];
       console.log("Received image posts", posts);
       var pageSize = Math.ceil(posts.length / this.$itemNumPerPage);
 
@@ -2643,7 +2710,8 @@ _eventBus__WEBPACK_IMPORTED_MODULE_0__["EVENT_BUS"].$on('reRender', function () 
 
 
       this.changeCurrentPage();
-      console.log("Pagenated content", this.paginated);
+      console.log("Pagenated content: ", this.paginated);
+      console.log("current Page Index: ", this.$globalParams.currentPageIndex);
       console.log("============================");
     },
     changeCurrentPage: function changeCurrentPage() {
@@ -2663,8 +2731,10 @@ _eventBus__WEBPACK_IMPORTED_MODULE_0__["EVENT_BUS"].$on('reRender', function () 
         }
       }
 
-      console.log("current Page Index: " + this.$globalParams.currentPageIndex);
       this.currentPage = this.paginated[this.$globalParams.currentPageIndex];
+    },
+    consoleLogIndex: function consoleLogIndex() {
+      console.log("current Page Index: ", this.$globalParams.currentPageIndex);
     }
   }
 });
@@ -2905,6 +2975,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ImageShow",
   props: ['api_token', 'user_id'],
@@ -2927,7 +3000,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.$router.push('/imgs');
       }
     });
-    console.log("============================");
   },
   methods: {
     report: function report() {
@@ -21633,24 +21705,14 @@ var render = function() {
                     _c("div", { staticClass: "mr-64" }, [
                       _vm._v(
                         "\n                        " +
-                          _vm._s(_vm.message) +
+                          _vm._s(_vm.selectedTagNames) +
                           "\n                    "
                       )
                     ]),
                     _vm._v(" "),
-                    _vm.SearchBarVisible == true
-                      ? _c(
-                          "div",
-                          [
-                            _c("SearchBar", {
-                              attrs: { id: "search_bar" },
-                              on: { newTagInserted: _vm.tagInserted }
-                            })
-                          ],
-                          1
-                        )
-                      : _vm._e()
-                  ]
+                    _c("SearchBar", { attrs: { id: "search_bar" } })
+                  ],
+                  1
                 ),
                 _vm._v(" "),
                 _c("router-view", {
@@ -21777,12 +21839,14 @@ var render = function() {
                   _c(
                     "p",
                     {
-                      staticClass: "py-2",
+                      staticClass: "py-2 px-4 rounded-lg hover:bg-blue-700",
                       attrs: { id: result.id },
                       on: {
                         click: function($event) {
-                          _vm.addTag({ id: result.id, name: result.tag_name })
-                          _vm.$emit("newTagInserted")
+                          return _vm.addTagAndEmitEvent({
+                            id: result.id,
+                            name: result.tag_name
+                          })
                         }
                       }
                     },
@@ -22273,7 +22337,8 @@ var render = function() {
               "mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
-                return _vm.changeCurrentPage("-")
+                _vm.changeCurrentPage("-")
+                _vm.consoleLogIndex()
               }
             }
           },
@@ -22287,7 +22352,8 @@ var render = function() {
               "ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
-                return _vm.changeCurrentPage("+")
+                _vm.changeCurrentPage("+")
+                _vm.consoleLogIndex()
               }
             }
           },
@@ -22476,13 +22542,29 @@ var render = function() {
                           attrs: {
                             to: {
                               name: "IndexPostedBy",
-                              params: {
-                                id: this.$globalParams.postedBy,
-                                indexWithParam: {
-                                  postedBy: this.$globalParams.postedBy
-                                }
-                              }
-                            }
+                              params: { postedBy: this.$globalParams.postedBy }
+                            },
+                            replace: ""
+                          }
+                        },
+                        [_vm._v("< Back")]
+                      )
+                    ],
+                    1
+                  )
+                : this.$globalParams.tagObjectArray.length !== 0
+                ? _c(
+                    "div",
+                    [
+                      _c(
+                        "router-link",
+                        {
+                          attrs: {
+                            to: {
+                              name: "IndexTaggedBy",
+                              params: { tagged: true }
+                            },
+                            replace: ""
                           }
                         },
                         [_vm._v("< Back")]
@@ -22493,9 +22575,11 @@ var render = function() {
                 : _c(
                     "div",
                     [
-                      _c("router-link", { attrs: { to: { name: "Index" } } }, [
-                        _vm._v("< Back")
-                      ])
+                      _c(
+                        "router-link",
+                        { attrs: { to: { name: "Index" }, replace: "" } },
+                        [_vm._v("< Back")]
+                      )
                     ],
                     1
                   ),
@@ -22722,9 +22806,8 @@ var render = function() {
                       to: {
                         name: "IndexPostedBy",
                         params: {
-                          id: _vm.post.user_id,
-                          indexWithParam: { postedBy: _vm.post.user_id },
-                          indexReset: 0
+                          postedBy: _vm.post.user_id,
+                          pageIndexReset: true
                         }
                       }
                     }
@@ -38135,17 +38218,17 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     name: 'Index',
     component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
   }, {
-    path: '/imgs/user/:id',
+    path: '/imgs/user/:postedBy',
     name: 'IndexPostedBy',
+    component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
+  }, {
+    path: '/imgs/tag',
+    name: 'IndexTaggedBy',
     component: _views_ImageIndex__WEBPACK_IMPORTED_MODULE_2__["default"]
   }, {
     path: '/imgs/create',
     name: 'Create',
     component: _views_ImageCreate__WEBPACK_IMPORTED_MODULE_3__["default"]
-  }, {
-    path: '/imgs/tags',
-    name: 'Tags',
-    component: _views_ImageIndexWithTags__WEBPACK_IMPORTED_MODULE_7__["default"]
   }, {
     path: '/imgs/create',
     component: _views_ImageCreate__WEBPACK_IMPORTED_MODULE_3__["default"]

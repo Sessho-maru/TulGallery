@@ -14,7 +14,7 @@
             <div v-if="focus" class="absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20">
                 <div v-if="searchResult.length === 0">No searchResult found for '{{ searchTerm }}'</div>
                 <div v-bind:key="result.id" v-for="result in searchResult">
-                    <p v-bind:id="result.id" class="py-2" @click="addTag({ id: result.id, name: result.tag_name }); $emit('newTagInserted')">{{ result.tag_name }}</p>
+                    <p v-bind:id="result.id" class="py-2 px-4 rounded-lg hover:bg-blue-700" @click="addTagAndEmitEvent({ id: result.id, name: result.tag_name })">{{ result.tag_name }}</p>
                 </div>
             </div>
 
@@ -30,6 +30,7 @@
 
 <script>
 import _ from 'lodash';
+import { EVENT_BUS } from '../eventBus';
 
 export default {
     name: "SearchBar",
@@ -66,7 +67,7 @@ export default {
             }
         }, 300),
 
-        addTag(tagObject)
+        addTagAndEmitEvent(tagObject)
         {
             this.$globalParams.tagObjectArray.push(tagObject);
             console.log("New Tag inserted, GlobalTagObjectyArray", this.$globalParams.tagObjectArray);
@@ -77,6 +78,9 @@ export default {
             this.searchResult = [];
             this.searchTerm = '';
             this.focus = false;
+
+            $emit('NewTagInserted');
+            EVENT_BUS.$emit('NewTagAndReRender');
         },
 
         AddTagName(tagName)

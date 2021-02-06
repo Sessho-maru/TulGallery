@@ -35,19 +35,17 @@ export default {
         return {
             fetched: [],
             paginated: [],
-            currentPage: []
+            currentPage: [],
+            index: 0,
+            // tagedBy: []
         }
     },
 
     created()
     {
-        EVENT_BUS.$on('NewTagAndReRender', () => {
-            console.log("Search with: ", this.$globalParams.tagObjectArray);
-            this.$globalParams.currentPageIndex = 0;
-            if (this.$globalParams.postedBy !== undefined)
-            {
-                this.$globalParams.postedBy = undefined;
-            }
+        EVENT_BUS.$on('reRender', () => {
+            console.log('Receiving reRender event');
+            console.log("will search with this: ", this.$globalParams.tagObjectArray);
 
             this.taggedBy();
         });
@@ -57,83 +55,53 @@ export default {
 
         console.log("Passed params from ImageShow Component: ", this.$route.params);
 
-        if (this.$route.params.postedBy !== undefined)
+        // with Params
+        if (this.$route.params.indexWithParam !== undefined)
         {
-            if (this.$route.params.pageIndexReset === true)
+            if (this.$route.params.indexReset !== undefined)
             {
-                this.$globalParams.currentPageIndex = 0;
+                this.$globalParams.currentPageIndex = this.$route.params.indexReset;
             }
 
-            if (this.$globalParams.tagObjectArray.length > 0)
+            if (this.$route.params.indexWithParam.postedBy !== undefined)
             {
-                this.$globalParams.tagObjectArray = [];
+                this.$globalParams.postedBy = this.$route.params.indexWithParam.postedBy;
+                console.log("this.$globalParams: ", this.$globalParams);
+
+                axios.get('/api/imgs/user/' + this.$globalParams.postedBy)
+                    .then( response => {
+                        this.fetched = response.data.data;
+                        this.pagenatedPosts(this.fetched);
+                    })
+                    .catch( errors => {
+                        console.log(errors);
+                        alert("Unable to Fetch Images");
+                    });
             }
 
-            this.$globalParams.postedBy = this.$route.params.postedBy;
-            this.postedBy();
-            return;
+            if (this.$globalParams.tagObjectArray.length !== 0)
+            {
+                console.log("tag received");
+            }
         }
-
-        if (this.$route.params.tagged === true)
+        else
         {
-            this.taggedBy();
-            return;
+            axios.get('/api/imgs')
+                .then( response => {
+                    this.fetched = response.data.data;
+                    this.pagenatedPosts(this.fetched);
+                })
+                .catch( errors => {
+                    console.log(errors);
+                    alert("Unable to Fetch Images");
+                });
         }
-
-        axios.get('/api/imgs')
-            .then( response => {
-                this.fetched = response.data.data;
-                this.pagenatedPosts(this.fetched);
-            })
-            .catch( errors => {
-                console.log(errors);
-                alert("Unable to Fetch Images");
-            });
-    },
-
-    destroyed()
-    {
-        EVENT_BUS.$off();
     },
 
     methods: {
 
-        taggedBy()
-        {
-            let tagIds = [];
-
-            this.$globalParams.tagObjectArray.map( (each) => {
-                tagIds.push(each.id);
-            });
-
-            axios.get('/api/tag', { params: { data: tagIds } })
-                .then( response => {
-                    this.fetched = response.data.data;
-                    this.pagenatedPosts(this.fetched);
-                })
-                .catch( errors => {
-                    console.log(errors);
-                    alert("Unable to Fetch Images");
-                });
-        },
-
-        postedBy()
-        {
-            axios.get('/api/imgs/user/' + this.$globalParams.postedBy)
-                .then( response => {
-                    this.fetched = response.data.data;
-                    this.pagenatedPosts(this.fetched);
-                })
-                .catch( errors => {
-                    console.log(errors);
-                    alert("Unable to Fetch Images");
-                });
-        },
-
         pagenatedPosts(posts)
         {
-            this.paginated = [];
-
             console.log("Received image posts", posts);
             let pageSize = Math.ceil(posts.length / this.$itemNumPerPage);
 
@@ -195,6 +163,29 @@ export default {
         consoleLogIndex()
         {
             console.log("current Page Index: ", this.$globalParams.currentPageIndex);
+        },
+
+        taggedBy()
+        {
+            let tagIds = [];
+
+            this.$globalParams.tagObjectArray.map( (each) => {
+                tagIds.push(each.id);
+            });
+
+            console.log(tagIds);
+
+            axios.get('/api/tag', { params: { data: tagIds } })
+                .then( response => {
+                    this.fetched = response.data.data;
+                    this.pagenatedPosts(this.fetched);
+                })
+                .catch( errors => {
+                    console.log(errors);
+                    alert("Unable to Fetch Images");
+                });
+
+            console.log("test");
         }
     }
 }
