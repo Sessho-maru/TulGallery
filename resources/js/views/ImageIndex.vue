@@ -59,6 +59,7 @@ export default {
 
         if (this.$route.params.postedBy !== undefined)
         {
+            this.$emit('flushSeletedTagNames');
             if (this.$route.params.pageIndexReset === true)
             {
                 this.$globalParams.currentPageIndex = 0;

@@ -79,7 +79,7 @@ export default {
             this.searchTerm = '';
             this.focus = false;
 
-            $emit('NewTagInserted');
+            this.$emit('NewTagInserted');
             EVENT_BUS.$emit('NewTagAndReRender');
         },
 

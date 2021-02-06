@@ -17,7 +17,7 @@ Vue.prototype.$globalParams = { currentPageIndex: 0, postedBy: undefined, tagObj
 
 Vue.prototype.$tag_ids = [];
 
-Vue.prototype.$itemNumPerPage = 2;
+Vue.prototype.$itemNumPerPage = 6;
 Vue.prototype.$maxSizePerEachItem = 20;
 
 Vue.use(VueCkeditor.plugin, options);

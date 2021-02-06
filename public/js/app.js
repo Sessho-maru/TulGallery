@@ -1891,7 +1891,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/SearchBar */ "./resources/js/components/SearchBar.vue");
-/* harmony import */ var _eventBus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../eventBus */ "./resources/js/eventBus.js");
 //
 //
 //
@@ -1968,32 +1967,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
   data: function data() {
     return {
       someone: {},
-      selectedTagNames: "",
-      SearchBarVisible: true
+      selectedTagNames: "" // SearchBarVisible: true
+
     };
   },
   props: ['user'],
   components: {
     SearchBar: _components_SearchBar__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  created: function created() {
-    var _this = this;
-
-    _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$on('NewTagAndReRender', function () {
-      _this.selectedTagNames = "";
-
-      _this.$globalParams.tagObjectArray.map(function (each) {
-        _this.selectedTagNames += each.name;
-      });
-    });
-  },
+  created: function created() {},
   mounted: function mounted() {
     if (this.user === undefined) {
       console.log("Guest");
@@ -2002,17 +1991,37 @@ __webpack_require__.r(__webpack_exports__);
       console.log("User login as", this.someone);
     }
   },
-  destroyed: function destroyed() {
-    _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$off();
-  },
+  destroyed: function destroyed() {},
   methods: {
     flushAndReset: function flushAndReset() {
-      this.SearchBarVisible = true;
+      // this.SearchBarVisible = true;
       this.selectedTagNames = '';
 
       while (this.$tag_ids.length > 0) {
         console.log(this.$tag_ids.pop());
       }
+    },
+    displayTags: function displayTags() {
+      var _this = this;
+
+      this.selectedTagNames = "";
+      var size = this.$globalParams.tagObjectArray.length;
+      this.$globalParams.tagObjectArray.map(function (each, i) {
+        if (i < size - 1) {
+          _this.selectedTagNames += "\n                        <p class=\"inline uppercase text-blue-500 text-3xl\">".concat(each.name, "</p><p class=\"inline mx-3\">OR</p>\n                    ");
+        } else {
+          _this.selectedTagNames += "\n                        <p class=\"inline uppercase text-blue-500 text-3xl\">".concat(each.name, "</p>\n                    ");
+        }
+      }); // this.$globalParams.tagObjectArray.map( (each, i) => {
+      //     if (i < (size - 1))
+      //     {
+      //         
+      //     }
+      //     else
+      //     {
+      //         
+      //     }
+      // });
     },
     // tagInserted()
     // {
@@ -2113,7 +2122,7 @@ __webpack_require__.r(__webpack_exports__);
       this.searchResult = [];
       this.searchTerm = '';
       this.focus = false;
-      $emit('NewTagInserted');
+      this.$emit('NewTagInserted');
       _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$emit('NewTagAndReRender');
     },
     AddTagName: function AddTagName(tagName) {
@@ -2621,6 +2630,8 @@ __webpack_require__.r(__webpack_exports__);
     console.log("Passed params from ImageShow Component: ", this.$route.params);
 
     if (this.$route.params.postedBy !== undefined) {
+      this.$emit('flushSeletedTagNames');
+
       if (this.$route.params.pageIndexReset === true) {
         this.$globalParams.currentPageIndex = 0;
       }
@@ -3023,6 +3034,112 @@ __webpack_require__.r(__webpack_exports__);
     }
   }
 });
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "#display[data-v-332fccf4] {\n  white-space: nowrap;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/lib/css-base.js":
+/*!*************************************************!*\
+  !*** ./node_modules/css-loader/lib/css-base.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
 
 /***/ }),
 
@@ -21294,6 +21411,545 @@ try {
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/lib/addStyles.js":
+/*!****************************************************!*\
+  !*** ./node_modules/style-loader/lib/addStyles.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getTarget = function (target, parent) {
+  if (parent){
+    return parent.querySelector(target);
+  }
+  return document.querySelector(target);
+};
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(target, parent) {
+                // If passing function in options, then use it for resolve "head" element.
+                // Useful for Shadow Root style i.e
+                // {
+                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
+                // }
+                if (typeof target === 'function') {
+                        return target();
+                }
+                if (typeof memo[target] === "undefined") {
+			var styleTarget = getTarget.call(this, target, parent);
+			// Special case to return head of iframe instead of iframe itself
+			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[target] = styleTarget;
+		}
+		return memo[target]
+	};
+})();
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(/*! ./urls */ "./node_modules/style-loader/lib/urls.js");
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+        if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertAt.before, target);
+		target.insertBefore(style, nextSibling);
+	} else {
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	if(options.attrs.type === undefined) {
+		options.attrs.type = "text/css";
+	}
+
+	if(options.attrs.nonce === undefined) {
+		var nonce = getNonce();
+		if (nonce) {
+			options.attrs.nonce = nonce;
+		}
+	}
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	if(options.attrs.type === undefined) {
+		options.attrs.type = "text/css";
+	}
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function getNonce() {
+	if (false) {}
+
+	return __webpack_require__.nc;
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = typeof options.transform === 'function'
+		 ? options.transform(obj.css) 
+		 : options.transform.default(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/lib/urls.js":
+/*!***********************************************!*\
+  !*** ./node_modules/style-loader/lib/urls.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/timers-browserify/main.js":
 /*!************************************************!*\
   !*** ./node_modules/timers-browserify/main.js ***!
@@ -21448,101 +22104,183 @@ var render = function() {
                           _c(
                             "svg",
                             {
-                              staticStyle: { background: "rgba(0, 0, 0, 0)" },
+                              staticStyle: { background: "rgb(29,181,147)" },
                               attrs: {
-                                width: "175.76005859375px",
-                                height: "72.80615234375px",
+                                width: "191.8324951171875px",
+                                height: "122.021240234375px",
                                 xmlns: "http://www.w3.org/2000/svg",
                                 viewBox:
-                                  "144.119970703125 38.596923828125 211.76005859375 72.80615234375",
+                                  "90.16622314453124 -11.436279296875 319.6675537109375 172.87255859375",
                                 preserveAspectRatio: "xMidYMid"
                               }
                             },
                             [
-                              _c("defs", [
-                                _c(
-                                  "filter",
-                                  {
-                                    attrs: {
-                                      id: "editing-hole",
-                                      x: "-100%",
-                                      y: "-100%",
-                                      width: "300%",
-                                      height: "300%"
-                                    }
-                                  },
-                                  [
-                                    _c("feFlood", {
+                              _c(
+                                "defs",
+                                [
+                                  _c(
+                                    "linearGradient",
+                                    {
                                       attrs: {
-                                        "flood-color": "#000",
-                                        result: "black"
+                                        id: "editing-shadow-gradient1",
+                                        x1: "0",
+                                        x2: "0",
+                                        y1: "0",
+                                        y2: "1"
                                       }
-                                    }),
-                                    _c("feMorphology", {
+                                    },
+                                    [
+                                      _c("stop", {
+                                        attrs: {
+                                          offset: "0",
+                                          "stop-color": "#000000",
+                                          "stop-opacity": "0"
+                                        }
+                                      }),
+                                      _c("stop", {
+                                        attrs: {
+                                          offset: "0.2",
+                                          "stop-color": "#000000",
+                                          "stop-opacity": "0"
+                                        }
+                                      }),
+                                      _c("stop", {
+                                        attrs: {
+                                          offset: "1",
+                                          "stop-color": "#000000",
+                                          "stop-opacity": "1"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _c(
+                                    "linearGradient",
+                                    {
                                       attrs: {
-                                        operator: "dilate",
-                                        radius: "2",
-                                        in: "SourceGraphic",
-                                        result: "erode"
+                                        id: "editing-shadow-gradient2",
+                                        x1: "-0.254709580222772",
+                                        x2: "1.2547095802227721",
+                                        y1: "-0.15605902899050716",
+                                        y2: "1.1560590289905073"
                                       }
-                                    }),
-                                    _c("feGaussianBlur", {
+                                    },
+                                    [
+                                      _c("stop", {
+                                        attrs: {
+                                          offset: "0",
+                                          "stop-color": "#ffffff"
+                                        }
+                                      }),
+                                      _c("stop", {
+                                        attrs: {
+                                          offset: "1",
+                                          "stop-color": "#fec918"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _c(
+                                    "filter",
+                                    {
                                       attrs: {
-                                        in: "erode",
-                                        stdDeviation: "4",
-                                        result: "blur"
+                                        id: "editing-shadow",
+                                        x: "-100%",
+                                        y: "-100%",
+                                        width: "300%",
+                                        height: "300%"
                                       }
-                                    }),
-                                    _c("feOffset", {
-                                      attrs: {
-                                        in: "blur",
-                                        dx: "2",
-                                        dy: "2",
-                                        result: "offset"
-                                      }
-                                    }),
-                                    _c("feComposite", {
-                                      attrs: {
-                                        operator: "atop",
-                                        in: "offset",
-                                        in2: "black",
-                                        result: "merge"
-                                      }
-                                    }),
-                                    _c("feComposite", {
-                                      attrs: {
-                                        operator: "in",
-                                        in: "merge",
-                                        in2: "SourceGraphic",
-                                        result: "inner-shadow"
-                                      }
-                                    })
-                                  ],
-                                  1
-                                )
-                              ]),
+                                    },
+                                    [
+                                      _c("feGaussianBlur", {
+                                        attrs: { stdDeviation: "2" }
+                                      }),
+                                      _c("feComposite", {
+                                        attrs: {
+                                          operator: "in",
+                                          in2: "SourceGraphic"
+                                        }
+                                      }),
+                                      _c("feGaussianBlur", {
+                                        attrs: { stdDeviation: "1" }
+                                      })
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
                               _c(
                                 "g",
-                                { attrs: { filter: "url(#editing-hole)" } },
+                                { attrs: { transform: "translate(250,75)" } },
                                 [
                                   _c(
                                     "g",
                                     {
                                       attrs: {
-                                        transform:
-                                          "translate(179.5799981355667, 87.12406253814697)"
+                                        transform: "translate(-29.4, -1.2)"
                                       }
                                     },
                                     [
-                                      _c("path", {
-                                        attrs: {
-                                          d:
-                                            "M1.09-3.30L1.09-3.30L1.09-3.30Q1.09-4.19 1.55-6.44L1.55-6.44L3.30-15.35L1.35-15.35L1.49-16.34L1.49-16.34Q5.45-17.52 9.27-20.43L9.27-20.43L10.86-20.43L10.07-16.83L12.64-16.83L12.34-15.35L9.80-15.35L8.12-6.44L8.12-6.44Q7.69-4.39 7.69-3.70L7.69-3.70L7.69-3.70Q7.69-2.11 9.08-1.78L9.08-1.78L9.08-1.78Q8.75-0.66 7.56 0L7.56 0L7.56 0Q6.37 0.66 4.69 0.66L4.69 0.66L4.69 0.66Q3.00 0.66 2.05-0.40L2.05-0.40L2.05-0.40Q1.09-1.45 1.09-3.30ZM23.07-1.39L23.07-1.39L23.07-1.39Q21.48 0.66 17.56 0.66L17.56 0.66L17.56 0.66Q15.51 0.66 14.03-0.58L14.03-0.58L14.03-0.58Q12.54-1.82 12.54-3.60L12.54-3.60L12.54-3.60Q12.54-4.59 12.64-5.08L12.64-5.08L14.85-16.83L21.55-17.49L19.14-4.75L19.14-4.75Q19.01-4.03 19.01-3.60L19.01-3.60L19.01-3.60Q19.01-1.68 20.16-1.68L20.16-1.68L20.16-1.68Q21.45-1.68 22.37-3.43L22.37-3.43L22.37-3.43Q22.67-3.99 22.80-4.72L22.80-4.72L25.15-16.83L31.65-17.49L29.21-4.62L29.21-4.62Q29.11-4.13 29.11-3.60L29.11-3.60L29.11-3.60Q29.11-3.07 29.40-2.49L29.40-2.49L29.40-2.49Q29.70-1.91 30.66-1.78L30.66-1.78L30.66-1.78Q30.46-0.99 29.77-0.46L29.77-0.46L29.77-0.46Q28.31 0.66 26.75 0.66L26.75 0.66L26.75 0.66Q25.18 0.66 24.26 0.10L24.26 0.10L24.26 0.10Q23.33-0.46 23.07-1.39ZM41.32-1.82L41.32-1.82L41.32-1.82Q40.29 0.66 37.03 0.66L37.03 0.66L37.03 0.66Q35.38 0.66 34.32-0.49L34.32-0.49L34.32-0.49Q33.46-1.45 33.46-2.54L33.46-2.54L33.46-2.54Q33.46-5.02 34.62-10.43L34.62-10.43L37.03-23.10L43.73-23.76L40.52-7.06L40.52-7.06Q39.96-4.62 39.96-3.76L39.96-3.76L39.96-3.76Q39.96-1.88 41.32-1.82ZM43.69-1.58L43.69-1.58L47.78-23.10L54.48-23.76L53.46-18.71L53.46-18.71Q53.10-17.16 52.64-16.07L52.64-16.07L52.64-16.07Q53.36-17.00 54.95-17.36L54.95-17.36L54.95-17.36Q55.41-17.49 55.97-17.49L55.97-17.49L55.97-17.49Q59.04-17.49 60.72-15.63L60.72-15.63L60.72-15.63Q62.40-13.76 62.40-10.16L62.40-10.16L62.40-10.16Q62.40-5.48 59.73-2.54L59.73-2.54L59.73-2.54Q56.86 0.66 51.65 0.66L51.65 0.66L51.65 0.66Q48.05 0.66 45.34-0.53L45.34-0.53L45.34-0.53Q44.39-0.96 43.69-1.58ZM52.07-11.55L50.33-1.88L50.33-1.88Q51.02-1.29 51.88-1.29L51.88-1.29L51.88-1.29Q52.73-1.29 53.23-1.62L53.23-1.62L53.23-1.62Q53.72-1.95 54.09-2.61L54.09-2.61L54.09-2.61Q55.08-4.39 55.87-9.83L55.87-9.83L55.87-9.83Q56.10-11.38 56.10-12.94L56.10-12.94L56.10-12.94Q56.10-14.49 55.75-14.98L55.75-14.98L55.75-14.98Q55.41-15.48 54.75-15.48L54.75-15.48L54.75-15.48Q52.73-15.48 52.07-11.55L52.07-11.55ZM71.58 0.66L71.58 0.66L71.58 0.66Q64.32 0.66 64.32-6.17L64.32-6.17L64.32-6.17Q64.32-11.02 66.99-14.16L66.99-14.16L66.99-14.16Q69.83-17.49 74.75-17.49L74.75-17.49L74.75-17.49Q78.31-17.49 80.12-15.84L80.12-15.84L80.12-15.84Q81.94-14.19 81.94-10.72L81.94-10.72L81.94-10.72Q81.94-5.45 79.10-2.38L79.10-2.38L79.10-2.38Q76.33 0.66 71.58 0.66ZM72.44-13.70L72.44-13.70L72.44-13.70Q72.04-12.80 71.73-11.47L71.73-11.47L71.73-11.47Q71.41-10.13 71.02-8.02L71.02-8.02L71.02-8.02Q70.62-5.91 70.62-3.30L70.62-3.30L70.62-3.30Q70.62-2.44 70.90-1.88L70.90-1.88L70.90-1.88Q71.18-1.32 71.94-1.32L71.94-1.32L71.94-1.32Q72.70-1.32 73.18-1.68L73.18-1.68L73.18-1.68Q73.66-2.05 74.02-2.90L74.02-2.90L74.02-2.90Q74.68-4.42 75.21-7.24L75.21-7.24L75.21-7.24Q75.73-10.07 75.78-11.29L75.78-11.29L75.78-11.29Q75.83-12.51 75.83-13.41L75.83-13.41L75.83-13.41Q75.83-14.32 75.57-14.92L75.57-14.92L75.57-14.92Q75.31-15.51 74.56-15.51L74.56-15.51L74.56-15.51Q73.82-15.51 73.33-15.05L73.33-15.05L73.33-15.05Q72.83-14.59 72.44-13.70ZM91.08 0.66L91.08 0.66L91.08 0.66Q83.82 0.66 83.82-6.17L83.82-6.17L83.82-6.17Q83.82-11.02 86.49-14.16L86.49-14.16L86.49-14.16Q89.33-17.49 94.25-17.49L94.25-17.49L94.25-17.49Q97.81-17.49 99.63-15.84L99.63-15.84L99.63-15.84Q101.44-14.19 101.44-10.72L101.44-10.72L101.44-10.72Q101.44-5.45 98.60-2.38L98.60-2.38L98.60-2.38Q95.83 0.66 91.08 0.66ZM91.94-13.70L91.94-13.70L91.94-13.70Q91.54-12.80 91.23-11.47L91.23-11.47L91.23-11.47Q90.92-10.13 90.52-8.02L90.52-8.02L90.52-8.02Q90.12-5.91 90.12-3.30L90.12-3.30L90.12-3.30Q90.12-2.44 90.40-1.88L90.40-1.88L90.40-1.88Q90.68-1.32 91.44-1.32L91.44-1.32L91.44-1.32Q92.20-1.32 92.68-1.68L92.68-1.68L92.68-1.68Q93.16-2.05 93.52-2.90L93.52-2.90L93.52-2.90Q94.18-4.42 94.71-7.24L94.71-7.24L94.71-7.24Q95.24-10.07 95.29-11.29L95.29-11.29L95.29-11.29Q95.34-12.51 95.34-13.41L95.34-13.41L95.34-13.41Q95.34-14.32 95.07-14.92L95.07-14.92L95.07-14.92Q94.81-15.51 94.07-15.51L94.07-15.51L94.07-15.51Q93.32-15.51 92.83-15.05L92.83-15.05L92.83-15.05Q92.33-14.59 91.94-13.70ZM113.72-9.27L113.72-9.27L113.72-9.27Q114.91-11.38 114.91-13.53L114.91-13.53L114.91-13.53Q114.91-14.95 113.88-14.95L113.88-14.95L113.88-14.95Q113.09-14.95 112.27-13.60L112.27-13.60L112.27-13.60Q111.41-12.24 111.14-10.49L111.14-10.49L109.43 0L102.60 0.66L105.96-16.83L111.41-17.49L110.81-14.16L110.81-14.16Q112.43-17.49 116.06-17.49L116.06-17.49L116.06-17.49Q117.98-17.49 119.01-16.50L119.01-16.50L119.01-16.50Q120.05-15.51 120.05-13.48L120.05-13.48L120.05-13.48Q120.05-11.45 118.72-10.16L118.72-10.16L118.72-10.16Q117.38-8.88 115.10-8.88L115.10-8.88L115.10-8.88Q114.11-8.88 113.72-9.27ZM131.18-1.39L131.18-1.39L131.18-1.39Q129.59 0.66 125.66 0.66L125.66 0.66L125.66 0.66Q123.62 0.66 122.13-0.58L122.13-0.58L122.13-0.58Q120.65-1.82 120.65-3.60L120.65-3.60L120.65-3.60Q120.65-4.59 120.75-5.08L120.75-5.08L122.96-16.83L129.66-17.49L127.25-4.75L127.25-4.75Q127.12-4.03 127.12-3.60L127.12-3.60L127.12-3.60Q127.12-1.68 128.27-1.68L128.27-1.68L128.27-1.68Q129.56-1.68 130.48-3.43L130.48-3.43L130.48-3.43Q130.78-3.99 130.91-4.72L130.91-4.72L133.25-16.83L139.75-17.49L137.31-4.62L137.31-4.62Q137.21-4.13 137.21-3.60L137.21-3.60L137.21-3.60Q137.21-3.07 137.51-2.49L137.51-2.49L137.51-2.49Q137.81-1.91 138.76-1.78L138.76-1.78L138.76-1.78Q138.57-0.99 137.87-0.46L137.87-0.46L137.87-0.46Q136.42 0.66 134.85 0.66L134.85 0.66L134.85 0.66Q133.29 0.66 132.36 0.10L132.36 0.10L132.36 0.10Q131.44-0.46 131.18-1.39Z",
-                                          fill: "#ccc"
-                                        }
-                                      })
+                                      _c(
+                                        "g",
+                                        { attrs: { transform: "skewX(45)" } },
+                                        [
+                                          _c(
+                                            "g",
+                                            {
+                                              attrs: {
+                                                filter: "url(#editing-shadow)"
+                                              }
+                                            },
+                                            [
+                                              _c(
+                                                "g",
+                                                {
+                                                  attrs: {
+                                                    transform:
+                                                      "translate(-54.18999910354614, 35.38999938964844)"
+                                                  }
+                                                },
+                                                [
+                                                  _c("path", {
+                                                    attrs: {
+                                                      d:
+                                                        "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
+                                                      fill:
+                                                        "url(#editing-shadow-gradient1)"
+                                                    }
+                                                  })
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        ]
+                                      )
                                     ]
-                                  )
+                                  ),
+                                  _c("g", [
+                                    _c(
+                                      "g",
+                                      {
+                                        attrs: {
+                                          transform:
+                                            "translate(-54.18999910354614, 35.38999938964844)"
+                                        }
+                                      },
+                                      [
+                                        _c("path", {
+                                          attrs: {
+                                            d:
+                                              "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
+                                            fill:
+                                              "url(#editing-shadow-gradient2)"
+                                          }
+                                        })
+                                      ]
+                                    )
+                                  ])
                                 ]
                               )
                             ]
@@ -21585,8 +22323,7 @@ var render = function() {
                                 d:
                                   "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
                               }
-                            }),
-                            _vm._v(".\n                        ")
+                            })
                           ]
                         ),
                         _vm._v(" "),
@@ -21702,15 +22439,16 @@ var render = function() {
                       "h-16 px-6 border-b border-gray-400 flex items-center justify-between"
                   },
                   [
-                    _c("div", { staticClass: "mr-64" }, [
-                      _vm._v(
-                        "\n                        " +
-                          _vm._s(_vm.selectedTagNames) +
-                          "\n                    "
-                      )
+                    _c("div", { staticClass: "mr-32" }, [
+                      _c("div", {
+                        domProps: { innerHTML: _vm._s(_vm.selectedTagNames) }
+                      })
                     ]),
                     _vm._v(" "),
-                    _c("SearchBar", { attrs: { id: "search_bar" } })
+                    _c("SearchBar", {
+                      attrs: { id: "search_bar" },
+                      on: { NewTagInserted: _vm.displayTags }
+                    })
                   ],
                   1
                 ),
@@ -21720,6 +22458,11 @@ var render = function() {
                   attrs: {
                     api_token: _vm.someone.api_token,
                     user_id: _vm.someone.id
+                  },
+                  on: {
+                    flushSeletedTagNames: function($event) {
+                      _vm.selectedTagNames = ""
+                    }
                   }
                 })
               ],
@@ -37964,7 +38707,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$globalParams = {
   tagObjectArray: []
 };
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$tag_ids = [];
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 2;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 6;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxSizePerEachItem = 20;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 
@@ -38036,7 +38779,9 @@ if (token) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _App_vue_vue_type_template_id_332fccf4_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App.vue?vue&type=template&id=332fccf4&scoped=true& */ "./resources/js/components/App.vue?vue&type=template&id=332fccf4&scoped=true&");
 /* harmony import */ var _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./App.vue?vue&type=script&lang=js& */ "./resources/js/components/App.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css& */ "./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -38044,7 +38789,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _App_vue_vue_type_template_id_332fccf4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
   _App_vue_vue_type_template_id_332fccf4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
@@ -38073,6 +38818,22 @@ component.options.__file = "resources/js/components/App.vue"
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./App.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css&":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css& ***!
+  \**************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/App.vue?vue&type=style&index=0&id=332fccf4&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_332fccf4_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
