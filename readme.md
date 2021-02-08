@@ -18,4 +18,4 @@ You can couple of things with this web page
 <br/>
 <img src="https://raw.githubusercontent.com/Sessho-maru/TulGallery/master/example.gif" />
 <br/>
-<a href="http://54.191.244.132/imgs" target="_blank"><strong>DEMO<strong/></a>
+[DEMO](http://54.191.244.132/imgs)
