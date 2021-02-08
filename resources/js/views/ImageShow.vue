@@ -7,24 +7,18 @@
             
                 <div class="flex justify-between">
                     <div v-if="this.$globalParams.postedBy !== undefined">
-                        <router-link :to="{ name: 'IndexPostedBy', params: { postedBy: this.$globalParams.postedBy } }" replace>< Back</router-link>
+                        <router-link :to="{ name: 'IndexPostedBy', params: { postedBy: this.$globalParams.postedBy } }" class="px-4 py-2 rounded text-sm text-gray-600 border border-gray-600 text-sm font-bold mr-4">< Back</router-link>
                     </div>
                     <div v-else-if="this.$globalParams.tagObjectArray.length !== 0">
-                        <router-link :to="{ name: 'IndexTaggedBy', params: { tagged: true } }" replace>< Back</router-link>
+                        <router-link :to="{ name: 'IndexTaggedBy', params: { tagged: true } }" class="px-4 py-2 rounded text-sm text-gray-600 border border-gray-600 text-sm font-bold mr-4">< Back</router-link>
                     </div>
                     <div v-else>
-                        <router-link :to="{ name: 'Index' }" replace>< Back</router-link>
+                        <router-link :to="{ name: 'Index' }" class="px-4 py-2 rounded text-sm text-gray-600 border border-gray-600 text-sm font-bold mr-4">< Back</router-link>
                     </div>
-                    <!-- <div v-if="isTaged">
-                        <router-link :to="{ name: 'Tags', params: { currentPageIndex: index } }">< Back</router-link>
-                    </div>
-                    <div v-else>
-                        <router-link :to="{ name: 'Index', params: { currentPageIndex: index } }">< Back</router-link>
-                    </div> -->
-                        
+                    
                     <div class="relative">
                         <div>
-                            <div class="inline-block" v-if="post.user_id != user_id">
+                            <div class="inline-block" v-if="post.user_id !== user_id">
                                 <div v-if="post.reported_count < this.$maxReportedCount">
                                     <a v-on:click.prevent="report" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Report ({{ post.reported_count }})</a>    
                                 </div>
@@ -33,7 +27,7 @@
                                 </div>
                             </div>
                             
-                            <div class="inline-block" v-if="post.user_id == user_id || user_id == this.$adminId">
+                            <div class="inline-block" v-if="post.user_id === user_id || user_id === this.$adminId">
                                 <router-link v-bind:to="'/imgs/' + post.image_id + '/edit'" class="px-4 py-2 rounded text-sm text-green-500 border border-green-500 text-sm font-bold mr-4">Edit</router-link>
                                 <a v-on:click.prevent="modal = !modal" class="px-4 py-2 rounded text-sm text-red-500 border border-red-500 text-sm font-bold cursor-pointer">Delete</a>
                             </div>
@@ -77,7 +71,7 @@
                     </div>
 
                     <p class="pt-6 pb-2 text-gray-600 font-bold uppercase text-sm">Uploader</p>
-                    <router-link :to="{ name: 'IndexPostedBy', params: { postedBy: post.user_id, pageIndexReset: true } }">{{ post.user_name }}</router-link>
+                    <router-link class="uppercase text-blue-500 text-3xl" :to="{ name: 'IndexPostedBy', params: { postedBy: post.user_id, pageIndexReset: true } }">{{ post.user_name }}</router-link>
                 </div>
 
             </div>

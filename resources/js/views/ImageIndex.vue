@@ -8,7 +8,7 @@
                         <source v-bind:src="each.data.url" type="video/webm">
                     </video>
                 </router-link>
-            </div> // developing... -->
+            </div> // Not support Demo... -->
             <div>
                 <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id } }">
                     <img class="block h-64 w-64 object-none object-cover hover:opacity-75" v-bind:src="each.data.thumbnail_url" alt="placeholder">
@@ -43,6 +43,7 @@ export default {
     {
         EVENT_BUS.$on('NewTagAndReRender', () => {
             console.log("Search with: ", this.$globalParams.tagObjectArray);
+            
             this.$globalParams.currentPageIndex = 0;
             if (this.$globalParams.postedBy !== undefined)
             {
@@ -54,7 +55,7 @@ export default {
     },
 
     mounted() {
-
+        
         console.log("Passed params from ImageShow Component: ", this.$route.params);
 
         if (this.$route.params.postedBy !== undefined)

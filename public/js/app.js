@@ -1966,16 +1966,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
   data: function data() {
     return {
       someone: {},
-      selectedTagNames: "" // SearchBarVisible: true
-
+      selectedTagNames: ""
     };
   },
   props: ['user'],
@@ -1993,14 +1990,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   destroyed: function destroyed() {},
   methods: {
-    flushAndReset: function flushAndReset() {
-      // this.SearchBarVisible = true;
-      this.selectedTagNames = '';
-
-      while (this.$tag_ids.length > 0) {
-        console.log(this.$tag_ids.pop());
-      }
-    },
     displayTags: function displayTags() {
       var _this = this;
 
@@ -2012,30 +2001,7 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           _this.selectedTagNames += "\n                        <p class=\"inline uppercase text-blue-500 text-3xl\">".concat(each.name, "</p>\n                    ");
         }
-      }); // this.$globalParams.tagObjectArray.map( (each, i) => {
-      //     if (i < (size - 1))
-      //     {
-      //         
-      //     }
-      //     else
-      //     {
-      //         
-      //     }
-      // });
-    },
-    // tagInserted()
-    // {
-    //     this.selectedTagNames = "";
-    //     this.$globalParams.tagObjectArray.map( (each) => {
-    //         this.selectedTagNames += each.name;
-    //     });
-    //     EVENT_BUS.$emit('NewTagAndReRender');
-    // },
-    tagSearchInit: function tagSearchInit(string) {
-      this.showMessage(string);
-    },
-    showMessage: function showMessage(tagNames) {
-      this.selectedTagNames = "result with: ".concat(tagNames.substring(0, tagNames.length - 3), "(click left logo to flush)");
+      });
     }
   }
 });
@@ -2117,20 +2083,11 @@ __webpack_require__.r(__webpack_exports__);
     addTagAndEmitEvent: function addTagAndEmitEvent(tagObject) {
       this.$globalParams.tagObjectArray.push(tagObject);
       console.log("New Tag inserted, GlobalTagObjectyArray", this.$globalParams.tagObjectArray);
-      var element = document.getElementById(tagObject.id);
-      element.classList.add("hidden");
       this.searchResult = [];
       this.searchTerm = '';
       this.focus = false;
       this.$emit('NewTagInserted');
       _eventBus__WEBPACK_IMPORTED_MODULE_1__["EVENT_BUS"].$emit('NewTagAndReRender');
-    },
-    AddTagName: function AddTagName(tagName) {
-      this.selectedTagNames += tagName + ' || ';
-    },
-    hide: function hide(id) {
-      var element = document.getElementById(id);
-      element.classList.add("hidden");
     }
   }
 });
@@ -2901,12 +2858,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -22100,192 +22051,189 @@ var render = function() {
                         }
                       },
                       [
-                        _c("div", { on: { click: _vm.flushAndReset } }, [
-                          _c(
-                            "svg",
-                            {
-                              staticStyle: { background: "rgb(29,181,147)" },
-                              attrs: {
-                                width: "191.8324951171875px",
-                                height: "122.021240234375px",
-                                xmlns: "http://www.w3.org/2000/svg",
-                                viewBox:
-                                  "90.16622314453124 -11.436279296875 319.6675537109375 172.87255859375",
-                                preserveAspectRatio: "xMidYMid"
-                              }
-                            },
-                            [
-                              _c(
-                                "defs",
-                                [
-                                  _c(
-                                    "linearGradient",
-                                    {
+                        _c(
+                          "svg",
+                          {
+                            staticStyle: { background: "rgb(29,181,147)" },
+                            attrs: {
+                              width: "191.8324951171875px",
+                              height: "122.021240234375px",
+                              xmlns: "http://www.w3.org/2000/svg",
+                              viewBox:
+                                "90.16622314453124 -11.436279296875 319.6675537109375 172.87255859375",
+                              preserveAspectRatio: "xMidYMid"
+                            }
+                          },
+                          [
+                            _c(
+                              "defs",
+                              [
+                                _c(
+                                  "linearGradient",
+                                  {
+                                    attrs: {
+                                      id: "editing-shadow-gradient1",
+                                      x1: "0",
+                                      x2: "0",
+                                      y1: "0",
+                                      y2: "1"
+                                    }
+                                  },
+                                  [
+                                    _c("stop", {
                                       attrs: {
-                                        id: "editing-shadow-gradient1",
-                                        x1: "0",
-                                        x2: "0",
-                                        y1: "0",
-                                        y2: "1"
+                                        offset: "0",
+                                        "stop-color": "#000000",
+                                        "stop-opacity": "0"
                                       }
-                                    },
-                                    [
-                                      _c("stop", {
-                                        attrs: {
-                                          offset: "0",
-                                          "stop-color": "#000000",
-                                          "stop-opacity": "0"
-                                        }
-                                      }),
-                                      _c("stop", {
-                                        attrs: {
-                                          offset: "0.2",
-                                          "stop-color": "#000000",
-                                          "stop-opacity": "0"
-                                        }
-                                      }),
-                                      _c("stop", {
-                                        attrs: {
-                                          offset: "1",
-                                          "stop-color": "#000000",
-                                          "stop-opacity": "1"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _c(
-                                    "linearGradient",
-                                    {
+                                    }),
+                                    _c("stop", {
                                       attrs: {
-                                        id: "editing-shadow-gradient2",
-                                        x1: "-0.254709580222772",
-                                        x2: "1.2547095802227721",
-                                        y1: "-0.15605902899050716",
-                                        y2: "1.1560590289905073"
+                                        offset: "0.2",
+                                        "stop-color": "#000000",
+                                        "stop-opacity": "0"
                                       }
-                                    },
-                                    [
-                                      _c("stop", {
-                                        attrs: {
-                                          offset: "0",
-                                          "stop-color": "#ffffff"
-                                        }
-                                      }),
-                                      _c("stop", {
-                                        attrs: {
-                                          offset: "1",
-                                          "stop-color": "#fec918"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _c(
-                                    "filter",
-                                    {
+                                    }),
+                                    _c("stop", {
                                       attrs: {
-                                        id: "editing-shadow",
-                                        x: "-100%",
-                                        y: "-100%",
-                                        width: "300%",
-                                        height: "300%"
+                                        offset: "1",
+                                        "stop-color": "#000000",
+                                        "stop-opacity": "1"
                                       }
-                                    },
-                                    [
-                                      _c("feGaussianBlur", {
-                                        attrs: { stdDeviation: "2" }
-                                      }),
-                                      _c("feComposite", {
-                                        attrs: {
-                                          operator: "in",
-                                          in2: "SourceGraphic"
-                                        }
-                                      }),
-                                      _c("feGaussianBlur", {
-                                        attrs: { stdDeviation: "1" }
-                                      })
-                                    ],
-                                    1
-                                  )
-                                ],
-                                1
-                              ),
-                              _c(
-                                "g",
-                                { attrs: { transform: "translate(250,75)" } },
-                                [
+                                    })
+                                  ],
+                                  1
+                                ),
+                                _c(
+                                  "linearGradient",
+                                  {
+                                    attrs: {
+                                      id: "editing-shadow-gradient2",
+                                      x1: "-0.254709580222772",
+                                      x2: "1.2547095802227721",
+                                      y1: "-0.15605902899050716",
+                                      y2: "1.1560590289905073"
+                                    }
+                                  },
+                                  [
+                                    _c("stop", {
+                                      attrs: {
+                                        offset: "0",
+                                        "stop-color": "#ffffff"
+                                      }
+                                    }),
+                                    _c("stop", {
+                                      attrs: {
+                                        offset: "1",
+                                        "stop-color": "#fec918"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                ),
+                                _c(
+                                  "filter",
+                                  {
+                                    attrs: {
+                                      id: "editing-shadow",
+                                      x: "-100%",
+                                      y: "-100%",
+                                      width: "300%",
+                                      height: "300%"
+                                    }
+                                  },
+                                  [
+                                    _c("feGaussianBlur", {
+                                      attrs: { stdDeviation: "2" }
+                                    }),
+                                    _c("feComposite", {
+                                      attrs: {
+                                        operator: "in",
+                                        in2: "SourceGraphic"
+                                      }
+                                    }),
+                                    _c("feGaussianBlur", {
+                                      attrs: { stdDeviation: "1" }
+                                    })
+                                  ],
+                                  1
+                                )
+                              ],
+                              1
+                            ),
+                            _c(
+                              "g",
+                              { attrs: { transform: "translate(250,75)" } },
+                              [
+                                _c(
+                                  "g",
+                                  {
+                                    attrs: {
+                                      transform: "translate(-29.4, -1.2)"
+                                    }
+                                  },
+                                  [
+                                    _c(
+                                      "g",
+                                      { attrs: { transform: "skewX(45)" } },
+                                      [
+                                        _c(
+                                          "g",
+                                          {
+                                            attrs: {
+                                              filter: "url(#editing-shadow)"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "g",
+                                              {
+                                                attrs: {
+                                                  transform:
+                                                    "translate(-54.18999910354614, 35.38999938964844)"
+                                                }
+                                              },
+                                              [
+                                                _c("path", {
+                                                  attrs: {
+                                                    d:
+                                                      "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
+                                                    fill:
+                                                      "url(#editing-shadow-gradient1)"
+                                                  }
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]
+                                ),
+                                _c("g", [
                                   _c(
                                     "g",
                                     {
                                       attrs: {
-                                        transform: "translate(-29.4, -1.2)"
+                                        transform:
+                                          "translate(-54.18999910354614, 35.38999938964844)"
                                       }
                                     },
                                     [
-                                      _c(
-                                        "g",
-                                        { attrs: { transform: "skewX(45)" } },
-                                        [
-                                          _c(
-                                            "g",
-                                            {
-                                              attrs: {
-                                                filter: "url(#editing-shadow)"
-                                              }
-                                            },
-                                            [
-                                              _c(
-                                                "g",
-                                                {
-                                                  attrs: {
-                                                    transform:
-                                                      "translate(-54.18999910354614, 35.38999938964844)"
-                                                  }
-                                                },
-                                                [
-                                                  _c("path", {
-                                                    attrs: {
-                                                      d:
-                                                        "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
-                                                      fill:
-                                                        "url(#editing-shadow-gradient1)"
-                                                    }
-                                                  })
-                                                ]
-                                              )
-                                            ]
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _c("g", [
-                                    _c(
-                                      "g",
-                                      {
+                                      _c("path", {
                                         attrs: {
-                                          transform:
-                                            "translate(-54.18999910354614, 35.38999938964844)"
+                                          d:
+                                            "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
+                                          fill: "url(#editing-shadow-gradient2)"
                                         }
-                                      },
-                                      [
-                                        _c("path", {
-                                          attrs: {
-                                            d:
-                                              "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
-                                            fill:
-                                              "url(#editing-shadow-gradient2)"
-                                          }
-                                        })
-                                      ]
-                                    )
-                                  ])
-                                ]
-                              )
-                            ]
-                          )
-                        ])
+                                      })
+                                    ]
+                                  )
+                                ])
+                              ]
+                            )
+                          ]
+                        )
                       ]
                     ),
                     _vm._v(" "),
@@ -22343,45 +22291,37 @@ var render = function() {
                     ),
                     _vm._v(" "),
                     _c(
-                      "div",
-                      { on: { click: _vm.flushAndReset } },
+                      "router-link",
+                      {
+                        staticClass:
+                          "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                        attrs: { to: "/tags" }
+                      },
                       [
                         _c(
-                          "router-link",
+                          "svg",
                           {
-                            staticClass:
-                              "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                            attrs: { to: "/tags" }
+                            staticClass: "fill-current text-blue-600 w-5 h-5",
+                            attrs: {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              viewBox: "0 0 24 24"
+                            }
                           },
                           [
-                            _c(
-                              "svg",
-                              {
-                                staticClass:
-                                  "fill-current text-blue-600 w-5 h-5",
-                                attrs: {
-                                  xmlns: "http://www.w3.org/2000/svg",
-                                  viewBox: "0 0 24 24"
-                                }
-                              },
-                              [
-                                _c("path", {
-                                  staticClass: "st0",
-                                  attrs: {
-                                    d:
-                                      "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
-                                  }
-                                })
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                              _vm._v("Tag list")
-                            ])
+                            _c("path", {
+                              staticClass: "st0",
+                              attrs: {
+                                d:
+                                  "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
+                              }
+                            })
                           ]
-                        )
-                      ],
-                      1
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                          _vm._v("Tag list")
+                        ])
+                      ]
                     ),
                     _vm._v(" "),
                     _c(
@@ -22445,12 +22385,21 @@ var render = function() {
                       })
                     ]),
                     _vm._v(" "),
-                    _c("SearchBar", {
-                      attrs: { id: "search_bar" },
-                      on: { NewTagInserted: _vm.displayTags }
-                    })
-                  ],
-                  1
+                    _vm.$route.name === "Index" ||
+                    _vm.$route.name === "IndexPostedBy" ||
+                    _vm.$route.name === "IndexTaggedBy"
+                      ? _c(
+                          "div",
+                          [
+                            _c("SearchBar", {
+                              attrs: { id: "search_bar" },
+                              on: { NewTagInserted: _vm.displayTags }
+                            })
+                          ],
+                          1
+                        )
+                      : _vm._e()
+                  ]
                 ),
                 _vm._v(" "),
                 _c("router-view", {
@@ -22570,9 +22519,7 @@ var render = function() {
               _vm.searchResult.length === 0
                 ? _c("div", [
                     _vm._v(
-                      "No searchResult found for '" +
-                        _vm._s(_vm.searchTerm) +
-                        "'"
+                      "Tag Name Not found '" + _vm._s(_vm.searchTerm) + "'"
                     )
                   ])
                 : _vm._e(),
@@ -23282,12 +23229,13 @@ var render = function() {
                       _c(
                         "router-link",
                         {
+                          staticClass:
+                            "px-4 py-2 rounded text-sm text-gray-600 border border-gray-600 text-sm font-bold mr-4",
                           attrs: {
                             to: {
                               name: "IndexPostedBy",
                               params: { postedBy: this.$globalParams.postedBy }
-                            },
-                            replace: ""
+                            }
                           }
                         },
                         [_vm._v("< Back")]
@@ -23302,12 +23250,13 @@ var render = function() {
                       _c(
                         "router-link",
                         {
+                          staticClass:
+                            "px-4 py-2 rounded text-sm text-gray-600 border border-gray-600 text-sm font-bold mr-4",
                           attrs: {
                             to: {
                               name: "IndexTaggedBy",
                               params: { tagged: true }
-                            },
-                            replace: ""
+                            }
                           }
                         },
                         [_vm._v("< Back")]
@@ -23320,7 +23269,11 @@ var render = function() {
                     [
                       _c(
                         "router-link",
-                        { attrs: { to: { name: "Index" }, replace: "" } },
+                        {
+                          staticClass:
+                            "px-4 py-2 rounded text-sm text-gray-600 border border-gray-600 text-sm font-bold mr-4",
+                          attrs: { to: { name: "Index" } }
+                        },
                         [_vm._v("< Back")]
                       )
                     ],
@@ -23329,7 +23282,7 @@ var render = function() {
               _vm._v(" "),
               _c("div", { staticClass: "relative" }, [
                 _c("div", [
-                  _vm.post.user_id != _vm.user_id
+                  _vm.post.user_id !== _vm.user_id
                     ? _c("div", { staticClass: "inline-block" }, [
                         _vm.post.reported_count < this.$maxReportedCount
                           ? _c("div", [
@@ -23373,8 +23326,8 @@ var render = function() {
                       ])
                     : _vm._e(),
                   _vm._v(" "),
-                  _vm.post.user_id == _vm.user_id ||
-                  _vm.user_id == this.$adminId
+                  _vm.post.user_id === _vm.user_id ||
+                  _vm.user_id === this.$adminId
                     ? _c(
                         "div",
                         { staticClass: "inline-block" },
@@ -23545,6 +23498,7 @@ var render = function() {
                 _c(
                   "router-link",
                   {
+                    staticClass: "uppercase text-blue-500 text-3xl",
                     attrs: {
                       to: {
                         name: "IndexPostedBy",
@@ -38706,8 +38660,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$globalParams = {
   postedBy: undefined,
   tagObjectArray: []
 };
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$tag_ids = [];
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 6;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 3;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxSizePerEachItem = 20;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 

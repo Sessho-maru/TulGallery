@@ -12,7 +12,7 @@
 
             <input type="text" v-bind:placeholder="selectedTagNames" id="searchTerm" v-model="searchTerm" @input="search" @focus="focus = true" class="w-64 bg-gray-200 border border-gray-400 pl-8 pr-3 py-1 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:shadow focus:bg-gray-100">
             <div v-if="focus" class="absolute bg-blue-900 text-white rounded-lg p-4 w-64 opacity-75 right-0 mr-2 shadow z-20">
-                <div v-if="searchResult.length === 0">No searchResult found for '{{ searchTerm }}'</div>
+                <div v-if="searchResult.length === 0">Tag Name Not found '{{ searchTerm }}'</div>
                 <div v-bind:key="result.id" v-for="result in searchResult">
                     <p v-bind:id="result.id" class="py-2 px-4 rounded-lg hover:bg-blue-700" @click="addTagAndEmitEvent({ id: result.id, name: result.tag_name })">{{ result.tag_name }}</p>
                 </div>
@@ -72,26 +72,12 @@ export default {
             this.$globalParams.tagObjectArray.push(tagObject);
             console.log("New Tag inserted, GlobalTagObjectyArray", this.$globalParams.tagObjectArray);
 
-            var element = document.getElementById(tagObject.id);
-            element.classList.add("hidden");
-
             this.searchResult = [];
             this.searchTerm = '';
             this.focus = false;
 
             this.$emit('NewTagInserted');
             EVENT_BUS.$emit('NewTagAndReRender');
-        },
-
-        AddTagName(tagName)
-        {
-            this.selectedTagNames += tagName + ' || ';
-        },
-
-        hide(id)
-        {
-            var element = document.getElementById(id);
-            element.classList.add("hidden");
         }
     }
 }
