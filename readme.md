@@ -15,6 +15,7 @@ You can couple of things with this web page
     - As its name says
 
 # 
+<br/>
 <img src="https://raw.githubusercontent.com/Sessho-maru/TulGallery/master/example.gif" />
-<br/><br/>
+<br/>
 <a href="http://54.191.244.132/imgs" target="_blank"><strong>DEMO<strong/></a>
