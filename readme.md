@@ -18,3 +18,15 @@ You can couple of things with this web page
 <br/>
 <img src="https://raw.githubusercontent.com/Sessho-maru/TulGallery/master/example.gif" />
 <a href="http://54.191.244.132/imgs" target="_blank">DEMO</a>
+
+# Stack
+- Backend
+    - php/laravel
+- Frontend
+    - vue.js
+    - tailwindcss
+- Database
+    - mysql
+- Server
+    - AWS EC2
+    - AWS S3
