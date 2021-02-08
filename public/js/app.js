@@ -23024,7 +23024,7 @@ var render = function() {
           "button",
           {
             staticClass:
-              "mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
+              "mr-2 px-3 py-1 hover:bg-white rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
                 _vm.changeCurrentPage("-")
@@ -23039,7 +23039,7 @@ var render = function() {
           "button",
           {
             staticClass:
-              "ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
+              "ml-2 px-3 py-1 hover:bg-white rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold",
             on: {
               click: function($event) {
                 _vm.changeCurrentPage("+")
@@ -38660,7 +38660,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$globalParams = {
   postedBy: undefined,
   tagObjectArray: []
 };
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 3;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 24;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxSizePerEachItem = 20;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 

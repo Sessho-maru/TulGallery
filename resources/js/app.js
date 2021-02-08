@@ -14,7 +14,7 @@ const options = {
 Vue.prototype.$adminId = 1;
 Vue.prototype.$maxReportedCount = 5;
 Vue.prototype.$globalParams = { currentPageIndex: 0, postedBy: undefined, tagObjectArray: [] };
-Vue.prototype.$itemNumPerPage = 3;
+Vue.prototype.$itemNumPerPage = 24;
 Vue.prototype.$maxSizePerEachItem = 20;
 
 Vue.use(VueCkeditor.plugin, options);

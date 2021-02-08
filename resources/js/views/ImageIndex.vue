@@ -17,8 +17,8 @@
         </div>
 
         <div class="absolute bottom-0 mb-10">
-            <button class="mr-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold" @click="changeCurrentPage('-'); consoleLogIndex();">Prev</button>
-            <button class="ml-2 px-3 py-1 rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold" @click="changeCurrentPage('+'); consoleLogIndex();">Next</button>
+            <button class="mr-2 px-3 py-1 hover:bg-white rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold" @click="changeCurrentPage('-'); consoleLogIndex();">Prev</button>
+            <button class="ml-2 px-3 py-1 hover:bg-white rounded text-sm text-blue-500 border border-blue-500 text-sm font-bold" @click="changeCurrentPage('+'); consoleLogIndex();">Next</button>
         </div>
 
     </div>
