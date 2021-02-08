@@ -3,7 +3,7 @@ This page is kind of image posting gallery <br/>
 You can couple of things with this web page
 <h4>- Longin / out</h4> 
 <h4>- Create / Delete / Edit your image post</h4> 
-<h4>- Search images with conditions such as: uploaded by {other user} / tagging with {tag name} </h4> 
+<h4>- Search images with conditions such as: uploaded by {user} / tagging with {tag name} </h4> 
 <h4>- Reporting inappropriate post</h4> 
 
 # Navigation
