@@ -15,5 +15,6 @@ You can couple of things with this web page
     - As its name says
 
 # Demo
+<img src="https://raw.githubusercontent.com/Sessho-maru/TulGallery/master/example.gif" />
 Demo URL : <br/>
 http://54.191.244.132/imgs
