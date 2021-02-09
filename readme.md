@@ -1,10 +1,10 @@
 # About
-This page is kind of image posting gallery <br/>
-You can couple of things with this web page
-<h3>Longin / out</h3>
-<h3>Create / Delete / Edit your image post</h3>
-<h3>Search images with conditions such as: uploaded by {user} / tagging with {tag name} </h3>
-<h3>Reporting inappropriate post</h3>
+This page is kind of image posting gallery<br/>
+You can couple of things with this web page<br/>
+<br/>**Longin / out**
+<br/>**Create / Delete / Edit your image post**
+<br/>**Search images with conditions such as uploaded by *{user}* / tagging with *{tag name}***
+<br/>**Reporting inappropriate post**
 
 # Navigation
 - Add new
