@@ -5,7 +5,7 @@ You can couple of things with this web page<br/>
 <br/>**Create / Delete / Edit your image post**
 <br/>**Search images with conditions such as uploaded by *{user}* / tagging with *{tag name}***
 <br/>**Reporting inappropriate post**
-- Reporting rule
+- Reporting rules
     - Everyone can report any post that considered an inappropriate one
     - Any post have report count more than 5, can be deleted by anyone
     - `admin` user has administrative access, so can delete / edit any post posted on page
