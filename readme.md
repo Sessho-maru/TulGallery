@@ -7,7 +7,7 @@ You can couple of things with this web page<br/>
 <br/>**Reporting inappropriate post**
 - Reporting rules
     - Everyone can report any post that considered an inappropriate one
-    - Any post have report count more than 5, can be deleted by anyone
+    - Any post has been reported more than 5 times, can be deleted by anyone
     - `admin` user has administrative access, so can delete / edit any post posted on page
     - Accounts for test
         - username: admin, password: 123
