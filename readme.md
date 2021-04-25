@@ -24,7 +24,7 @@ You can couple of things with this web page<br/>
 # 
 <br/>
 <img src="https://raw.githubusercontent.com/Sessho-maru/TulGallery/master/example.gif" />
-<a href="http://34.211.241.176/imgs" target="_blank">DEMO</a>
+<a href="http://54.201.19.246/imgs" target="_blank">DEMO</a>
 
 # Stack
 - Backend
