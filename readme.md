@@ -17,7 +17,7 @@
 `Auth\LoginController` _controller_ から `AuthenticatesUsers` _trait_ に定義されている</br>
 [login( _**Request $request**_ )](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L31-L55) を呼び出します。
 
-まず、ユーザー入力した [`username`](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L68), `password` の有効性をチェックします。
+まず、ユーザー入力した [`username`](https://github.com/Sessho-maru/TulGallery/blob/a03eb7e8533f047549d040ec4c6f955676fb5f52/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L145-L148), `password` の有効性をチェックします。
 ```php
 protected function validateLogin(Request $request)
 {
@@ -37,5 +37,5 @@ protected function attemptLogin(Request $request)
 }
 ```
 `Auth::guard` の _method_ [attempt( _**array $credentials, bool $remember**_)](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php#L353-L374) を実行します。</br>
-この時、 [credentials( _**Request $request**_ )](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L92-L95) から返却された `username`, `password` を _key_ としてする _array_ が渡されます。</br>
-認証が成功したら [setUser()](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php#L822-L831) を通じて、そのセッション[認証されたユーザーをセットします]()。
+この時、 [credentials( _**Request $request**_ )](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L92-L95) から返却された 'username', 'password' を _key_ としてする _array_ が渡されます。</br>
+認証が成功したら [setUser()](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php#L822-L831) を通じて、そのセッション[認証されたユーザーをセットします](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Auth/GuardHelpers.php#L13-L18)。
