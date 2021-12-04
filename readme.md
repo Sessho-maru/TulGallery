@@ -11,7 +11,7 @@
 | POST   | login         | Auth\LoginController@login       | login.blade.php    |
 | GET    | api/imgs      | ImagesController@index           | ImageIndex.vue     |
 | GET    | api/imgs/{id} | ImagesController@show            | ImageShow.vue      |
-| GET    | api/imgs/{id} | ImagesController@store           | ImageCreate.vue    |
+| POST   | api/imgs      | ImagesController@store           | ImageCreate.vue    |
 | POST   | api/search    | SearchController@index           |          -         |
 
 `Auth\LoginController` _controller_ から `AuthenticatesUsers` _trait_ に定義されている</br>
