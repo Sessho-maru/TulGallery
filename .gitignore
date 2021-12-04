@@ -15,6 +15,7 @@ vendor/laravel/framework/src/Illuminate/*
 !vendor/laravel/framework/src/Illuminate/Auth/
 vendor/laravel/framework/src/Illuminate/Auth/*
 !vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php
+!vendor/laravel/framework/src/Illuminate/Auth/GuardHelpers.php
 
 !vendor/laravel/framework/src/Illuminate/Foundation
 vendor/laravel/framework/src/Illuminate/Foundation/*

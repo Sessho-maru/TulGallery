@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    @if (auth()->user())
-        <App v-bind:user="{{ auth()->user() }}"></App>
+    <?php $user = auth()->user(); ?>
+    @if ($user)
+        <App v-bind:user="{{ $user }}"></App>
     @else
         <App></App>
     @endif
