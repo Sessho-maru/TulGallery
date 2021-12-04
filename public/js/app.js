@@ -1950,22 +1950,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "App",
@@ -22027,190 +22011,131 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return !_vm.someone
-    ? _c("div", [_vm._v("Loading...")])
-    : _c("div", [
-        _c("div", { staticClass: "h-screen bg-white" }, [
-          _c("div", { staticClass: "flex" }, [
+  return _c("div", [
+    _c("div", { staticClass: "h-screen bg-white" }, [
+      _c("div", { staticClass: "flex" }, [
+        _c(
+          "div",
+          {
+            staticClass: "bg-gray-200 w-48 h-screen border-r-2 border-gray-400"
+          },
+          [
             _c(
-              "div",
-              {
-                staticClass:
-                  "bg-gray-200 w-48 h-screen border-r-2 border-gray-400"
-              },
+              "nav",
+              { staticClass: "pt-4" },
               [
-                _c(
-                  "nav",
-                  { staticClass: "pt-4" },
-                  [
-                    _c(
-                      "a",
-                      {
-                        attrs: {
-                          href: _vm.$router.resolve({ name: "Index" }).href
-                        }
-                      },
-                      [
+                _c("router-link", { attrs: { to: { name: "Index" } } }, [
+                  _c(
+                    "svg",
+                    {
+                      staticStyle: { background: "rgb(29,181,147)" },
+                      attrs: {
+                        width: "191.8324951171875px",
+                        height: "122.021240234375px",
+                        xmlns: "http://www.w3.org/2000/svg",
+                        viewBox:
+                          "90.16622314453124 -11.436279296875 319.6675537109375 172.87255859375",
+                        preserveAspectRatio: "xMidYMid"
+                      }
+                    },
+                    [
+                      _c(
+                        "defs",
+                        [
+                          _c(
+                            "linearGradient",
+                            {
+                              attrs: {
+                                id: "editing-shadow-gradient1",
+                                x1: "0",
+                                x2: "0",
+                                y1: "0",
+                                y2: "1"
+                              }
+                            },
+                            [
+                              _c("stop", {
+                                attrs: {
+                                  offset: "0",
+                                  "stop-color": "#000000",
+                                  "stop-opacity": "0"
+                                }
+                              }),
+                              _c("stop", {
+                                attrs: {
+                                  offset: "0.2",
+                                  "stop-color": "#000000",
+                                  "stop-opacity": "0"
+                                }
+                              }),
+                              _c("stop", {
+                                attrs: {
+                                  offset: "1",
+                                  "stop-color": "#000000",
+                                  "stop-opacity": "1"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _c(
+                            "linearGradient",
+                            {
+                              attrs: {
+                                id: "editing-shadow-gradient2",
+                                x1: "-0.254709580222772",
+                                x2: "1.2547095802227721",
+                                y1: "-0.15605902899050716",
+                                y2: "1.1560590289905073"
+                              }
+                            },
+                            [
+                              _c("stop", {
+                                attrs: { offset: "0", "stop-color": "#ffffff" }
+                              }),
+                              _c("stop", {
+                                attrs: { offset: "1", "stop-color": "#fec918" }
+                              })
+                            ],
+                            1
+                          ),
+                          _c(
+                            "filter",
+                            {
+                              attrs: {
+                                id: "editing-shadow",
+                                x: "-100%",
+                                y: "-100%",
+                                width: "300%",
+                                height: "300%"
+                              }
+                            },
+                            [
+                              _c("feGaussianBlur", {
+                                attrs: { stdDeviation: "2" }
+                              }),
+                              _c("feComposite", {
+                                attrs: { operator: "in", in2: "SourceGraphic" }
+                              }),
+                              _c("feGaussianBlur", {
+                                attrs: { stdDeviation: "1" }
+                              })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _c("g", { attrs: { transform: "translate(250,75)" } }, [
                         _c(
-                          "svg",
-                          {
-                            staticStyle: { background: "rgb(29,181,147)" },
-                            attrs: {
-                              width: "191.8324951171875px",
-                              height: "122.021240234375px",
-                              xmlns: "http://www.w3.org/2000/svg",
-                              viewBox:
-                                "90.16622314453124 -11.436279296875 319.6675537109375 172.87255859375",
-                              preserveAspectRatio: "xMidYMid"
-                            }
-                          },
+                          "g",
+                          { attrs: { transform: "translate(-29.4, -1.2)" } },
                           [
-                            _c(
-                              "defs",
-                              [
-                                _c(
-                                  "linearGradient",
-                                  {
-                                    attrs: {
-                                      id: "editing-shadow-gradient1",
-                                      x1: "0",
-                                      x2: "0",
-                                      y1: "0",
-                                      y2: "1"
-                                    }
-                                  },
-                                  [
-                                    _c("stop", {
-                                      attrs: {
-                                        offset: "0",
-                                        "stop-color": "#000000",
-                                        "stop-opacity": "0"
-                                      }
-                                    }),
-                                    _c("stop", {
-                                      attrs: {
-                                        offset: "0.2",
-                                        "stop-color": "#000000",
-                                        "stop-opacity": "0"
-                                      }
-                                    }),
-                                    _c("stop", {
-                                      attrs: {
-                                        offset: "1",
-                                        "stop-color": "#000000",
-                                        "stop-opacity": "1"
-                                      }
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _c(
-                                  "linearGradient",
-                                  {
-                                    attrs: {
-                                      id: "editing-shadow-gradient2",
-                                      x1: "-0.254709580222772",
-                                      x2: "1.2547095802227721",
-                                      y1: "-0.15605902899050716",
-                                      y2: "1.1560590289905073"
-                                    }
-                                  },
-                                  [
-                                    _c("stop", {
-                                      attrs: {
-                                        offset: "0",
-                                        "stop-color": "#ffffff"
-                                      }
-                                    }),
-                                    _c("stop", {
-                                      attrs: {
-                                        offset: "1",
-                                        "stop-color": "#fec918"
-                                      }
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _c(
-                                  "filter",
-                                  {
-                                    attrs: {
-                                      id: "editing-shadow",
-                                      x: "-100%",
-                                      y: "-100%",
-                                      width: "300%",
-                                      height: "300%"
-                                    }
-                                  },
-                                  [
-                                    _c("feGaussianBlur", {
-                                      attrs: { stdDeviation: "2" }
-                                    }),
-                                    _c("feComposite", {
-                                      attrs: {
-                                        operator: "in",
-                                        in2: "SourceGraphic"
-                                      }
-                                    }),
-                                    _c("feGaussianBlur", {
-                                      attrs: { stdDeviation: "1" }
-                                    })
-                                  ],
-                                  1
-                                )
-                              ],
-                              1
-                            ),
-                            _c(
-                              "g",
-                              { attrs: { transform: "translate(250,75)" } },
-                              [
-                                _c(
-                                  "g",
-                                  {
-                                    attrs: {
-                                      transform: "translate(-29.4, -1.2)"
-                                    }
-                                  },
-                                  [
-                                    _c(
-                                      "g",
-                                      { attrs: { transform: "skewX(45)" } },
-                                      [
-                                        _c(
-                                          "g",
-                                          {
-                                            attrs: {
-                                              filter: "url(#editing-shadow)"
-                                            }
-                                          },
-                                          [
-                                            _c(
-                                              "g",
-                                              {
-                                                attrs: {
-                                                  transform:
-                                                    "translate(-54.18999910354614, 35.38999938964844)"
-                                                }
-                                              },
-                                              [
-                                                _c("path", {
-                                                  attrs: {
-                                                    d:
-                                                      "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
-                                                    fill:
-                                                      "url(#editing-shadow-gradient1)"
-                                                  }
-                                                })
-                                              ]
-                                            )
-                                          ]
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                ),
-                                _c("g", [
+                            _c("g", { attrs: { transform: "skewX(45)" } }, [
+                              _c(
+                                "g",
+                                { attrs: { filter: "url(#editing-shadow)" } },
+                                [
                                   _c(
                                     "g",
                                     {
@@ -22224,202 +22149,224 @@ var render = function() {
                                         attrs: {
                                           d:
                                             "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
-                                          fill: "url(#editing-shadow-gradient2)"
+                                          fill: "url(#editing-shadow-gradient1)"
                                         }
                                       })
                                     ]
                                   )
-                                ])
-                              ]
-                            )
-                          ]
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "p",
-                      {
-                        staticClass:
-                          "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
-                      },
-                      [_vm._v("Create")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                        attrs: {
-                          to: {
-                            name: "Create",
-                            params: { api_token: _vm.someone.api_token }
-                          }
-                        }
-                      },
-                      [
-                        _c(
-                          "svg",
-                          {
-                            staticClass: "fill-current text-blue-600 w-5 h-5",
-                            attrs: { viewBox: "0 0 24 24" }
-                          },
-                          [
-                            _c("path", {
-                              attrs: {
-                                d:
-                                  "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
-                              }
-                            })
+                                ]
+                              )
+                            ])
                           ]
                         ),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                          _vm._v("Add new")
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "p",
-                      {
-                        staticClass:
-                          "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
-                      },
-                      [_vm._v("Tag")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                        attrs: { to: "/tags" }
-                      },
-                      [
-                        _c(
-                          "svg",
-                          {
-                            staticClass: "fill-current text-blue-600 w-5 h-5",
-                            attrs: {
-                              xmlns: "http://www.w3.org/2000/svg",
-                              viewBox: "0 0 24 24"
-                            }
-                          },
-                          [
-                            _c("path", {
-                              staticClass: "st0",
+                        _c("g", [
+                          _c(
+                            "g",
+                            {
                               attrs: {
-                                d:
-                                  "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
+                                transform:
+                                  "translate(-54.18999910354614, 35.38999938964844)"
                               }
-                            })
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                          _vm._v("Tag list")
+                            },
+                            [
+                              _c("path", {
+                                attrs: {
+                                  d:
+                                    "M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z",
+                                  fill: "url(#editing-shadow-gradient2)"
+                                }
+                              })
+                            ]
+                          )
                         ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "p",
-                      {
-                        staticClass:
-                          "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
-                      },
-                      [_vm._v("Settings")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
-                        attrs: { to: "/logout" }
-                      },
-                      [
-                        _c(
-                          "svg",
-                          {
-                            staticClass: "fill-current text-blue-600 w-5 h-5",
-                            attrs: { viewBox: "0 0 24 24" }
-                          },
-                          [
-                            _c("path", {
-                              attrs: {
-                                d:
-                                  "M21 3h-3.8c-.7 0-1.3-.6-1.3-1.3S16.5.4 17.2.4h5.1c.7 0 1.3.6 1.3 1.3v20.5c0 .7-.6 1.3-1.3 1.3h-5.1c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3H21V3zm-6.9 7.7L8.6 5.2c-.5-.5-.6-1.3-.1-1.8s1.3-.5 1.8 0l7.7 7.7c.8.8.2 2.2-.9 2.2H1.8c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3h12.3zm-1.6 4.8c.5-.5 1.3-.4 1.8.1s.4 1.3-.1 1.8l-3.8 3.2c-.5.5-1.3.4-1.8-.1-.6-.5-.5-1.3 0-1.7l3.9-3.3z"
-                              }
-                            })
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "pl-3 tracking-wise" }, [
-                          _vm._v("Logout")
-                        ])
-                      ]
-                    )
-                  ],
-                  1
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "flex flex-col flex-1 h-screen" },
-              [
+                      ])
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
                 _c(
-                  "div",
+                  "p",
                   {
                     staticClass:
-                      "h-16 px-6 border-b border-gray-400 flex items-center justify-between"
+                      "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
+                  },
+                  [_vm._v("Create")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass:
+                      "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                    attrs: {
+                      to: {
+                        name: "Create",
+                        params: { api_token: _vm.someone.api_token }
+                      }
+                    }
                   },
                   [
-                    _c("div", { staticClass: "mr-32" }, [
-                      _c("div", {
-                        domProps: { innerHTML: _vm._s(_vm.selectedTagNames) }
-                      })
-                    ]),
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "fill-current text-blue-600 w-5 h-5",
+                        attrs: { viewBox: "0 0 24 24" }
+                      },
+                      [
+                        _c("path", {
+                          attrs: {
+                            d:
+                              "M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"
+                          }
+                        })
+                      ]
+                    ),
                     _vm._v(" "),
-                    _vm.$route.name === "Index" ||
-                    _vm.$route.name === "IndexPostedBy" ||
-                    _vm.$route.name === "IndexTaggedBy"
-                      ? _c(
-                          "div",
-                          [
-                            _c("SearchBar", {
-                              attrs: { id: "search_bar" },
-                              on: { NewTagInserted: _vm.displayTags }
-                            })
-                          ],
-                          1
-                        )
-                      : _vm._e()
+                    _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                      _vm._v("Add new")
+                    ])
                   ]
                 ),
                 _vm._v(" "),
-                _c("router-view", {
-                  staticClass: "flex flex-1 flex-wrap p-6",
-                  attrs: {
-                    api_token: _vm.someone.api_token,
-                    user_id: _vm.someone.id
+                _c(
+                  "p",
+                  {
+                    staticClass:
+                      "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
                   },
-                  on: {
-                    flushSeletedTagNames: function($event) {
-                      _vm.selectedTagNames = ""
-                    }
-                  }
-                })
+                  [_vm._v("Tag")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass:
+                      "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                    attrs: { to: "/tags" }
+                  },
+                  [
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "fill-current text-blue-600 w-5 h-5",
+                        attrs: {
+                          xmlns: "http://www.w3.org/2000/svg",
+                          viewBox: "0 0 24 24"
+                        }
+                      },
+                      [
+                        _c("path", {
+                          staticClass: "st0",
+                          attrs: {
+                            d:
+                              "M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"
+                          }
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                      _vm._v("Tag list")
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "p",
+                  {
+                    staticClass:
+                      "pl-6 pt-12 text-gray-500 uppercase font-bold text-xs"
+                  },
+                  [_vm._v("Settings")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass:
+                      "pl-6 flex items-center py-2 hover:text-blue-300 text-sm",
+                    attrs: { to: "/logout" }
+                  },
+                  [
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "fill-current text-blue-600 w-5 h-5",
+                        attrs: { viewBox: "0 0 24 24" }
+                      },
+                      [
+                        _c("path", {
+                          attrs: {
+                            d:
+                              "M21 3h-3.8c-.7 0-1.3-.6-1.3-1.3S16.5.4 17.2.4h5.1c.7 0 1.3.6 1.3 1.3v20.5c0 .7-.6 1.3-1.3 1.3h-5.1c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3H21V3zm-6.9 7.7L8.6 5.2c-.5-.5-.6-1.3-.1-1.8s1.3-.5 1.8 0l7.7 7.7c.8.8.2 2.2-.9 2.2H1.8c-.7 0-1.3-.6-1.3-1.3 0-.7.6-1.3 1.3-1.3h12.3zm-1.6 4.8c.5-.5 1.3-.4 1.8.1s.4 1.3-.1 1.8l-3.8 3.2c-.5.5-1.3.4-1.8-.1-.6-.5-.5-1.3 0-1.7l3.9-3.3z"
+                          }
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "pl-3 tracking-wise" }, [
+                      _vm._v("Logout")
+                    ])
+                  ]
+                )
               ],
               1
             )
-          ])
-        ])
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "flex flex-col flex-1 h-screen" },
+          [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "h-16 px-6 border-b border-gray-400 flex items-center justify-between"
+              },
+              [
+                _c("div", { staticClass: "mr-32" }, [
+                  _c("div", {
+                    domProps: { innerHTML: _vm._s(_vm.selectedTagNames) }
+                  })
+                ]),
+                _vm._v(" "),
+                _vm.$route.name === "Index" ||
+                _vm.$route.name === "IndexPostedBy" ||
+                _vm.$route.name === "IndexTaggedBy"
+                  ? _c(
+                      "div",
+                      [
+                        _c("SearchBar", {
+                          attrs: { id: "search_bar" },
+                          on: { NewTagInserted: _vm.displayTags }
+                        })
+                      ],
+                      1
+                    )
+                  : _vm._e()
+              ]
+            ),
+            _vm._v(" "),
+            _c("router-view", {
+              staticClass: "flex flex-1 flex-wrap p-6",
+              attrs: {
+                api_token: _vm.someone.api_token,
+                user_id: _vm.someone.id
+              },
+              on: {
+                flushSeletedTagNames: function($event) {
+                  _vm.selectedTagNames = ""
+                }
+              }
+            })
+          ],
+          1
+        )
       ])
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39468,8 +39415,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\TulGel\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\TulGel\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\gong_april\Documents\xampp\htdocs\TulGallery\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\gong_april\Documents\xampp\htdocs\TulGallery\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

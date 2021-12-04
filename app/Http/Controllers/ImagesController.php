@@ -64,7 +64,6 @@ class ImagesController extends Controller
 
     public function index()
     {
-        // $this->authorize('viewAny', Image::class); All Registered User can view any Images
         return (ImageResource::collection(Image::all()))->response()->setStatusCode(200);
     }
 
@@ -92,8 +91,6 @@ class ImagesController extends Controller
 
     public function store()
     {
-        $this->authorize('create', Image::class);
-
         $validated = $this->validateData();
         $tags = htmlspecialchars($validated['tags']);
 
@@ -125,15 +122,12 @@ class ImagesController extends Controller
     public function show($id)
     {   
         $image = Image::find($id);
-        // $this->authorize('view', $image); All Registered User can view Specific Image
-
         return (new ImageResource($image))->response()->setStatusCode(200);
     }
 
     public function update($id)
     {
         $image = Image::find($id);
-        $this->authorize('update', $image);
 
         if (request()->flag == "url_update")
         {
@@ -171,7 +165,6 @@ class ImagesController extends Controller
         $image = Image::find($id);
         $updated_count = ($image->reported_count) + 1;
         $image->update(['reported_count' =>  $updated_count]);
-
         return response($updated_count, 200);
     }
 
@@ -185,13 +178,11 @@ class ImagesController extends Controller
         Storage::disk('s3')->delete('images/' . $fileName[1]);
         
         $image->delete();
-
         return response([], 204);
     }
 
     public function index_withUser()
     {
-        // $this->authorize('viewAny', Image::class); All Registered User can view any Images
         return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
     }
 }

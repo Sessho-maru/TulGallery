@@ -1,20 +1,14 @@
 <template>
-    
-    <div v-if="!someone">Loading...</div>
-    <div v-else>
-
+    <div>
         <div class="h-screen bg-white">
             <div class="flex">
-
                 <div class="bg-gray-200 w-48 h-screen border-r-2 border-gray-400">
-
                     <nav class="pt-4">
-
-                        <a :href="$router.resolve({name: 'Index'}).href">
+                        <router-link :to="{ name: 'Index' }">
                             <svg width="191.8324951171875px" height="122.021240234375px" xmlns="http://www.w3.org/2000/svg" viewBox="90.16622314453124 -11.436279296875 319.6675537109375 172.87255859375" style="background:rgb(29,181,147)" preserveAspectRatio="xMidYMid"><defs><linearGradient id="editing-shadow-gradient1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000000" stop-opacity="0"></stop><stop offset="0.2" stop-color="#000000" stop-opacity="0"></stop><stop offset="1" stop-color="#000000" stop-opacity="1"></stop></linearGradient><linearGradient id="editing-shadow-gradient2" x1="-0.254709580222772" x2="1.2547095802227721" y1="-0.15605902899050716" y2="1.1560590289905073"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#fec918"></stop></linearGradient><filter id="editing-shadow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2"></feGaussianBlur><feComposite operator="in" in2="SourceGraphic"></feComposite><feGaussianBlur stdDeviation="1"></feGaussianBlur></filter></defs><g transform="translate(250,75)"><g transform="translate(-29.4, -1.2)"><g transform="skewX(45)"><g filter="url(#editing-shadow)"><g transform="translate(-54.18999910354614, 35.38999938964844)"><path d="M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z" fill="url(#editing-shadow-gradient1)"></path></g></g></g></g><g><g transform="translate(-54.18999910354614, 35.38999938964844)">
                                 <path d="M28.76 0L22.84 0L22.84-60.16L4.23-60.16L4.70-65.80L47.28-65.80L46.81-60.16L28.76-60.16L28.76 0ZM60.54-6.02L60.54-6.02L60.54-6.02Q62.60-5.26 67.12-5.26L67.12-5.26L67.12-5.26Q71.63-5.26 78.77-8.93L78.77-8.93L78.77-47L84.88-47.47L84.88 0L78.77 0L78.77-5.08L78.77-5.08Q71.82 0.28 64.58 0.28L64.58 0.28L64.58 0.28Q55.55 0.28 51.51-5.08L51.51-5.08L51.51-5.08Q49.44-7.71 49.44-12.41L49.44-12.41L49.44-47L55.55-47.47L55.55-14.01L55.55-14.01Q55.55-8.18 60.54-6.02ZM104.15 0L98.04 0L98.04-70.03L104.15-70.50L104.15 0Z" fill="url(#editing-shadow-gradient2)"></path></g></g></g>
                             </svg>
-                        </a>
+                        </router-link>
 
                         <p class="pl-6 pt-12 text-gray-500 uppercase font-bold text-xs">Create</p>
                         <router-link :to="{ name: 'Create', params: { api_token: someone.api_token } }" class="pl-6 flex items-center py-2 hover:text-blue-300 text-sm">
@@ -44,33 +38,23 @@
 
                             <div class="pl-3 tracking-wise">Logout</div>
                         </router-link>
-
                     </nav>
-
                 </div> <!-- left section -->
 
-
                 <div class="flex flex-col flex-1 h-screen">
-
                     <div class="h-16 px-6 border-b border-gray-400 flex items-center justify-between">
                         <div class="mr-32">
                             <div v-html="selectedTagNames"></div>
                         </div>
-                        
                         <div v-if="$route.name === 'Index' || $route.name === 'IndexPostedBy' || $route.name === 'IndexTaggedBy'">
                             <SearchBar id="search_bar" @NewTagInserted="displayTags"/>
                         </div>
                     </div> <!-- top section -->
-
                     <router-view v-bind:api_token="someone.api_token" v-bind:user_id="someone.id" @flushSeletedTagNames="selectedTagNames = ''" class="flex flex-1 flex-wrap p-6" /><!-- bottom section -->
-                    
                 </div> <!-- right section -->
-
             </div>
         </div>
-
     </div>
-    
 </template>
 
 <script>

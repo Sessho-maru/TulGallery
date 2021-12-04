@@ -22,24 +22,24 @@ Route::get('/logout-manual', function ()
 Route::post('/imgs/upload', function()
 {
     $uploaded = request()->file('file')->store(
-        'images',
+        'imgs',
         's3'
     );
 
     return [ 
-        'url' => 'https://tulgallery.s3-us-west-2.amazonaws.com/' . $uploaded
+        'url' => env('AWS_URL') . $uploaded
     ];
 });
 
 Route::post('/imgs/upload/thumb', function()
 {
     $uploaded = request()->file('file')->store(
-        'thumbnail',
+        'thumbs',
         's3'
     );
 
     return [ 
-        'url' => 'https://tulgallery.s3-us-west-2.amazonaws.com/' . $uploaded
+        'url' => env('AWS_URL') . $uploaded
     ];
 });
 

@@ -5,11 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "name": "Listen for Xdebug",
+            "type": "php",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://app.test/imgs",
-            "webRoot": "${workspaceFolder}"
+            "port": 9000
         }
     ]
 }
