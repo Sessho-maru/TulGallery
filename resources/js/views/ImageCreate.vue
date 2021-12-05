@@ -85,61 +85,64 @@ export default {
             document.getElementById(target).innerHTML = "";
         },
 
-        drawThumbnail(imgUrl, scale)
-        {
-            this.img = new Image();
-            this.img.src = imgUrl;
-            this.img.crossOrigin = "anonymous";
+        // thumbnail
+        /*
+            drawThumbnail(imgUrl, scale)
+            {
+                this.img = new Image();
+                this.img.src = imgUrl;
+                this.img.crossOrigin = "anonymous";
 
-            return new Promise( (resolve, reject) => {
-                this.img.onload = () => {
-                    const elem = document.createElement('canvas');
-                    elem.width = Math.floor(this.img.width * scale);
-                    elem.height = Math.floor(this.img.height * scale);
+                return new Promise( (resolve, reject) => {
+                    this.img.onload = () => {
+                        const elem = document.createElement('canvas');
+                        elem.width = Math.floor(this.img.width * scale);
+                        elem.height = Math.floor(this.img.height * scale);
 
-                    const ctx = elem.getContext('2d');
-                    
-                    ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, elem.width, elem.height);
+                        const ctx = elem.getContext('2d');
+                        
+                        ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, elem.width, elem.height);
 
-                    ctx.canvas.toBlob((blob) => {
-                        const file = new File([blob], 'test', {
-                            type: this.form.format.extension
-                        });
-                        resolve(file);
-                    }, this.form.format.extension, 1);
-                }
-            });
-        },
-
-        async uploadThumbnail(imgUrl, scale)
-        {
-            const thumbnail = await this.drawThumbnail(imgUrl, scale);
-            console.log("thumbnail image: ", thumbnail);
-
-            let formData = new FormData();
-            formData.append('file', thumbnail);
-
-            axios.post('/imgs/upload/thumb', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-                .then( response => {
-                    console.log("thumbnail image url: ", response.data.url);
-                    
-                    axios.patch('/api/imgs/' + this.form.image_id, { 'api_token': this.api_token, 'url': imgUrl, 'thumbnail_url': response.data.url, 'flag': "url_update" }) // Url update request
-                            .then( resopnse => {
-                                this.$router.push(resopnse.data.links.self);
-                            })
-                            .catch( error => {
-                                console.log(error);
+                        ctx.canvas.toBlob((blob) => {
+                            const file = new File([blob], 'test', {
+                                type: this.form.format.extension
                             });
-                })
-                .catch( err => {
-                    console.log(err);
-                    console.log("failed");
+                            resolve(file);
+                        }, this.form.format.extension, 1);
+                    }
                 });
-        },
+            },
+
+            async uploadThumbnail(imgUrl, scale)
+            {
+                const thumbnail = await this.drawThumbnail(imgUrl, scale);
+                console.log("thumbnail image: ", thumbnail);
+
+                let formData = new FormData();
+                formData.append('file', thumbnail);
+
+                axios.post('/imgs/upload/thumb', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+                    .then( response => {
+                        console.log("thumbnail image url: ", response.data.url);
+                        
+                        axios.patch('/api/imgs/' + this.form.image_id, { 'api_token': this.api_token, 'url': imgUrl, 'thumbnail_url': response.data.url, 'flag': "url_update" }) // Url update request
+                                .then( resopnse => {
+                                    this.$router.push(resopnse.data.links.self);
+                                })
+                                .catch( error => {
+                                    console.log(error);
+                                });
+                    })
+                    .catch( err => {
+                        console.log(err);
+                        console.log("failed");
+                    });
+            },
+        */
         
         fileHandle()
         {
-            if ( this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024 )
+            if (this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024)
             {
                 document.getElementById('error_image').innerHTML = "Too large file size (Maximum: "+ this.$maxSizePerEachItem +"MB)";
                 document.getElementById('image').value = '';
@@ -154,11 +157,11 @@ export default {
                 this.form.format.type = "photo";
                 this.form.format.extension = this.file.type;
             }
-            // else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
-            // {
-            //     this.form.format.type = "webm";
-            //     this.form.format.extension = this.file.type;
-            // } // Demo only supports image file formats
+            else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
+            {
+                this.form.format.type = "webm";
+                this.form.format.extension = this.file.type;
+            } // Demo only supports image file formats
             else
             {
                 alert("Demo only supports image file formats");

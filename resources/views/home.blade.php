@@ -7,5 +7,4 @@
     @else
         <App></App>
     @endif
-    {{-- SPA application: laravel home.blade.php calls vue's App Component --}}
 @endsection

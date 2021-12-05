@@ -11,7 +11,7 @@
                         </router-link>
 
                         <p class="pl-6 pt-12 text-gray-500 uppercase font-bold text-xs">Create</p>
-                        <router-link :to="{ name: 'Create', params: { api_token: someone.api_token } }" class="pl-6 flex items-center py-2 hover:text-blue-300 text-sm">
+                        <router-link :to="{ name: 'Create', params: { api_token: authedUser.api_token } }" class="pl-6 flex items-center py-2 hover:text-blue-300 text-sm">
                             <svg viewBox="0 0 24 24" class="fill-current text-blue-600 w-5 h-5">
                                 <path d="M23.3 11.9c0 .9-.6 1.4-1.4 1.4h-8.5v8.5c0 .9-.6 1.4-1.4 1.4s-1.4-.6-1.4-1.4v-8.5H2c-.9 0-1.4-.6-1.4-1.4 0-.9.6-1.4 1.4-1.4h8.5V1.9c0-.9.6-1.4 1.4-1.4s1.4.6 1.4 1.4v8.5h8.5c.9 0 1.5.6 1.5 1.5z"/>
                             </svg>
@@ -21,7 +21,7 @@
 
 
                         <p class="pl-6 pt-12 text-gray-500 uppercase font-bold text-xs">Tag</p>
-                        <router-link to="/tags" class="pl-6 flex items-center py-2 hover:text-blue-300 text-sm">
+                        <router-link :to="{ name: 'allTags' }" class="pl-6 flex items-center py-2 hover:text-blue-300 text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-blue-600 w-5 h-5">
                                 <path class="st0" d="M20 2h-1V1c0-.6-.4-1-1-1s-1 .4-1 1v1h-4V1c0-.6-.4-1-1-1s-1 .4-1 1v1H7V1c0-.6-.4-1-1-1S5 .4 5 1v1H4C1.8 2 0 3.8 0 6v14c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4V6c0-2.2-1.8-4-4-4zM4 4h1v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h4v1c0 .6.4 1 1 1s1-.4 1-1V4h1c1.1 0 2 .9 2 2v2H2V6c0-1.1.9-2 2-2zm16 18H4c-1.1 0-2-.9-2-2V10h20v10c0 1.1-.9 2-2 2zM8 14c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zM8 18c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1zm6 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1s.4-1 1-1h2c.6 0 1 .4 1 1z"/>
                             </svg>
@@ -50,7 +50,7 @@
                             <SearchBar id="search_bar" @NewTagInserted="displayTags"/>
                         </div>
                     </div> <!-- top section -->
-                    <router-view v-bind:api_token="someone.api_token" v-bind:user_id="someone.id" @flushSeletedTagNames="selectedTagNames = ''" class="flex flex-1 flex-wrap p-6" /><!-- bottom section -->
+                    <router-view v-bind:api_token="authedUser.api_token" v-bind:user_id="authedUser.id" @flushSeletedTagNames="selectedTagNames = ''" class="flex flex-1 flex-wrap p-6" /><!-- bottom section -->
                 </div> <!-- right section -->
             </div>
         </div>
@@ -66,7 +66,7 @@ export default {
     data()
     {
         return {
-            someone: {},
+            authedUser: {},
             selectedTagNames: ""
         }
     },
@@ -79,11 +79,6 @@ export default {
         SearchBar
     },
 
-    created()
-    {
-
-    },
-
     mounted() {
         if (this.user === undefined)
         {
@@ -91,14 +86,9 @@ export default {
         }
         else
         {
-            this.someone = this.user;
-            console.log("User login as", this.someone);
+            this.authedUser = this.user;
+            console.log("User login as", this.authedUser);
         }
-    },
-
-    destroyed()
-    {
-
     },
 
     methods: {
