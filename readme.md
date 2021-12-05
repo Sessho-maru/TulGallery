@@ -6,12 +6,14 @@
 # Detail
 ###  * 重要 _route_ 一覧
 | Method | URI           | Controller                       | View               | Auth Middleware |
-|--------|---------------|----------------------------------|--------------------|-----------------|
+|--------|---------------|----------------------------------|--------------------|:-----------------:|
 | POST   | register      | Auth\RegisterController@register | register.blade.php |        -        |
 | POST   | login         | Auth\LoginController@login       | login.blade.php    |        -        |
 | GET    | api/imgs      | ImagesController@index           | ImageIndex.vue     |        X        |
 | GET    | api/imgs/{id} | ImagesController@show            | ImageShow.vue      |        X        |
 | GET    | api/imgs/{id} | ImagesController@store           | ImageCreate.vue    |        O        |
+| PATCH  | api/imgs/{id} | ImagesController@update          | ImageEdit.vue      | O               |
+| DELETE | api/imgs/{id} | ImagesController@destroy         | -                  | O               |
 | POST   | api/search    | SearchController@index           |          -         |        X        |
 
 このWEBアプリケーションはイメージの掲載(_ImagesController@store_)、修正(_ImagesController@update_)、削除(_ImagesController@destroy_)</br>
@@ -68,8 +70,8 @@ protected function attemptLogin(Request $request)
 ```
 `$user` が _null_ とか _false_ ではないなら `$user` を _props_ として渡します。</br>
 
-[`App.vue`](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue) _component_ には _navigation_ 領域、_router-view_ によって 格URL毎に表示される中身の領域が分けられています。</br>
-`App.vue` の _Vue instance_ が _mount_ されたらまず、`mounted()` で、guest ユーザーか認証済みのユーザーかチェックして</br>
+[`App.vue`](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue) _component_ には [_navigation_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L4-L42)、格URL毎に他の中身が表示される [_router-view_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L44-L54) が分けられています。</br>
+`App.vue` の _Vue instance_ が _mount_ されたらまず、`mounted()` で guest ユーザーか認証済みのユーザーかチェックして</br>
 後者の場合、`this.authedUser` を初期化します。
 ```javascript
 mounted() {

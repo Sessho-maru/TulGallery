@@ -49,8 +49,8 @@
                         <div v-if="$route.name === 'Index' || $route.name === 'IndexPostedBy' || $route.name === 'IndexTaggedBy'">
                             <SearchBar id="search_bar" @NewTagInserted="displayTags"/>
                         </div>
-                    </div> <!-- top section -->
-                    <router-view v-bind:api_token="authedUser.api_token" v-bind:user_id="authedUser.id" @flushSeletedTagNames="selectedTagNames = ''" class="flex flex-1 flex-wrap p-6" /><!-- bottom section -->
+                    </div> <!-- right-top section -->
+                    <router-view v-bind:api_token="authedUser.api_token" v-bind:user_id="authedUser.id" @flushSeletedTagNames="selectedTagNames = ''" class="flex flex-1 flex-wrap p-6" /><!-- right-bottom section -->
                 </div> <!-- right section -->
             </div>
         </div>
