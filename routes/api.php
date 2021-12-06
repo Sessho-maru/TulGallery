@@ -18,13 +18,14 @@ Route::middleware('auth:api')->group(function ()
     Route::post('/imgs', 'ImagesController@store');
     Route::patch('/imgs/{id}', 'ImagesController@update');
     Route::delete('/imgs/{id}', 'ImagesController@destroy');
+    Route::post('/imgs/validate', 'ImagesController@validate_tags');
 });
 
 Route::get('/imgs', 'ImagesController@index')->name('index');
 Route::get('/imgs/{id}', 'ImagesController@show')->name('show');
 
-Route::get('/imgs/user/{id}', 'ImagesController@index_withUser');
-Route::get('/tag', 'ImagesController@indexByTag');
+Route::get('/imgs/user/{id}', 'ImagesController@index_by_user');
+Route::get('/tag', 'ImagesController@index_by_tag');
 
 Route::post('search', 'SearchController@index');
 

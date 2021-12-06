@@ -9,6 +9,13 @@
             "type": "php",
             "request": "launch",
             "port": 9000
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://tul.test/",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

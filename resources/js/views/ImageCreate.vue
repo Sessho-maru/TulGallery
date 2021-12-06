@@ -4,7 +4,7 @@
 
             <div v-if="loading">Loading....</div>
             <div v-else>
-                <form @submit.prevent="submitForm">
+                <form @submit.prevent="createNewPost">
                     <div class="pb-2">
                         <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
                         <input id="image" type="file" ref="file" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
@@ -14,13 +14,13 @@
                     <div class="py-8">
                         <label for="description" class="text-blue-500 pt-2 uppercase text-xs font-bold">Description</label>
                         <div class="pt-5">
-                            <ckeditor id="description" type="classic" v-model="form.description"></ckeditor>
+                            <ckeditor id="description" type="classic" v-model="objPost.description"></ckeditor>
                         </div>
                     </div>
 
                     <div class="pb-2">
                         <label for="tag" class="text-blue-500 pt-2 uppercase text-xs font-bold">Tags</label>
-                        <input id="tag" type="text" v-model="form.tags" placeholder="All the tag inputs must be devied by ','" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" @input="clearError('error_tag')">
+                        <input id="tag" type="text" v-model="objPost.tags" placeholder="All the tag inputs must be devied by ','" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" @input="clearError('error_tag')">
                     </div>
                     <p id="error_tag" class="text-red-600 text-sm font-bold"></p>
                 
@@ -48,10 +48,8 @@ export default {
         return {
             file: "",
 
-            form: {
-                image_id: 0,
-                url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png",
-                thumbnail_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png",
+            objPost: {
+                url: "",
                 description: "",
                 tags: "",
                 format: {}
@@ -75,76 +73,11 @@ export default {
     },
 
     methods: {
-
-        hasDuplicates(array) {
-            return (new Set(array)).size !== array.length;
-        },
-
-        clearError(target)
-        {
-            document.getElementById(target).innerHTML = "";
-        },
-
-        // thumbnail
-        /*
-            drawThumbnail(imgUrl, scale)
-            {
-                this.img = new Image();
-                this.img.src = imgUrl;
-                this.img.crossOrigin = "anonymous";
-
-                return new Promise( (resolve, reject) => {
-                    this.img.onload = () => {
-                        const elem = document.createElement('canvas');
-                        elem.width = Math.floor(this.img.width * scale);
-                        elem.height = Math.floor(this.img.height * scale);
-
-                        const ctx = elem.getContext('2d');
-                        
-                        ctx.drawImage(this.img, 0, 0, this.img.width, this.img.height, 0, 0, elem.width, elem.height);
-
-                        ctx.canvas.toBlob((blob) => {
-                            const file = new File([blob], 'test', {
-                                type: this.form.format.extension
-                            });
-                            resolve(file);
-                        }, this.form.format.extension, 1);
-                    }
-                });
-            },
-
-            async uploadThumbnail(imgUrl, scale)
-            {
-                const thumbnail = await this.drawThumbnail(imgUrl, scale);
-                console.log("thumbnail image: ", thumbnail);
-
-                let formData = new FormData();
-                formData.append('file', thumbnail);
-
-                axios.post('/imgs/upload/thumb', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-                    .then( response => {
-                        console.log("thumbnail image url: ", response.data.url);
-                        
-                        axios.patch('/api/imgs/' + this.form.image_id, { 'api_token': this.api_token, 'url': imgUrl, 'thumbnail_url': response.data.url, 'flag': "url_update" }) // Url update request
-                                .then( resopnse => {
-                                    this.$router.push(resopnse.data.links.self);
-                                })
-                                .catch( error => {
-                                    console.log(error);
-                                });
-                    })
-                    .catch( err => {
-                        console.log(err);
-                        console.log("failed");
-                    });
-            },
-        */
-        
         fileHandle()
         {
             if (this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024)
             {
-                document.getElementById('error_image').innerHTML = "Too large file size (Maximum: "+ this.$maxSizePerEachItem +"MB)";
+                this.displayError('image', `Too large file size (Maximum: ${this.$maxSizePerEachItem}MB)`);
                 document.getElementById('image').value = '';
                 return;
             }
@@ -154,17 +87,17 @@ export default {
 
             if (this.file.type === 'image/jpeg' || this.file.type === 'image/png' || this.file.type === 'image/gif')
             {
-                this.form.format.type = "photo";
-                this.form.format.extension = this.file.type;
+                this.objPost.format.type = "photo";
+                this.objPost.format.extension = this.file.type;
             }
             else if (this.file.type === 'video/webm' || this.file.type === 'video/mp4')
             {
-                this.form.format.type = "webm";
-                this.form.format.extension = this.file.type;
-            } // Demo only supports image file formats
+                this.objPost.format.type = "webm";
+                this.objPost.format.extension = this.file.type;
+            }
             else
             {
-                alert("Demo only supports image file formats");
+                alert("Not supported format", this.file.type);
                 this.file = null;
                 return;
             }
@@ -172,53 +105,120 @@ export default {
             this.fileLoaded = true;
         },
 
-        submitForm()
+        validateTags(tags)
         {
-            if (this.fileLoaded == false)
+            return new Promise((resolve, reject) => {
+                axios.post('/api/imgs/validate', {'tags': tags, 'api_token': this.api_token})
+                    .then((res) => {
+                        resolve(res);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            });
+        },
+
+        uploadImageToBucket(formData)
+        {
+            return new Promise((resolve, reject) => {
+                axios.post('/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+                    .then((res) => {
+                        resolve(res.data.url);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            });
+        },
+
+        insertRecordThenRegisterTags()
+        {
+            return new Promise((resolve, reject) => {
+                axios.post('/api/imgs', {...this.objPost, 'api_token': this.api_token})
+                    .then((res) => {
+                        resolve(res.data);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            });
+        },
+
+        async createNewPost()
+        {
+            if (this.fileLoaded === false)
             {
-                document.getElementById('error_image').innerHTML = "Require at least 1 Image";
+                this.displayError('image', "Requires 1 Image at least");
                 return;
             }
 
-            if (this.form.tags === "")
+            if (this.objPost.tags === "")
             {
-                document.getElementById('error_tag').innerHTML = "Require at least 1 Tag";
+                this.displayError('tag', "Requires 1 Tag at least");
                 return;
             }
 
-            let tags = this.form.tags.split(",");
-            if (this.hasDuplicates(tags) == true)
+            let tags = this.objPost.tags.split(",");
+            if (this.hasDuplicates(tags))
             {
-                document.getElementById('error_tag').innerHTML = "Inserted Tags aren't unique";
+                this.displayError('tag', "Inserted Tags aren't unique");
                 return;
             }
 
             document.getElementById("submitButton").disabled = true;
+            let noErr = true;
 
-            axios.post('/api/imgs', {...this.form, api_token: this.api_token}) // Image form request
-                    .then( response => {
+            await this.validateTags(this.objPost.tags) // execute tags validation
+                .then((res) => {
+                    console.log(res.data.msg);
+                })
+                .catch((err) => {
+                    this.displayError('tag', err.response.data.msg, true);
+                    noErr = false;
+                });
+            if(!noErr) return;
 
-                        this.form.image_id = response.data.data.image_id;
-                    
-                        let formData = new FormData();
-                        formData.append('file', this.file);
+            let formData = new FormData();
+            formData.append('file', this.file);
 
-                        axios.post('/imgs/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }) // Image upload request
-                            .then( response => {
-                                this.uploadThumbnail(response.data.url, 1/5);
-                            })
-                            .catch( errors => {
-                                console.log(errors);
-                                document.getElementById('error_image').innerHTML = errors.response.data.msg;
-                                document.getElementById("submitButton").disabled = false;
-                            });
-                    })
-                    .catch( errors => {
-                        console.log(errors);
-                        document.getElementById('error_tag').innerHTML = errors.response.data.msg;
-                        document.getElementById("submitButton").disabled = false;
-                    });
-        }
+            await this.uploadImageToBucket(formData) // upload Image to S3 Bucket then get Url
+                .then((res) => {
+                    console.log("New Image was uploaded to S3 Bucket", res);
+                    this.objPost.url = res;
+                })
+                .catch((err) => {
+                    // TODO: return proper error message when uploading fails from /imgs/upload
+                    noErr = false;
+                });
+            if(!noErr) return;
+
+            await this.insertRecordThenRegisterTags() // insert new record to Image Model and register tags then redirect
+                .then((res) => {
+                    console.log(`New Image Model record(id: ${res.data.image_id}) was inserted and tags was registered: "${this.objPost.tags}"`);
+                    this.$router.push(res.links.self);
+                })
+                .catch((err) => {
+                    console.log('Unexpected error occured');
+                });
+        },
+
+        hasDuplicates(array) {
+            return (new Set(array)).size !== array.length;
+        },
+
+        displayError(target, msg, turnOnBtn = false)
+        {
+            document.getElementById(`error_${target}`).innerHTML = msg;
+            if(turnOnBtn)
+            {
+                document.getElementById("submitButton").disabled = false;
+            }
+        },
+
+        clearError(target)
+        {
+            document.getElementById(target).innerHTML = "";
+        },
     }
 }
 </script>

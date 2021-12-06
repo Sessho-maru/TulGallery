@@ -18,40 +18,16 @@ class ImagesController extends Controller
     {
         return request()->validate([
             'url' => 'required|active_url',
-            'thumbnail_url' => 'required|active_url',
             'description' => '',
             'tags' => 'required',
-            'format' => ''
+            'format' => 'required'
         ]);
-    }
-
-    private function tagVaildation($tags)
-    {
-        $tagNames = explode(",", $tags);
-        // split given $tags(string) by ','
-
-        foreach ($tagNames as $tagName)
-        {
-            $returned = Tag::where('tag_name', $tagName)->first();
-
-            if ($returned === null)
-            {
-                return response()->json([
-                    'status' => 'error',
-                    'msg' => 'tag names inserted incorrectly',
-                ], 422);
-            }
-        }
-        // if $tagName is cannot be found in Tag model then, return 422
-
-        return $tagNames;
     }
 
     private function urlUpdate()
     {
         return request()->validate([
             'url' => 'required|active_url',
-            'thumbnail_url' => 'required|active_url'
         ]);
     }
 
@@ -67,7 +43,104 @@ class ImagesController extends Controller
         return (ImageResource::collection(Image::all()))->response()->setStatusCode(200);
     }
 
-    public function indexByTag()
+    public function show($id)
+    {   
+        $image = Image::find($id);
+        return (new ImageResource($image))->response()->setStatusCode(200);
+    }
+
+    public function store()
+    {
+        $validated = $this->validateData();
+
+        $image = request()->user()->images()->create([
+            'user_id' => request()->user()->id,
+            'url' => $validated['url'],
+            'description' => $validated['description'],
+            'format' => $validated['format']['type']
+        ]);
+
+        $tags = explode(',', $validated['tags']);
+        foreach ($tags as $tag) // register valid $tag_id into each image
+        {
+            $tag_id = Tag::where('tag_name', $tag)->first()->id;
+            DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
+        }
+
+        return (new ImageResource($image))->response()->setStatusCode(201);
+    }
+
+    public function update($id)
+    {
+        $image = Image::find($id);
+
+        if (request()->flag == "url_update")
+        {
+            $image->update($this->urlUpdate());
+        }
+        
+        if (request()->flag == "post_update")
+        {
+            $validated = $this->validateData();
+            $tags = htmlspecialchars($validated['tags']);
+
+            $tags_vaildated = $this->validateTags($tags);
+
+            if (gettype($tags_vaildated) === 'object')
+            {
+                return $tags_vaildated;
+            } // $tags_vaildated would be resopnseObject type when validateTags() fail
+            
+            DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
+            foreach ($tags_vaildated as $tagName)
+            {
+                $tag_id = Tag::where('tag_name', $tagName)->first()->id;
+                DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
+            }
+            // register vaild $tag_id into each image using image's id
+
+            $image->update($this->postUpdate());
+        }
+
+        return (new ImageResource($image))->response()->setStatusCode(200);
+    }
+
+    public function destroy($id)
+    {
+        $image = Image::find($id);
+        
+        DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
+
+        $fileName = explode('images/', $image->url);
+        Storage::disk('s3')->delete('images/' . $fileName[1]);
+        
+        $image->delete();
+        return response([], 204);
+    }
+
+    public function validate_tags()
+    {
+        $tagNames = explode(',', request()->tags);
+
+        foreach ($tagNames as $tagName)
+        {
+            $returned = Tag::where('tag_name', $tagName)->first();
+            if ($returned === null) // if $tagName was not found from Tag Model, return 422
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'tag names inserted incorrectly',
+                ], 422);
+            }
+        }
+
+        return response()->json([
+            'status' => 'OK',
+            'msg' => 'tag validation passed',
+        ], 200);
+    }
+
+    public function index_by_tag()
     {
         $tags = request()->data;
         $images = [];
@@ -89,75 +162,9 @@ class ImagesController extends Controller
         return (ImageResource::collection(Image::findMany(array_keys($image_ids))))->response()->setStatusCode(200);
     }
 
-    public function store()
+    public function index_by_user()
     {
-        $validated = $this->validateData();
-        $tags = htmlspecialchars($validated['tags']);
-
-        $tags_vaildated = $this->tagVaildation($tags);
-
-        if (gettype($tags_vaildated) === 'object')
-        {
-            return $tags_vaildated;
-        } // $tags_vaildated would be resopnseObject type when tagVaildation() fail
-
-        $image = request()->user()->images()->create([
-            'user_id' => request()->user()->id,
-            'url' => $validated['url'],
-            'thumbnail_url' => $validated['thumbnail_url'],
-            'description' => $validated['description'],
-            'format' => $validated['format']['type']
-        ]);
-
-        foreach ($tags_vaildated as $tagName)
-        {
-            $tag_id = Tag::where('tag_name', $tagName)->first()->id;
-            DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
-        }
-        // register vaild $tag_id into each image using image's id
-
-        return (new ImageResource($image))->response()->setStatusCode(201);
-    }
-
-    public function show($id)
-    {   
-        $image = Image::find($id);
-        return (new ImageResource($image))->response()->setStatusCode(200);
-    }
-
-    public function update($id)
-    {
-        $image = Image::find($id);
-
-        if (request()->flag == "url_update")
-        {
-            $image->update($this->urlUpdate());
-        }
-        
-        if (request()->flag == "post_update")
-        {
-            $validated = $this->validateData();
-            $tags = htmlspecialchars($validated['tags']);
-
-            $tags_vaildated = $this->tagVaildation($tags);
-
-            if (gettype($tags_vaildated) === 'object')
-            {
-                return $tags_vaildated;
-            } // $tags_vaildated would be resopnseObject type when tagVaildation() fail
-            
-            DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
-            foreach ($tags_vaildated as $tagName)
-            {
-                $tag_id = Tag::where('tag_name', $tagName)->first()->id;
-                DB::insert('INSERT INTO image_tag (image_id, tag_id) VALUES (?, ?)', [$image->id, $tag_id]);
-            }
-            // register vaild $tag_id into each image using image's id
-
-            $image->update($this->postUpdate());
-        }
-
-        return (new ImageResource($image))->response()->setStatusCode(200);
+        return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
     }
 
     public function report($id)
@@ -168,21 +175,4 @@ class ImagesController extends Controller
         return response($updated_count, 200);
     }
 
-    public function destroy($id)
-    {
-        $image = Image::find($id);
-        
-        DB::delete('DELETE FROM image_tag WHERE image_id LIKE ?', [$id]);
-
-        $fileName = explode('images/', $image->url);
-        Storage::disk('s3')->delete('images/' . $fileName[1]);
-        
-        $image->delete();
-        return response([], 204);
-    }
-
-    public function index_withUser()
-    {
-        return (ImageResource::collection(User::find(request()->id)->images))->response()->setStatusCode(200);
-    }
 }

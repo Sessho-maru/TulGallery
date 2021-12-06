@@ -50,7 +50,13 @@
                             <SearchBar id="search_bar" @NewTagInserted="displayTags"/>
                         </div>
                     </div> <!-- right-top section -->
-                    <router-view v-bind:api_token="authedUser.api_token" v-bind:user_id="authedUser.id" @flushSeletedTagNames="selectedTagNames = ''" class="flex flex-1 flex-wrap p-6" /><!-- right-bottom section -->
+
+                    <router-view class="flex flex-1 flex-wrap p-6"
+                        v-bind:api_token="authedUser.api_token" 
+                        v-bind:user_id="authedUser.id" 
+                        @flushSeletedTagNames="selectedTagNames = ''"
+                    /><!-- right-bottom section -->
+                    
                 </div> <!-- right section -->
             </div>
         </div>
