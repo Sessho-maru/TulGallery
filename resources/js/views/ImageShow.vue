@@ -47,7 +47,7 @@
                 </div>
 
                 <div v-if="post.format === 'webm'">
-                    <video class="" controls loop>
+                    <video class="pt-8" loop autoplay>
                         <source v-bind:src="post.url" type="video/webm">
                     </video>
                 </div>
@@ -89,8 +89,7 @@ export default {
         'user_id',
     ],
 
-    data()
-    {
+    data() {
         return {
             post: null,
             modal: false,
@@ -98,8 +97,7 @@ export default {
         }
     },
 
-    mounted()
-    {
+    mounted() {
         console.log("this.$globalParams: ", this.$globalParams);
         
         axios.get('/api/imgs/' + this.$route.params.id)

@@ -1,17 +1,17 @@
 <template>
     <div class="overflow-x-hidden">
 
-        <div v-bind:key="each.data.image_id" v-for="each in currentPage" class="w-1/2 md:w-1/3 lg:w-1/6">
-            <!-- <div v-if="each.data.format === 'webm'">
-                <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id, currentPageIndex: index } }">
-                    <video class="block h-64 w-64 object-none object-cover hover:opacity-75">
+        <div v-bind:key="each.data.image_id" v-for="each in currentPage" class="mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/5">
+            <div v-if="each.data.format === 'webm'">
+                <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id } }">
+                    <video class="block h-auto w-full hover:opacity-75" autoplay loop>
                         <source v-bind:src="each.data.url" type="video/webm">
                     </video>
                 </router-link>
-            </div> // Not support Demo... -->
-            <div>
+            </div>
+            <div v-if="each.data.format === 'photo'">
                 <router-link :to="{ name: 'ImageShow', params: { id: each.data.image_id } }">
-                    <img class="block h-64 w-64 object-none object-cover hover:opacity-75" v-bind:src="each.data.thumbnail_url" alt="placeholder">
+                    <img class="block h-auto w-full hover:opacity-75" v-bind:src="each.data.url" alt="placeholder">
                 </router-link>
             </div>
         </div>
@@ -53,6 +53,14 @@ export default {
             this.taggedBy();
         });
     },
+
+    // TODO: refactor code with beforeRouteEnter() hook
+    /*
+    beforeRouteEnter(to, from, next)
+    {
+        console.log(from);
+    },
+    */
 
     mounted() {
         
@@ -192,6 +200,7 @@ export default {
             }
 
             this.currentPage = this.paginated[this.$globalParams.currentPageIndex];
+            console.log(this.currentPage);
         },
 
         consoleLogIndex()

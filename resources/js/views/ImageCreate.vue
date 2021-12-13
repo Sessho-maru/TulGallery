@@ -7,7 +7,7 @@
                 <form @submit.prevent="createNewPost">
                     <div class="pb-2">
                         <label for="image" class="text-blue-500 pt-2 uppercase text-xs font-bold">Image</label>
-                        <input id="image" type="file" ref="file" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="fileHandle" @click="clearError('error_image')"/>
+                        <input id="image" type="file" ref="file" class="pt-5 w-full border-b pb-2 focus:outline-none focus:border-blue-400" enctype="multipart/form-data" @change="handleFile" @click="clearError('error_image')"/>
                     </div>
                     <p id="error_image" class="text-red-600 text-sm font-bold"></p>
 
@@ -43,8 +43,7 @@ export default {
         'api_token',
     ],
 
-    data()
-    {
+    data() {
         return {
             file: "",
 
@@ -57,7 +56,7 @@ export default {
 
             loading: true,
             fileLoaded: false,
-            img: ""
+            vaildTags: [],
         }
     },
 
@@ -73,7 +72,7 @@ export default {
     },
 
     methods: {
-        fileHandle()
+        handleFile()
         {
             if (this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024)
             {
@@ -102,20 +101,38 @@ export default {
                 return;
             }
 
+            this.fetchAllTag();
             this.fileLoaded = true;
         },
 
-        validateTags(tags)
+        fetchAllTag()
         {
-            return new Promise((resolve, reject) => {
-                axios.post('/api/imgs/validate', {'tags': tags, 'api_token': this.api_token})
-                    .then((res) => {
-                        resolve(res);
-                    })
-                    .catch((err) => {
-                        reject(err);
+            axios.get('/api/tags')
+                .then((res) => {
+                    this.vaildTags = res.data.map((each) => {
+                        return each.tag_name;
                     });
-            });
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        },
+
+        isTagDuplicated(array) 
+        {
+            return (new Set(array)).size !== array.length;
+        },
+
+        isTagsValid(tags)
+        {
+            for (let each of tags)
+            {
+                if (this.vaildTags.indexOf(each) === -1)
+                {
+                    return false;
+                }
+            }
+            return true;
         },
 
         uploadImageToBucket(formData)
@@ -159,31 +176,28 @@ export default {
             }
 
             let tags = this.objPost.tags.split(",");
-            if (this.hasDuplicates(tags))
+            if (this.isTagDuplicated(tags))
             {
                 this.displayError('tag', "Inserted Tags aren't unique");
                 return;
             }
 
+            if (!this.isTagsValid(tags))
+            {
+                this.displayError('tag', "Tag names inserted incorrectly");
+                return;
+            }
+            console.log('Tag validation passed');
+
             document.getElementById("submitButton").disabled = true;
+
             let noErr = true;
-
-            await this.validateTags(this.objPost.tags) // execute tags validation
-                .then((res) => {
-                    console.log(res.data.msg);
-                })
-                .catch((err) => {
-                    this.displayError('tag', err.response.data.msg, true);
-                    noErr = false;
-                });
-            if(!noErr) return;
-
             let formData = new FormData();
             formData.append('file', this.file);
 
             await this.uploadImageToBucket(formData) // upload Image to S3 Bucket then get Url
                 .then((res) => {
-                    console.log("New Image was uploaded to S3 Bucket", res);
+                    console.log("New Image was uploaded to S3 Bucket");
                     this.objPost.url = res;
                 })
                 .catch((err) => {
@@ -200,10 +214,6 @@ export default {
                 .catch((err) => {
                     console.log('Unexpected error occured');
                 });
-        },
-
-        hasDuplicates(array) {
-            return (new Set(array)).size !== array.length;
         },
 
         displayError(target, msg, turnOnBtn = false)

@@ -39,8 +39,7 @@ export default {
         'api_token'
     ],
 
-    data()
-    {
+    data() {
         return {
             searchTerm: "",
             searchResult: [],

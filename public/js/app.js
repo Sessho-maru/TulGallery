@@ -2221,7 +2221,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       },
       loading: true,
       fileLoaded: false,
-      img: ""
+      vaildTags: []
     };
   },
   mounted: function mounted() {
@@ -2232,7 +2232,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   methods: {
-    fileHandle: function fileHandle() {
+    handleFile: function handleFile() {
       if (this.$refs.file.files[0].size > this.$maxSizePerEachItem * 1024 * 1024) {
         this.displayError('image', "Too large file size (Maximum: ".concat(this.$maxSizePerEachItem, "MB)"));
         document.getElementById('image').value = '';
@@ -2254,21 +2254,52 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return;
       }
 
+      this.fetchAllTag();
       this.fileLoaded = true;
     },
-    validateTags: function validateTags(tags) {
+    fetchAllTag: function fetchAllTag() {
       var _this = this;
 
-      return new Promise(function (resolve, reject) {
-        axios.post('/api/imgs/validate', {
-          'tags': tags,
-          'api_token': _this.api_token
-        }).then(function (res) {
-          resolve(res);
-        })["catch"](function (err) {
-          reject(err);
+      axios.get('/api/tags').then(function (res) {
+        _this.vaildTags = res.data.map(function (each) {
+          return each.tag_name;
         });
+      })["catch"](function (err) {
+        console.log(err);
       });
+    },
+    isTagDuplicated: function isTagDuplicated(array) {
+      return new Set(array).size !== array.length;
+    },
+    isTagsValid: function isTagsValid(tags) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = tags[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var each = _step.value;
+
+          if (this.vaildTags.indexOf(each) === -1) {
+            return false;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return true;
     },
     uploadImageToBucket: function uploadImageToBucket(formData) {
       return new Promise(function (resolve, reject) {
@@ -2327,7 +2358,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               case 6:
                 tags = this.objPost.tags.split(",");
 
-                if (!this.hasDuplicates(tags)) {
+                if (!this.isTagDuplicated(tags)) {
                   _context.next = 10;
                   break;
                 }
@@ -2336,33 +2367,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 return _context.abrupt("return");
 
               case 10:
-                document.getElementById("submitButton").disabled = true;
-                noErr = true;
-                _context.next = 14;
-                return this.validateTags(this.objPost.tags) // execute tags validation
-                .then(function (res) {
-                  console.log(res.data.msg);
-                })["catch"](function (err) {
-                  _this3.displayError('tag', err.response.data.msg, true);
-
-                  noErr = false;
-                });
-
-              case 14:
-                if (noErr) {
-                  _context.next = 16;
+                if (this.isTagsValid(tags)) {
+                  _context.next = 13;
                   break;
                 }
 
+                this.displayError('tag', "Tag names inserted incorrectly");
                 return _context.abrupt("return");
 
-              case 16:
+              case 13:
+                console.log('Tag validation passed');
+                document.getElementById("submitButton").disabled = true;
+                noErr = true;
                 formData = new FormData();
                 formData.append('file', this.file);
                 _context.next = 20;
                 return this.uploadImageToBucket(formData) // upload Image to S3 Bucket then get Url
                 .then(function (res) {
-                  console.log("New Image was uploaded to S3 Bucket", res);
+                  console.log("New Image was uploaded to S3 Bucket");
                   _this3.objPost.url = res;
                 })["catch"](function (err) {
                   // TODO: return proper error message when uploading fails from /imgs/upload
@@ -2402,9 +2424,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return createNewPost;
     }(),
-    hasDuplicates: function hasDuplicates(array) {
-      return new Set(array).size !== array.length;
-    },
     displayError: function displayError(target, msg) {
       var turnOnBtn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       document.getElementById("error_".concat(target)).innerHTML = msg;
@@ -2481,55 +2500,111 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   props: ['api_token'],
   data: function data() {
     return {
-      post: "",
-      loading: true
+      post: {},
+      loading: true,
+      vaildTags: []
     };
   },
   mounted: function mounted() {
     var _this = this;
 
     axios.get('/api/imgs/' + this.$route.params.id).then(function (response) {
-      _this.post = response.data.data;
-      _this.post.tags = _this.post.tags.toString();
+      _this.objPost = response.data.data;
+      _this.objPost.tags = _this.objPost.tags.toString();
       _this.loading = false;
     })["catch"](function (errors) {
       if (errors.response.status === 404 || errors.response.status === 403) {
         _this.$router.push('/imgs');
       }
     });
+    this.fetchAllTag();
   },
   methods: {
-    submitPost: function submitPost() {
+    fetchAllTag: function fetchAllTag() {
       var _this2 = this;
 
-      if (this.post.tags === "") {
-        document.getElementById('error_tag').innerHTML = "Require at least 1 Tag";
-        return;
-      }
-
-      var tags = this.post.tags.split(",");
-
-      if (this.hasDuplicates(tags) == true) {
-        document.getElementById('error_tag').innerHTML = "Inserted Tags aren't unique";
-        return;
-      }
-
-      document.getElementById("submtiButton").disabled = true;
-      axios.patch('/api/imgs/' + this.$route.params.id, _objectSpread({}, this.post, {
-        api_token: this.api_token,
-        flag: "post_update"
-      })).then(function (response) {
-        _this2.$router.push(response.data.links.self);
-      })["catch"](function (errors) {
-        document.getElementById('error_tag').innerHTML = errors.response.data.msg;
-        document.getElementById("submtiButton").disabled = false;
+      axios.get('/api/tags').then(function (res) {
+        _this2.vaildTags = res.data.map(function (each) {
+          return each.tag_name;
+        });
+      })["catch"](function (err) {
+        console.log(err);
       });
     },
-    hasDuplicates: function hasDuplicates(array) {
+    isTagDuplicated: function isTagDuplicated(array) {
       return new Set(array).size !== array.length;
     },
-    clearError: function clearError(field) {
-      document.getElementById(field).innerHTML = "";
+    isTagsValid: function isTagsValid(tags) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = tags[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var each = _step.value;
+
+          if (this.vaildTags.indexOf(each) === -1) {
+            return false;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return true;
+    },
+    submitPost: function submitPost() {
+      var _this3 = this;
+
+      if (this.objPost.tags === "") {
+        this.displayError('tag', "Requires 1 Tag at least");
+        return;
+      }
+
+      var tags = this.objPost.tags.split(",");
+
+      if (this.isTagDuplicated(tags)) {
+        this.displayError('tag', "Inserted Tags aren't unique");
+        return;
+      }
+
+      if (!this.isTagsValid(tags)) {
+        this.displayError('tag', "Tag names inserted incorrectly");
+        return;
+      }
+
+      console.log('Tag validation passed');
+      document.getElementById("submtiButton").disabled = true;
+      axios.patch('/api/imgs/' + this.$route.params.id, _objectSpread({}, this.objPost, {
+        api_token: this.api_token
+      })).then(function (res) {
+        _this3.$router.push(res.data.links.self);
+      })["catch"](function (err) {
+        // TODO: return proper error message
+        console.log(err);
+      });
+    },
+    displayError: function displayError(target, msg) {
+      var turnOnBtn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      document.getElementById("error_".concat(target)).innerHTML = msg;
+
+      if (turnOnBtn) {
+        document.getElementById("submitButton").disabled = false;
+      }
+    },
+    clearError: function clearError(target) {
+      document.getElementById(target).innerHTML = "";
     }
   }
 });
@@ -2596,6 +2671,14 @@ __webpack_require__.r(__webpack_exports__);
       _this.taggedBy();
     });
   },
+  // TODO: refactor code with beforeRouteEnter() hook
+
+  /*
+  beforeRouteEnter(to, from, next)
+  {
+      console.log(from);
+  },
+  */
   mounted: function mounted() {
     var _this2 = this;
 
@@ -2715,6 +2798,7 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.currentPage = this.paginated[this.$globalParams.currentPageIndex];
+      console.log(this.currentPage);
     },
     consoleLogIndex: function consoleLogIndex() {
       console.log("current Page Index: ", this.$globalParams.currentPageIndex);
@@ -22651,7 +22735,7 @@ var render = function() {
                       enctype: "multipart/form-data"
                     },
                     on: {
-                      change: _vm.fileHandle,
+                      change: _vm.handleFile,
                       click: function($event) {
                         return _vm.clearError("error_image")
                       }
@@ -22818,7 +22902,7 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "pt-8" }, [
-              _c("img", { attrs: { src: _vm.post.url, alt: "" } })
+              _c("img", { attrs: { src: _vm.objPost.url, alt: "" } })
             ]),
             _vm._v(" "),
             _c(
@@ -22850,11 +22934,11 @@ var render = function() {
                       _c("ckeditor", {
                         attrs: { id: "description", type: "classic" },
                         model: {
-                          value: _vm.post.description,
+                          value: _vm.objPost.description,
                           callback: function($$v) {
-                            _vm.$set(_vm.post, "description", $$v)
+                            _vm.$set(_vm.objPost, "description", $$v)
                           },
-                          expression: "post.description"
+                          expression: "objPost.description"
                         }
                       })
                     ],
@@ -22878,8 +22962,8 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.post.tags,
-                        expression: "post.tags"
+                        value: _vm.objPost.tags,
+                        expression: "objPost.tags"
                       }
                     ],
                     staticClass:
@@ -22889,14 +22973,14 @@ var render = function() {
                       type: "text",
                       placeholder: "All the tag inputs must be devied by ','"
                     },
-                    domProps: { value: _vm.post.tags },
+                    domProps: { value: _vm.objPost.tags },
                     on: {
                       input: [
                         function($event) {
                           if ($event.target.composing) {
                             return
                           }
-                          _vm.$set(_vm.post, "tags", $event.target.value)
+                          _vm.$set(_vm.objPost, "tags", $event.target.value)
                         },
                         function($event) {
                           return _vm.clearError("error_tag")
@@ -22964,35 +23048,70 @@ var render = function() {
       _vm._l(_vm.currentPage, function(each) {
         return _c(
           "div",
-          { key: each.data.image_id, staticClass: "w-1/2 md:w-1/3 lg:w-1/6" },
+          {
+            key: each.data.image_id,
+            staticClass: "mb-4 px-2 w-1/2 md:w-1/3 lg:w-1/5"
+          },
           [
-            _c(
-              "div",
-              [
-                _c(
-                  "router-link",
-                  {
-                    attrs: {
-                      to: {
-                        name: "ImageShow",
-                        params: { id: each.data.image_id }
-                      }
-                    }
-                  },
+            each.data.format === "webm"
+              ? _c(
+                  "div",
                   [
-                    _c("img", {
-                      staticClass:
-                        "block h-64 w-64 object-none object-cover hover:opacity-75",
-                      attrs: {
-                        src: each.data.thumbnail_url,
-                        alt: "placeholder"
-                      }
-                    })
-                  ]
+                    _c(
+                      "router-link",
+                      {
+                        attrs: {
+                          to: {
+                            name: "ImageShow",
+                            params: { id: each.data.image_id }
+                          }
+                        }
+                      },
+                      [
+                        _c(
+                          "video",
+                          {
+                            staticClass: "block h-auto w-full hover:opacity-75",
+                            attrs: { autoplay: "", loop: "" }
+                          },
+                          [
+                            _c("source", {
+                              attrs: { src: each.data.url, type: "video/webm" }
+                            })
+                          ]
+                        )
+                      ]
+                    )
+                  ],
+                  1
                 )
-              ],
-              1
-            )
+              : _vm._e(),
+            _vm._v(" "),
+            each.data.format === "photo"
+              ? _c(
+                  "div",
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        attrs: {
+                          to: {
+                            name: "ImageShow",
+                            params: { id: each.data.image_id }
+                          }
+                        }
+                      },
+                      [
+                        _c("img", {
+                          staticClass: "block h-auto w-full hover:opacity-75",
+                          attrs: { src: each.data.url, alt: "placeholder" }
+                        })
+                      ]
+                    )
+                  ],
+                  1
+                )
+              : _vm._e()
           ]
         )
       }),
@@ -23402,11 +23521,15 @@ var render = function() {
             _vm._v(" "),
             _vm.post.format === "webm"
               ? _c("div", [
-                  _c("video", { attrs: { controls: "", loop: "" } }, [
-                    _c("source", {
-                      attrs: { src: _vm.post.url, type: "video/webm" }
-                    })
-                  ])
+                  _c(
+                    "video",
+                    { staticClass: "pt-8", attrs: { loop: "", autoplay: "" } },
+                    [
+                      _c("source", {
+                        attrs: { src: _vm.post.url, type: "video/webm" }
+                      })
+                    ]
+                  )
                 ])
               : _c("div", [
                   _c("div", { staticClass: "pt-8" }, [
@@ -38638,7 +38761,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$globalParams = {
   postedBy: undefined,
   tagObjectArray: []
 };
-vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 24;
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$itemNumPerPage = 3;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.prototype.$maxSizePerEachItem = 20;
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_ckeditor5__WEBPACK_IMPORTED_MODULE_4___default.a.plugin, options);
 

@@ -16,7 +16,8 @@
 | DELETE | api/imgs/{id} | ImagesController@destroy         | -                  | O               |
 | POST   | api/search    | SearchController@index           |          -         |        X        |
 
-このWEBアプリケーションはイメージの掲載(_ImagesController@store_)、修正(_ImagesController@update_)、削除(_ImagesController@destroy_)</br>
+このWEBアプリケーションはイメージの</br>
+掲載(_ImagesController@store_)、修正(_ImagesController@update_)、削除(_ImagesController@destroy_)</br>
 を行う為にはログインが必要です。</br>
 その他の _controller_ は guest ユーザーでも実行出来ますが、guest ユーザーが上記の _controller_ を実行しようとしたら</br>
 **/login** にURLが _redirect_ され、ログインページに移動されます。
@@ -26,8 +27,8 @@
 `Auth\LoginController` _controller_ から `AuthenticatesUsers` _trait_ が定義されている</br>
 [login( _**Request $request**_ )](https://github.com/Sessho-maru/TulGallery/blob/master/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L31-L55) を呼び出します。
 
-まず、ユーザー入力した [`username`](https://github.com/Sessho-maru/TulGallery/blob/a03eb7e8533f047549d040ec4c6f955676fb5f52/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L145-L148), `password` の有効性をチェックします。
-```php認証済みのユーザーかチェックします。
+まず、ユーザーが入力した [`username`](https://github.com/Sessho-maru/TulGallery/blob/a03eb7e8533f047549d040ec4c6f955676fb5f52/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php#L145-L148), `password` の有効性をチェックします。
+```php
 protected function validateLogin(Request $request)
 {
     $request->validate([
@@ -70,8 +71,8 @@ protected function attemptLogin(Request $request)
 ```
 `$user` が _null_ とか _false_ ではないなら `$user` を _props_ として渡します。</br>
 
-[`App.vue`](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue) _component_ には [_navigation_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L4-L42)、格URL毎にマッチする _component_ を表示する [_router-view_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L44-L54) が分けられています。</br>
-`App.vue` の _Vue instance_ が _mount_ されたらまず、`mounted()` で guest ユーザーか認証済みのユーザーかチェックして</br>
+[`App.vue`](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue) _component_ は [_navigation_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L4-L42)と、格URL毎にマッチする _component_ を表示する [_router-view_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L44-L54) に分けられています。</br>
+`App.vue` の _Vue instance_ が初期化され DOM に _mount_ されたらまず、`mounted()` で guest ユーザーか認証済みのユーザーかチェックして</br>
 後者の場合、`this.authedUser` を初期化します。
 ```javascript
 mounted() {
