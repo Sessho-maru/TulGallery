@@ -4,7 +4,7 @@
 動くイメージフォーマット、_.gif_　と　動画 _.webm_ ファイルフォーマットもアップロード出来ます。
 
 ### [DEMO](http://54.219.167.232/login)
-_admin_ アカウントとしてログイン出来ます。</br>
+_guest_ として入りたり、_admin_ アカウントでログイン出来ます。</br>
 username: _admin_</br>
 password: _q1w2e3_
 
