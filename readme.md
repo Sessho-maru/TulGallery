@@ -77,7 +77,7 @@ protected function attemptLogin(Request $request)
 `$user` が _null_ とか _false_ ではないなら `$user` を _props_ として渡します。</br>
 
 [`App.vue`](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue) _component_ は [_navigation_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L4-L42)と、格URL毎にマッチする _component_ を表示する [_router-view_ 領域](https://github.com/Sessho-maru/TulGallery/blob/master/resources/js/components/App.vue#L44-L54) に分けられています。</br>
-`App.vue` の _Vue instance_ が初期化され DOM に _mount_ されたらまず、`mounted()` で guest ユーザーか認証済みのユーザーかチェックして</br>
+`App.vue` の _Vue instance_ が初期化され DOM に _mount_ されたらまず、`mounted()` で guest ユーザーか認証済みのユーザーかチェックして
 後者の場合、`this.authedUser` を初期化します。
 ```javascript
 mounted() {
